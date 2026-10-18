@@ -1,12 +1,23 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
+import { guardAgainstExtensionDomChanges } from './lib/domGuard.js'
+import { reportError, watchForErrors } from './lib/report.js'
 import { watchForUpdates } from './lib/updates.js'
 import './styles.css'
 
-createRoot(document.getElementById('root')).render(
+guardAgainstExtensionDomChanges()
+watchForErrors()
+
+createRoot(document.getElementById('root'), {
+  onUncaughtError: (error) => reportError(error, 'react.uncaught'),
+  onRecoverableError: (error) => reportError(error, 'react.recoverable'),
+}).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>,
 )
 

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { brand } from '../data/brand.js'
 import { club } from '../data/club.js'
+import ErrorBoundary from './ErrorBoundary.jsx'
 import { CalendarIcon, GiftIcon, HomeIcon, MenuIcon } from './Icons.jsx'
 import QRCode from './QRCode.jsx'
 
@@ -29,7 +30,10 @@ export default function Layout() {
 
       <div className="app">
         <main className="screen">
-          <Outlet />
+          {/* Keyed by path so a failed screen recovers as soon as you go somewhere else. */}
+          <ErrorBoundary key={pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
 
         <nav className="tabbar" aria-label="Main">
