@@ -8,6 +8,7 @@ import { bestReadyReward, club } from '../data/club.js'
 import { fridayMania } from '../data/offers.js'
 import { formatSessionDate, formatSessionTime, getSession, upcomingSessions, workshop } from '../data/workshops.js'
 import { firstName, formatLKR, formatPoints } from '../lib/format.js'
+import { BUILD_ID } from '../lib/updates.js'
 
 const STEPS = [
   ['Join in 30 seconds', `Get ${club.welcomeBonus} points – that’s a free Garlic Bread.`],
@@ -49,7 +50,7 @@ export default function Home() {
           </div>
           <p className="hello">Hi {firstName(member.name)}</p>
           <p className="balance">
-            <span className="retro retro-gold">{formatPoints(balance)}</span> points
+            <span key={balance} className="retro retro-gold">{formatPoints(balance)}</span> points
           </p>
           <RewardProgress balance={balance} />
           <div className="hero-actions">
@@ -109,6 +110,7 @@ export default function Home() {
             />
           )}
         </section>
+        <p className="version">Version {BUILD_ID}</p>
       </div>
     </>
   )

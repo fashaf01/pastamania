@@ -36,7 +36,7 @@ export default function MemberCard() {
           </div>
           <p className="member-id">{member.id}</p>
           <p className="balance center">
-            <span className="retro retro-gold">{formatPoints(balance)}</span> points
+            <span key={balance} className="retro retro-gold">{formatPoints(balance)}</span> points
           </p>
         </article>
 

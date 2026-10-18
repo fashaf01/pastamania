@@ -8,6 +8,12 @@ import { club } from '../data/club.js'
 // Only allow in-app paths as the post-join destination.
 const safeNext = (next) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/')
 
+// Accepts 0771234567, 077 123 4567, +94 77 123 4567 … and returns 0771234567, or null if invalid.
+const normalisePhone = (value) => {
+  const digits = value.replace(/[\s-]/g, '').replace(/^\+94/, '0')
+  return /^07\d{8}$/.test(digits) ? digits : null
+}
+
 export default function Join() {
   const { member, join } = useClub()
   const navigate = useNavigate()
@@ -15,13 +21,19 @@ export default function Join() {
   const [params] = useSearchParams()
   const next = safeNext(params.get('next'))
   const [form, setForm] = useState({ name: '', phone: '', birthday: '' })
+  const [phoneError, setPhoneError] = useState(false)
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
   if (member) return <Navigate to={next} replace />
 
   const submit = (e) => {
     e.preventDefault()
-    join({ name: form.name.trim(), phone: form.phone.trim(), birthday: form.birthday || null })
+    const phone = normalisePhone(form.phone)
+    if (!phone) {
+      setPhoneError(true)
+      return
+    }
+    join({ name: form.name.trim(), phone, birthday: form.birthday || null })
     toast('Welcome! Your free Garlic Bread is ready')
     navigate(next, { replace: true })
   }
@@ -45,13 +57,16 @@ export default function Join() {
               required
               type="tel"
               inputMode="tel"
-              pattern="^(\+94|0)7\d{8}$"
-              title="Sri Lankan mobile, e.g. 0771234567"
               placeholder="07X XXX XXXX"
               value={form.phone}
-              onChange={update('phone')}
+              onChange={(e) => {
+                setPhoneError(false)
+                update('phone')(e)
+              }}
               autoComplete="tel"
+              aria-invalid={phoneError}
             />
+            {phoneError && <span className="field-error">Enter a Sri Lankan mobile number, e.g. 077 123 4567</span>}
           </label>
           <label>
             <span className="label">

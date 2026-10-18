@@ -27,7 +27,7 @@ export default function Rewards() {
         {member ? (
           <section className="summary-card">
             <p className="balance dark">
-              <span className="retro">{formatPoints(balance)}</span> points
+              <span key={balance} className="retro">{formatPoints(balance)}</span> points
             </p>
             <RewardProgress balance={balance} />
           </section>

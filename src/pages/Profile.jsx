@@ -4,6 +4,7 @@ import { ChevronIcon } from '../components/Icons.jsx'
 import { useClub } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
 import { formatDate, formatPhone, formatPoints } from '../lib/format.js'
+import { BUILD_ID } from '../lib/updates.js'
 
 export default function Profile() {
   const { member, activity, signOut } = useClub()
@@ -57,6 +58,7 @@ export default function Profile() {
         </section>
 
         <button className="text-btn" onClick={leave}>Sign out</button>
+        <p className="version">Version {BUILD_ID}</p>
       </div>
     </>
   )
