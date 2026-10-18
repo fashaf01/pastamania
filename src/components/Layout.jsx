@@ -1,78 +1,51 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { brand } from '../data/brand.js'
-import { formatPhone } from '../lib/format.js'
-import { BagIcon, HomeIcon, MenuIcon, PinIcon, StarIcon, TagIcon } from './Icons.jsx'
-import { useOrder } from './OrderSheet.jsx'
+import { club } from '../data/club.js'
+import { CalendarIcon, GiftIcon, HomeIcon, MenuIcon, QrIcon } from './Icons.jsx'
+import QRCode from './QRCode.jsx'
 
-const NAV = [
+const TABS = [
   { to: '/', label: 'Home', Icon: HomeIcon, end: true },
   { to: '/menu', label: 'Menu', Icon: MenuIcon },
-  { to: '/offers', label: 'Offers', Icon: TagIcon },
-  { to: '/branches', label: 'Branches', Icon: PinIcon },
-  { to: '/events', label: 'Events', Icon: StarIcon },
+  { to: '/card', label: 'My Card', Icon: QrIcon, centre: true },
+  { to: '/rewards', label: 'Rewards', Icon: GiftIcon },
+  { to: '/bookings', label: 'Bookings', Icon: CalendarIcon },
 ]
 
+// Phone-width app shell. On wide screens the app sits beside a brand panel with a QR code
+// for opening it on a phone.
 export default function Layout() {
-  const openOrder = useOrder()
   const { pathname } = useLocation()
 
   useEffect(() => window.scrollTo(0, 0), [pathname])
 
   return (
-    <>
-      <header className="topbar">
-        <div className="container topbar-inner">
-          <NavLink to="/" className="logo" aria-label="PastaMania home">
-            <img src={brand.logo} alt="" width="44" height="44" />
-            <span className="logo-text">
-              PastaMania
-              <small>Sri Lanka</small>
-            </span>
-          </NavLink>
-          <nav className="topnav" aria-label="Main">
-            {NAV.map(({ to, label, end }) => (
-              <NavLink key={to} to={to} end={end}>
-                {label}
-              </NavLink>
-            ))}
-          </nav>
-          <button className="btn btn-primary btn-sm" onClick={openOrder}>
-            <BagIcon width={18} height={18} /> Order
-          </button>
-        </div>
-      </header>
+    <div className="stage">
+      <aside className="stage-panel" aria-hidden="true">
+        <img src={brand.logo} alt="" width="120" height="120" />
+        <p className="retro retro-gold stage-title">{club.name}</p>
+        <p className="caps-white">Earn · Redeem · Book</p>
+        <p className="stage-text">Scan to open the app on your phone, then add it to your home screen.</p>
+        <QRCode value={window.location.origin} size={160} label="Open on your phone" />
+      </aside>
 
-      <main>
-        <Outlet />
-      </main>
+      <div className="app">
+        <main className="screen">
+          <Outlet />
+        </main>
 
-      <footer className="footer">
-        <div className="container footer-inner">
-          <div className="footer-id">
-            <img src={brand.logo} alt="" width="56" height="56" loading="lazy" />
-            <div>
-              <p className="footer-brand">PastaMania Sri Lanka</p>
-              <p className="muted small">{brand.tagline}</p>
-            </div>
-          </div>
-          <div className="footer-links">
-            <a href={`tel:${brand.phone}`}>{formatPhone(brand.phone)}</a>
-            <a href={`mailto:${brand.email}`}>{brand.email}</a>
-            <a href={brand.socials.instagram} target="_blank" rel="noreferrer">Instagram</a>
-            <a href={brand.socials.facebook} target="_blank" rel="noreferrer">Facebook</a>
-          </div>
-        </div>
-      </footer>
-
-      <nav className="tabbar" aria-label="Main">
-        {NAV.map(({ to, label, Icon, end }) => (
-          <NavLink key={to} to={to} end={end}>
-            <Icon />
-            <span>{label}</span>
-          </NavLink>
-        ))}
-      </nav>
-    </>
+        <nav className="tabbar" aria-label="Main">
+          {TABS.map(({ to, label, Icon, end, centre }) => (
+            <NavLink key={to} to={to} end={end} className={centre ? 'tab-centre' : undefined}>
+              <span className="tab-icon">
+                <Icon />
+              </span>
+              <span>{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      </div>
+    </div>
   )
 }

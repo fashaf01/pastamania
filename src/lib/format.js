@@ -1,5 +1,11 @@
 export const formatLKR = (amount) => `LKR ${amount.toLocaleString('en-US')}`
 
+export const formatPoints = (points) => points.toLocaleString('en-US')
+
+export const formatDate = (ms) => new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+
+export const firstName = (name = '') => name.trim().split(/\s+/)[0]
+
 // '+94112553618' -> '+94 11 255 3618', '+94761255750' -> '+94 76 125 5750'
 export const formatPhone = (phone) => {
   const m = phone.match(/^\+94(\d{2})(\d{3})(\d{4})$/)

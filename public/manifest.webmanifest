@@ -1,13 +1,22 @@
 {
-  "name": "PastaMania Sri Lanka",
+  "name": "PastaMania Club",
   "short_name": "PastaMania",
-  "description": "Menu, offers, branches and events for PastaMania Sri Lanka.",
+  "description": "PastaMania Sri Lanka – earn Mania Points, redeem rewards, browse the menu and book Dough Workz.",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#fbf1de",
   "theme_color": "#9e2022",
+  "categories": ["food", "lifestyle"],
   "icons": [
     { "src": "/images/brand/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
     { "src": "/images/brand/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "My Card", "url": "/card", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Menu", "url": "/menu", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Book Dough Workz", "url": "/bookings", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] }
   ]
 }

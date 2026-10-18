@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import AppBar from '../components/AppBar.jsx'
+import { useClub } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
 import { events } from '../data/events.js'
 import { formatPhone } from '../lib/format.js'
-
-const EMPTY = { name: '', phone: '', date: '', guests: '', location: '', notes: '' }
 
 const buildMessage = (f) =>
   [
@@ -19,8 +19,17 @@ const buildMessage = (f) =>
     .filter((line) => line !== null)
     .join('\n')
 
-export default function Events() {
-  const [form, setForm] = useState(EMPTY)
+export default function Catering() {
+  const { member } = useClub()
+  const catering = events.find((e) => e.id === 'catering')
+  const [form, setForm] = useState({
+    name: member?.name ?? '',
+    phone: member?.phone ?? '',
+    date: '',
+    guests: '',
+    location: '',
+    notes: '',
+  })
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
   const submit = (e) => {
@@ -35,42 +44,23 @@ export default function Events() {
   }
 
   return (
-    <div className="container page">
-      <h1 className="page-title retro retro-red">Events & experiences</h1>
+    <>
+      <AppBar title="Event catering" back />
+      <div className="screen-pad">
+        <section className="panel">
+          <span className="event-icon" aria-hidden="true">{catering.icon}</span>
+          <h2 className="retro retro-red">{catering.title}</h2>
+          <p>{catering.description}</p>
+          <ul className="ticks">
+            {catering.details.map((d) => (
+              <li key={d}>{d}</li>
+            ))}
+          </ul>
+          <p className="muted small">
+            Prefer to talk? Call <a className="link" href={`tel:${brand.cateringPhone}`}>{formatPhone(brand.cateringPhone)}</a>.
+          </p>
+        </section>
 
-      <div className="event-grid">
-        {events.map((ev) => (
-          <article key={ev.id} className="event-card">
-            <div className="event-card-head">
-              <span className="event-icon" aria-hidden="true">{ev.icon}</span>
-              <span className="tag">{ev.tag}</span>
-            </div>
-            <h2>{ev.title}</h2>
-            <p>{ev.description}</p>
-            {ev.details.length > 0 && (
-              <ul className="ticks">
-                {ev.details.map((d) => (
-                  <li key={d}>{d}</li>
-                ))}
-              </ul>
-            )}
-            <a
-              className="btn btn-primary"
-              href={ev.cta.href}
-              {...(ev.cta.href.startsWith('http') ? { target: '_blank', rel: 'noreferrer' } : {})}
-            >
-              {ev.cta.label}
-            </a>
-          </article>
-        ))}
-      </div>
-
-      <section id="enquiry" className="enquiry">
-        <h2>Catering enquiry</h2>
-        <p className="muted">
-          Tell us about your event and our team will get back to you. Prefer to talk? Call{' '}
-          <a className="link" href={`tel:${brand.cateringPhone}`}>{formatPhone(brand.cateringPhone)}</a>.
-        </p>
         <form onSubmit={submit} className="form">
           <label>
             Your name
@@ -98,16 +88,14 @@ export default function Events() {
             Anything else?
             <textarea rows="3" value={form.notes} onChange={update('notes')} placeholder="Occasion, live pasta station, dietary needs…" />
           </label>
-          <div className="form-actions">
-            <button type="submit" className="btn btn-primary">Send by email</button>
-            {brand.whatsapp && (
-              <button type="button" className="btn btn-whatsapp" onClick={whatsapp} disabled={!form.name || !form.phone}>
-                Send on WhatsApp
-              </button>
-            )}
-          </div>
+          <button type="submit" className="btn btn-primary btn-block">Send enquiry by email</button>
+          {brand.whatsapp && (
+            <button type="button" className="btn btn-whatsapp btn-block" onClick={whatsapp} disabled={!form.name || !form.phone}>
+              Send on WhatsApp
+            </button>
+          )}
         </form>
-      </section>
-    </div>
+      </div>
+    </>
   )
 }
