@@ -1,0 +1,12 @@
+{
+  "name": "PastaMania Sri Lanka",
+  "short_name": "PastaMania",
+  "description": "Menu, offers, branches and events for PastaMania Sri Lanka.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff9f2",
+  "theme_color": "#a6192e",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
