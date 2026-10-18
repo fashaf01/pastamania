@@ -1,21 +1,29 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
 import { club } from '../data/club.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import { CalendarIcon, GiftIcon, HomeIcon, MenuIcon } from './Icons.jsx'
+import { CalendarIcon, GiftIcon, HomeIcon, MenuIcon, WalletIcon } from './Icons.jsx'
 import QRCode from './QRCode.jsx'
 
 const TABS = [
   { to: '/', label: 'Home', Icon: HomeIcon, end: true },
   { to: '/menu', label: 'Menu', Icon: MenuIcon },
   { to: '/rewards', label: 'Rewards', Icon: GiftIcon },
+  { to: '/wallet', label: 'Wallet', Icon: WalletIcon, end: true },
   { to: '/book', label: 'Book', Icon: CalendarIcon },
 ]
+
+// Screens shown at the counter get the whole phone: no tab bar under the QR.
+const FULL_SCREEN = [/^\/card$/, /^\/wallet\/.+/, /^\/staff$/]
 
 // Phone-width app shell. On wide screens the app sits beside a QR code for opening it on a phone.
 export default function Layout() {
   const { pathname } = useLocation()
+  const { vouchers } = useClub()
+  const readyVouchers = vouchers.filter((v) => voucherStatus(v) === 'ready').length
+  const showTabs = !FULL_SCREEN.some((re) => re.test(pathname))
 
   useEffect(() => window.scrollTo(0, 0), [pathname])
 
@@ -36,14 +44,19 @@ export default function Layout() {
           </ErrorBoundary>
         </main>
 
-        <nav className="tabbar" aria-label="Main">
-          {TABS.map(({ to, label, Icon, end }) => (
-            <NavLink key={to} to={to} end={end}>
-              <Icon />
-              <span>{label}</span>
-            </NavLink>
-          ))}
-        </nav>
+        {showTabs && (
+          <nav className="tabbar" aria-label="Main">
+            {TABS.map(({ to, label, Icon, end }) => (
+              <NavLink key={to} to={to} end={end}>
+                <span className="tab-icon">
+                  <Icon />
+                  {to === '/wallet' && readyVouchers > 0 && <span className="tab-dot" aria-label={`${readyVouchers} ready`} />}
+                </span>
+                <span>{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        )}
       </div>
     </div>
   )

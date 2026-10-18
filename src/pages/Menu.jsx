@@ -117,12 +117,13 @@ export default function Menu() {
           <DishImage item={selected} className="sheet-photo" />
           <div className="sheet-row">
             <span className="price">{formatLKR(selected.price)}</span>
-            <span className="pill pill-gold">Earn {pointsForSpend(selected.price)} points</span>
+            <span className="pill pill-gold">{pointsForSpend(selected.price)} points in store</span>
           </div>
-          <a className="btn btn-primary btn-block" href={branch.uberEatsUrl} target="_blank" rel="noreferrer">
+          <p className="muted">Dine in or take away and show your code when you pay to earn points.</p>
+          <a className="btn btn-outline btn-block" href={branch.uberEatsUrl} target="_blank" rel="noreferrer">
             Order on Uber Eats
           </a>
-          <p className="footnote">Dining in? Show your member card when you pay.</p>
+          <p className="footnote">Points aren’t earned on delivery orders.</p>
         </Sheet>
       )}
     </>

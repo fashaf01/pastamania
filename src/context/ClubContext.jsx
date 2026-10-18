@@ -35,10 +35,18 @@ const randomDigits = (length) => Array.from(crypto.getRandomValues(new Uint8Arra
 
 const DAY = 24 * 60 * 60 * 1000
 
+const UNDO_WINDOW = 30 * 60 * 1000
+
 const addActivity = (s, entry) => ({
   ...s,
   activity: [{ id: randomCode(8), at: Date.now(), ...entry }, ...s.activity],
 })
+
+// Member numbers are shown as PM 1234 5678; accept them typed with or without spaces.
+const normaliseCode = (value) => value.replace(/\s/g, '').toUpperCase()
+const normalisePhone = (value) => value.replace(/[\s-]/g, '').replace(/^\+94/, '0')
+
+export const voucherStatus = (v, now = Date.now()) => (v.usedAt ? 'used' : v.expiresAt <= now ? 'expired' : 'ready')
 
 const ClubContext = createContext(null)
 
@@ -71,12 +79,63 @@ export function ClubProvider({ children }) {
     )
   }, [])
 
-  // Staff would record this by scanning the member card at the till.
-  const recordPurchase = useCallback((amount, label) => {
-    const points = pointsForSpend(amount)
-    setState((s) => addActivity({ ...s, balance: s.balance + points }, { type: 'earn', points, label, amount }))
-    return points
+  // --- Counter actions (the staff screen). A backend would run these after checking the staff login.
+
+  // Finds the member by card number or mobile. On this prototype only members saved on this device exist.
+  const findMember = useCallback(
+    (query) => {
+      const m = state.member
+      if (!m || !query) return null
+      return normaliseCode(query) === m.id || normalisePhone(query) === m.phone ? m : null
+    },
+    [state.member],
+  )
+
+  // Points for a bill at the counter. Returns the award so it can be undone.
+  const recordPurchase = useCallback((amount, label = 'Visit') => {
+    const award = { id: randomCode(8), at: Date.now(), type: 'earn', points: pointsForSpend(amount), label, amount }
+    setState((s) => ({ ...s, balance: s.balance + award.points, activity: [award, ...s.activity] }))
+    return award
   }, [])
+
+  // Takes a mistyped award back: within 30 minutes, once, and only if the points haven't been spent.
+  const undoAward = useCallback(
+    (awardId) => {
+      const award = state.activity.find((a) => a.id === awardId && a.type === 'earn')
+      if (!award || award.undone) return { error: 'That award can’t be undone.' }
+      if (Date.now() - award.at > UNDO_WINDOW) return { error: 'Too late to undo – awards can be undone for 30 minutes.' }
+      if (state.balance < award.points) return { error: 'Those points have already been spent.' }
+      setState((s) =>
+        addActivity(
+          {
+            ...s,
+            balance: s.balance - award.points,
+            activity: s.activity.map((a) => (a.id === awardId ? { ...a, undone: true } : a)),
+          },
+          { type: 'adjust', points: -award.points, label: 'Correction at the counter' },
+        ),
+      )
+      return { ok: true }
+    },
+    [state.activity, state.balance],
+  )
+
+  // Marks a voucher as used when the counter hands over the free item.
+  const markVoucherUsed = useCallback(
+    (code) => {
+      const voucher = state.vouchers.find((v) => v.code === normaliseCode(code))
+      if (!voucher) return { error: 'No voucher with that code.' }
+      const status = voucherStatus(voucher)
+      if (status === 'used') return { error: 'This voucher has already been used.' }
+      if (status === 'expired') return { error: 'This voucher has expired.' }
+      setState((s) => ({
+        ...s,
+        vouchers: s.vouchers.map((v) => (v.code === voucher.code ? { ...v, usedAt: Date.now() } : v)),
+      }))
+      return { ok: true, voucher }
+    },
+    [state.vouchers],
+  )
 
   const redeem = useCallback(
     (reward) => {
@@ -114,8 +173,8 @@ export function ClubProvider({ children }) {
   const signOut = useCallback(() => setState(EMPTY), [])
 
   const value = useMemo(
-    () => ({ ...state, join, recordPurchase, redeem, book, cancelBooking, signOut }),
-    [state, join, recordPurchase, redeem, book, cancelBooking, signOut],
+    () => ({ ...state, join, findMember, recordPurchase, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut }),
+    [state, join, findMember, recordPurchase, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut],
   )
 
   return <ClubContext.Provider value={value}>{children}</ClubContext.Provider>

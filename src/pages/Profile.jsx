@@ -35,6 +35,7 @@ export default function Profile() {
         <ul className="list links">
           <li><Link to="/branches">Branches & opening hours <ChevronIcon width={18} height={18} /></Link></li>
           <li><Link to="/catering">Event catering <ChevronIcon width={18} height={18} /></Link></li>
+          <li><Link to="/staff">Counter screen (staff demo) <ChevronIcon width={18} height={18} /></Link></li>
           <li><a href={`tel:${brand.phone}`}>Call us · {formatPhone(brand.phone)}</a></li>
           <li><a href={brand.socials.instagram} target="_blank" rel="noreferrer">Instagram</a></li>
         </ul>

@@ -1,25 +1,26 @@
 import { Link } from 'react-router-dom'
-import { ChevronIcon } from '../components/Icons.jsx'
+import Banners from '../components/Banners.jsx'
+import { ChevronIcon, GiftIcon } from '../components/Icons.jsx'
 import RewardProgress from '../components/RewardProgress.jsx'
-import { useClub } from '../context/ClubContext.jsx'
+import { useClub, voucherStatus } from '../context/ClubContext.jsx'
+import { liveBanners } from '../data/banners.js'
 import { brand } from '../data/brand.js'
 import { getBranch } from '../data/branches.js'
 import { bestReadyReward, club } from '../data/club.js'
-import { fridayMania } from '../data/offers.js'
-import { formatSessionDate, formatSessionTime, getSession, upcomingSessions, workshop } from '../data/workshops.js'
-import { firstName, formatLKR, formatPoints } from '../lib/format.js'
+import { formatSessionDate, formatSessionTime, getSession, workshop } from '../data/workshops.js'
+import { firstName, formatPoints } from '../lib/format.js'
 import { BUILD_ID } from '../lib/updates.js'
 
 const STEPS = [
   ['Join in 30 seconds', `Get ${club.welcomeBonus} points – that’s a free Garlic Bread.`],
-  ['Show your card when you pay', `Earn 1 point for every LKR ${club.spendPerPoint} at any branch.`],
-  ['Swap points for free food', 'Garlic bread, sodas, pasta and pizza.'],
+  ['Show your code when you pay', `Earn 1 point for every LKR ${club.spendPerPoint} at any branch.`],
+  ['Swap points for free food', 'Redeem in the app, show the voucher, enjoy.'],
 ]
 
-function Row({ to, image, title, text }) {
+function Row({ to, image, icon, title, text, className = '' }) {
   return (
-    <Link to={to} className="row">
-      <img src={image} alt="" />
+    <Link to={to} className={`row ${className}`}>
+      {image ? <img src={image} alt="" /> : <span className="row-icon">{icon}</span>}
       <span className="row-text">
         <strong>{title}</strong>
         <span>{text}</span>
@@ -30,8 +31,8 @@ function Row({ to, image, title, text }) {
 }
 
 export default function Home() {
-  const { member, balance, bookings } = useClub()
-  const nextSession = upcomingSessions()[0]
+  const { member, balance, bookings, vouchers } = useClub()
+  const ready = vouchers.filter((v) => voucherStatus(v) === 'ready')
   const myNext = bookings
     .filter((b) => b.status !== 'cancelled')
     .map((b) => ({ ...b, session: getSession(b.sessionId) }))
@@ -54,9 +55,11 @@ export default function Home() {
           </p>
           <RewardProgress balance={balance} />
           <div className="hero-actions">
-            <Link className="btn btn-gold" to="/card">Show my card</Link>
-            {bestReadyReward(balance) && (
-              <Link className="btn btn-ghost" to="/rewards">Redeem</Link>
+            <Link className="btn btn-gold" to="/card">Show my code</Link>
+            {ready.length > 0 ? (
+              <Link className="btn btn-ghost" to="/wallet">Use voucher</Link>
+            ) : (
+              bestReadyReward(balance) && <Link className="btn btn-ghost" to="/rewards">Redeem</Link>
             )}
           </div>
         </section>
@@ -75,6 +78,32 @@ export default function Home() {
       )}
 
       <div className="pad">
+        <section className="block">
+          <Banners banners={liveBanners()} />
+        </section>
+
+        {member && (ready.length > 0 || myNext) && (
+          <section className="block rows">
+            {ready.length > 0 && (
+              <Row
+                to="/wallet"
+                className="ready-row"
+                icon={<GiftIcon width={20} height={20} />}
+                title={ready.length === 1 ? `Free ${ready[0].name} ready` : `${ready.length} free items ready`}
+                text="Show the voucher at the counter"
+              />
+            )}
+            {myNext && (
+              <Row
+                to={`/book/ticket/${myNext.ref}`}
+                image={workshop.image}
+                title={`Workshop · ${formatSessionDate(myNext.session)}, ${formatSessionTime(myNext.session)}`}
+                text={`${getBranch(myNext.session.branchId).name} · ${myNext.children.length} ${myNext.children.length === 1 ? 'child' : 'children'}`}
+              />
+            )}
+          </section>
+        )}
+
         {!member && (
           <section className="block">
             <h2 className="h2">How it works</h2>
@@ -92,24 +121,6 @@ export default function Home() {
           </section>
         )}
 
-        <section className="block rows">
-          <Row to="/offers" image={fridayMania.pastHeroes[3].image} title="FridayMania" text="Buy 1, get 1 free every Friday" />
-          {myNext ? (
-            <Row
-              to={`/book/ticket/${myNext.ref}`}
-              image={workshop.image}
-              title={`Workshop · ${formatSessionDate(myNext.session)}, ${formatSessionTime(myNext.session)}`}
-              text={`${getBranch(myNext.session.branchId).name} · ${myNext.children.length} ${myNext.children.length === 1 ? 'child' : 'children'}`}
-            />
-          ) : (
-            <Row
-              to="/book"
-              image={workshop.image}
-              title="Kids pizza workshops"
-              text={nextSession ? `Next: ${formatSessionDate(nextSession)} · ${formatLKR(workshop.pricePerChild)}` : 'New dates soon'}
-            />
-          )}
-        </section>
         <p className="version">Version {BUILD_ID}</p>
       </div>
     </>

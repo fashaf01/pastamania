@@ -40,3 +40,15 @@ export const PlusIcon = (p) => (
 export const MinusIcon = (p) => (
   <svg {...base} {...p}><path d="M5 12h14" /></svg>
 )
+export const WalletIcon = (p) => (
+  <svg {...base} {...p}><path d="M19 7V5a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H5a2 2 0 0 1-2-2V6" /><path d="M16 13.5h.01" /></svg>
+)
+export const QrIcon = (p) => (
+  <svg {...base} {...p}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3" /></svg>
+)
+export const CheckIcon = (p) => (
+  <svg {...base} {...p}><path d="M20 6 9 17l-5-5" /></svg>
+)
+export const CameraIcon = (p) => (
+  <svg {...base} {...p}><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" /><circle cx="12" cy="13.5" r="3.5" /></svg>
+)

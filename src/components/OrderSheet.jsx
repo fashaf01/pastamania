@@ -34,6 +34,7 @@ export function OrderProvider({ children }) {
           <a className="btn btn-outline btn-block" href={brand.pickmeUrl} target="_blank" rel="noreferrer">
             Also on PickMe Food
           </a>
+          <p className="footnote">Delivery platforms set their own prices. Points are earned in store only, not on delivery orders.</p>
         </Sheet>
       )}
     </OrderContext.Provider>

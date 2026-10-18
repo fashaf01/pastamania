@@ -1,23 +1,23 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AppBar from '../components/AppBar.jsx'
-import QRCode from '../components/QRCode.jsx'
+import { ChevronIcon, GiftIcon } from '../components/Icons.jsx'
 import RewardProgress from '../components/RewardProgress.jsx'
 import Sheet from '../components/Sheet.jsx'
-import { useClub } from '../context/ClubContext.jsx'
+import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { club, rewards } from '../data/club.js'
-import { formatDate, formatPoints } from '../lib/format.js'
+import { formatPoints } from '../lib/format.js'
 
 export default function Rewards() {
   const { member, balance, vouchers, redeem } = useClub()
+  const navigate = useNavigate()
   const [confirming, setConfirming] = useState(null)
-  const [voucher, setVoucher] = useState(null)
-  const active = vouchers.filter((v) => v.expiresAt > Date.now())
+  const ready = vouchers.filter((v) => voucherStatus(v) === 'ready').length
 
   const confirmRedeem = () => {
-    const issued = redeem(confirming)
+    const voucher = redeem(confirming)
     setConfirming(null)
-    if (issued) setVoucher(issued)
+    if (voucher) navigate(`/wallet/${voucher.id}`, { state: { fresh: true } })
   }
 
   return (
@@ -40,24 +40,15 @@ export default function Rewards() {
           </section>
         )}
 
-        {active.length > 0 && (
-          <section className="block">
-            <h2 className="h2">Ready to use</h2>
-            <ul className="list">
-              {active.map((v) => (
-                <li key={v.id}>
-                  <button className="list-row" onClick={() => setVoucher(v)}>
-                    <img src={v.image} alt="" />
-                    <span className="row-text">
-                      <strong>{v.name}</strong>
-                      <span>Use by {formatDate(v.expiresAt)}</span>
-                    </span>
-                    <span className="pill pill-red">Show</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
+        {ready > 0 && (
+          <Link to="/wallet" className="row ready-row">
+            <span className="row-icon"><GiftIcon width={20} height={20} /></span>
+            <span className="row-text">
+              <strong>{ready === 1 ? '1 voucher ready' : `${ready} vouchers ready`}</strong>
+              <span>In your Wallet</span>
+            </span>
+            <ChevronIcon width={18} height={18} />
+          </Link>
         )}
 
         <section className="block">
@@ -81,28 +72,32 @@ export default function Rewards() {
               )
             })}
           </ul>
-          <p className="footnote">1 point for every LKR {club.spendPerPoint} · vouchers last {club.voucherValidDays} days</p>
+          <p className="footnote">1 point for every LKR {club.spendPerPoint} spent in store · vouchers last {club.voucherValidDays} days</p>
         </section>
       </div>
 
       {confirming && (
         <Sheet title={`Redeem ${confirming.name}?`} onClose={() => setConfirming(null)}>
-          <img className="sheet-photo" src={confirming.image} alt="" />
-          <p>
-            Uses {formatPoints(confirming.points)} of your {formatPoints(balance)} points. You’ll get a voucher to show at the counter.
-          </p>
-          <button className="btn btn-primary btn-block" onClick={confirmRedeem}>Redeem</button>
-        </Sheet>
-      )}
-
-      {voucher && (
-        <Sheet title={voucher.name} onClose={() => setVoucher(null)}>
-          <div className="voucher-ticket">
-            <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={190} label="Voucher QR code" />
-            <p className="code">{voucher.code}</p>
-            <p className="muted">Valid until {formatDate(voucher.expiresAt)}</p>
+          <div className="confirm-item">
+            <img src={confirming.image} alt="" />
+            <p>A voucher for a free {confirming.name} goes into your Wallet. Show it at the counter within {club.voucherValidDays} days.</p>
           </div>
-          <p className="center muted">Show this at the counter. One use only.</p>
+          <dl className="sum">
+            <div>
+              <dt>Your points</dt>
+              <dd>{formatPoints(balance)}</dd>
+            </div>
+            <div>
+              <dt>This reward</dt>
+              <dd>−{formatPoints(confirming.points)}</dd>
+            </div>
+            <div className="sum-total">
+              <dt>Left after</dt>
+              <dd>{formatPoints(balance - confirming.points)} points</dd>
+            </div>
+          </dl>
+          <button className="btn btn-primary btn-block" onClick={confirmRedeem}>Redeem</button>
+          <button className="text-btn" onClick={() => setConfirming(null)}>Cancel</button>
         </Sheet>
       )}
     </>

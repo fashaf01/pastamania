@@ -12,9 +12,11 @@ import Join from './pages/Join.jsx'
 import MemberCard from './pages/MemberCard.jsx'
 import Menu from './pages/Menu.jsx'
 import NotFound from './pages/NotFound.jsx'
-import Offers from './pages/Offers.jsx'
 import Profile from './pages/Profile.jsx'
 import Rewards from './pages/Rewards.jsx'
+import Staff from './pages/Staff.jsx'
+import Voucher from './pages/Voucher.jsx'
+import Wallet from './pages/Wallet.jsx'
 import WorkshopBooking from './pages/WorkshopBooking.jsx'
 
 export default function App() {
@@ -28,13 +30,16 @@ export default function App() {
                 <Route index element={<Home />} />
                 <Route path="menu" element={<Menu />} />
                 <Route path="rewards" element={<Rewards />} />
+                <Route path="wallet" element={<Wallet />} />
+                <Route path="wallet/:id" element={<Voucher />} />
                 <Route path="book" element={<Bookings />} />
                 <Route path="book/:sessionId" element={<WorkshopBooking />} />
                 <Route path="book/ticket/:ref" element={<BookingDetail />} />
                 <Route path="card" element={<MemberCard />} />
                 <Route path="join" element={<Join />} />
                 <Route path="me" element={<Profile />} />
-                <Route path="offers" element={<Offers />} />
+                <Route path="staff" element={<Staff />} />
+                <Route path="offers" element={<Navigate to="/" replace />} />
                 <Route path="branches" element={<Branches />} />
                 <Route path="catering" element={<Catering />} />
                 <Route path="bookings" element={<Navigate to="/book" replace />} />

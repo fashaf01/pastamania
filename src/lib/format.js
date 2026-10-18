@@ -6,6 +6,9 @@ export const formatDate = (ms) => new Date(ms).toLocaleDateString('en-GB', { day
 
 export const firstName = (name = '') => name.trim().split(/\s+/)[0]
 
+// 'PM12345678' -> 'PM 1234 5678'
+export const formatMemberCode = (code = '') => code.replace(/^(PM)(\d{4})(\d{4})$/, '$1 $2 $3')
+
 // '+94112553618' -> '+94 11 255 3618', '+94761255750' -> '+94 76 125 5750'
 export const formatPhone = (phone) => {
   const m = phone.match(/^\+94(\d{2})(\d{3})(\d{4})$/)
