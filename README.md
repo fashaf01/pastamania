@@ -24,6 +24,28 @@ npm run preview   # serve the production build
 
 Any static host works. `vercel.json` is included so client-side routes (`/menu`, `/offers`, …) resolve on Vercel. For Netlify, add a `public/_redirects` file containing `/* /index.html 200`.
 
+## Design
+
+The look follows PastaMania's own Instagram posts (FridayMania posters): textured poster-red backgrounds,
+gold hatched retro serif headlines with a dark outline and offset shadow, wide white caps, starburst stickers
+and the running-chef logo badge.
+
+- **Fonts** – Fraunces (soft, heavy) from Google Fonts for retro headlines; the brand-supplied Oswald (labels,
+  buttons) and Inter (body) are self-hosted from `src/assets/fonts/` as Latin-subset WOFF2 files.
+- **Colours** – sampled from the logo and posters: poster red `#9E2022`, logo red `#ED1C25`, gold `#FBB516`, ink `#231F20`.
+
+## Images
+
+| Folder | Contents |
+|---|---|
+| `public/images/menu/` | Dish photos. Havelock uses the branded white-plate set; One Galle Face uses its own set (files with a hash suffix, e.g. `carbonara-pasta-0308d344.jpg`) |
+| `public/images/promo/` | Combo photos and the FridayMania pizza banner (cropped from the 23 Sep poster, without the dated text) |
+| `public/images/brand/` | Optimised logo and app icons |
+| `design/` | Original uploads kept for reference: full-size logos, the original poster, and all font files (not shipped) |
+
+To add a photo, drop it in `public/images/menu/` and add the file name to the item in `src/data/menu.js`.
+Items without a photo show their category icon.
+
 ## Updating content
 
 All content lives in `src/data/` – no code changes needed for routine updates:
@@ -42,7 +64,9 @@ Comments like `// M01`, `// P16` refer to source IDs in the research dossier (18
 
 The first version is seeded from public research. These items need the brand's confirmation:
 
-- [ ] **Logo, food photos and brand colours** – the app uses placeholder emoji art and a red/gold palette taken from public artwork
+- [x] **Logo and food photos** – added
+- [ ] **Missing photos** – Stroganoff Baked Rice, Five Bean Salad, the three tea carafes, Mountain Dew
+- [ ] **Brand colour codes** – current palette is sampled from the logo and posters; swap in official codes if they have a brand guide
 - [ ] **Official dine-in menu and prices** – current prices are Uber Eats delivery prices; Alfred House menu is partial
 - [ ] **Dine-in hours** per branch (sources conflict) and holiday hours
 - [ ] **Phone numbers** – Havelock number, and which of the two One Galle Face numbers is current

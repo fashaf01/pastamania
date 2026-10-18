@@ -3,6 +3,7 @@ export const brand = {
   name: 'PastaMania',
   country: 'Sri Lanka',
   tagline: 'Pasta & pizza, made for sharing',
+  logo: '/images/brand/logo.webp',
   about:
     'Singapore-born casual Italian dining since 1998, serving Sri Lanka since 2018. ' +
     'Creamy pastas, hand-made pizzas and local fusion favourites like Jaffna Calamari ' +

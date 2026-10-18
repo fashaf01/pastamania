@@ -24,9 +24,10 @@ export default function Layout() {
       <header className="topbar">
         <div className="container topbar-inner">
           <NavLink to="/" className="logo" aria-label="PastaMania home">
-            <span className="logo-mark">P</span>
+            <img src={brand.logo} alt="" width="44" height="44" />
             <span className="logo-text">
-              Pasta<span>Mania</span>
+              PastaMania
+              <small>Sri Lanka</small>
             </span>
           </NavLink>
           <nav className="topnav" aria-label="Main">
@@ -48,9 +49,12 @@ export default function Layout() {
 
       <footer className="footer">
         <div className="container footer-inner">
-          <div>
-            <p className="footer-brand">PastaMania Sri Lanka</p>
-            <p className="muted small">{brand.tagline}</p>
+          <div className="footer-id">
+            <img src={brand.logo} alt="" width="56" height="56" loading="lazy" />
+            <div>
+              <p className="footer-brand">PastaMania Sri Lanka</p>
+              <p className="muted small">{brand.tagline}</p>
+            </div>
           </div>
           <div className="footer-links">
             <a href={`tel:${brand.phone}`}>{formatPhone(brand.phone)}</a>

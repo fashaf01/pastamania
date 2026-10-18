@@ -36,7 +36,7 @@ export default function Events() {
 
   return (
     <div className="container page">
-      <h1 className="page-title">Events & experiences</h1>
+      <h1 className="page-title retro retro-red">Events & experiences</h1>
 
       <div className="event-grid">
         {events.map((ev) => (

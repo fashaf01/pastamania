@@ -7,7 +7,13 @@ export const fridayMania = {
     'Each Friday one hero dish is buy-one-get-one-free for dine-in, takeaway, Uber Eats and PickMe Food. ' +
     'The dish changes every week, so follow us on Instagram for this Friday’s pick.',
   terms: 'Selected hero dish only. Cannot be combined with other offers.',
-  pastHeroes: ['Arrabiata with Chicken Rasher', 'Tuscan Chicken Pizza', 'Jaffna Calamari', 'Hot Basil Chicken Pizza'],
+  image: '/images/promo/fridaymania-pizza.jpg',
+  pastHeroes: [
+    { name: 'Arrabiata with Chicken Rasher', image: '/images/menu/arrabiata-with-chicken-rasher-pasta.jpg' },
+    { name: 'Tuscan Chicken Pizza', image: '/images/menu/tuscan-chicken-pizza.jpg' },
+    { name: 'Jaffna Calamari', image: '/images/menu/jaffna-calamari-pasta.jpg' },
+    { name: 'Hot Basil Chicken Pizza', image: '/images/menu/hot-basil-chicken-pizza.jpg' },
+  ],
   sources: ['P13', 'P14', 'P17', 'P19', 'P20', 'P23', 'P24'],
 }
 
@@ -16,6 +22,7 @@ export const offers = [
     id: 'solo-spaghetti',
     title: 'Solo Spaghetti',
     price: 2890,
+    image: '/images/promo/solo-spaghetti.jpg',
     includes: ['Chicken Bolognese', 'Potato Wedges', 'Soft drink'],
     where: 'Alfred House & One Galle Face · Uber Eats',
     status: 'listed',
@@ -25,6 +32,7 @@ export const offers = [
     id: 'double-penne',
     title: 'Double Penne',
     price: 4290,
+    image: '/images/promo/double-penne.jpg',
     includes: ['Creamy Chicken Pasta', '7-inch Tuscan Chicken Pizza', 'Two drinks'],
     where: 'Alfred House & One Galle Face · Uber Eats',
     status: 'listed',

@@ -13,7 +13,7 @@ export default function Branches() {
 
   return (
     <div className="container page">
-      <h1 className="page-title">Branches</h1>
+      <h1 className="page-title retro retro-red">Branches</h1>
       <div className="branch-grid">
         {branches.map((b) => (
           <article key={b.id} id={b.id} className="branch-card">

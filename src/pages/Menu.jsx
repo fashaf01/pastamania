@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import DishImage from '../components/DishImage.jsx'
 import { SearchIcon } from '../components/Icons.jsx'
 import { useOrder } from '../components/OrderSheet.jsx'
 import { brand } from '../data/brand.js'
@@ -39,7 +40,7 @@ export default function Menu() {
 
   return (
     <div className="container page">
-      <h1 className="page-title">Menu</h1>
+      <h1 className="page-title retro retro-red">Menu</h1>
 
       <div className="segmented" role="tablist" aria-label="Branch">
         {branches.map((b) => (
@@ -89,14 +90,12 @@ export default function Menu() {
 
       {groups.map((g) => (
         <section key={g.name} className="menu-group">
-          <h2>
-            <span aria-hidden="true">{g.icon}</span> {g.name}
-          </h2>
+          <h2 className="retro retro-red">{g.name}</h2>
           <ul className="menu-list">
             {g.items.map((i) => (
               <li key={i.name} className="menu-item">
+                <DishImage item={i} className="menu-thumb" />
                 <span className="menu-name">{i.name}</span>
-                <span className="menu-dots" aria-hidden="true" />
                 <span className="price">{formatLKR(i.price)}</span>
               </li>
             ))}
