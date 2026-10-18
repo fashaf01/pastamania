@@ -38,14 +38,4 @@ export const offers = [
     status: 'listed',
     sources: ['M02', 'M03'],
   },
-  {
-    id: 'ntb-amex',
-    title: 'NTB Amex Points Vouchers',
-    price: null,
-    includes: ['LKR 2,500 voucher for 12,500 points', 'LKR 5,000 voucher for 25,000 points'],
-    where: 'In-store redemption · valid six months from issue',
-    status: 'listed',
-    link: 'https://www.americanexpress.lk/en/rewards/shop-with-your-points',
-    sources: ['R01', 'R02'],
-  },
 ]

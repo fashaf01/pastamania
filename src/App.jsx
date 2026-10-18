@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import { OrderProvider } from './components/OrderSheet.jsx'
 import { ToastProvider } from './components/Toast.jsx'
@@ -27,17 +27,18 @@ export default function App() {
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="menu" element={<Menu />} />
-                <Route path="card" element={<MemberCard />} />
                 <Route path="rewards" element={<Rewards />} />
-                <Route path="bookings" element={<Bookings />} />
-                <Route path="bookings/workshop/:sessionId" element={<WorkshopBooking />} />
-                <Route path="bookings/:ref" element={<BookingDetail />} />
+                <Route path="book" element={<Bookings />} />
+                <Route path="book/:sessionId" element={<WorkshopBooking />} />
+                <Route path="book/ticket/:ref" element={<BookingDetail />} />
+                <Route path="card" element={<MemberCard />} />
                 <Route path="join" element={<Join />} />
                 <Route path="me" element={<Profile />} />
                 <Route path="offers" element={<Offers />} />
                 <Route path="branches" element={<Branches />} />
                 <Route path="catering" element={<Catering />} />
-                <Route path="events" element={<Bookings />} />
+                <Route path="bookings" element={<Navigate to="/book" replace />} />
+                <Route path="events" element={<Navigate to="/book" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>

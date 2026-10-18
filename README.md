@@ -1,42 +1,38 @@
-# PastaMania Club – Sri Lanka (v0.2)
+# PastaMania Club – Sri Lanka (v0.3)
 
-Mobile loyalty app for PastaMania Sri Lanka, in the style of the Chatime rewards app: member card, Mania Points,
-rewards and vouchers, the menu, and Dough Workz workshop booking. Built with React + Vite as an installable
-web app (PWA) – add it to the home screen and it opens full-screen like a native app, with offline support.
+A simple loyalty app for PastaMania Sri Lanka, in the spirit of the Chatime rewards app.
+The promise is one line: **eat pasta, earn free pasta** – join and your first Garlic Bread is free.
+
+Built with React + Vite as a phone-first web app; add it to the home screen to open it full-screen like an app.
 
 ## Screens
 
-Bottom tabs: **Home · Menu · My Card · Rewards · Bookings**
+Four tabs: **Home · Menu · Rewards · Book**
 
-- **Home** – greeting, points card with tier progress, quick actions (Order, Dough Workz, Offers, Branches), next booking, FridayMania, rewards to unlock, signature dishes
-- **Menu** – per-branch menu with photos, search, categories and points per dish; tap a dish for details and Uber Eats ordering
-- **My Card** – member QR code for staff to scan at the till, member number, tier and balance
-- **Rewards** – redeem points for food vouchers (each with its own QR code), voucher wallet, points history, tier benefits
-- **Bookings** – Dough Workz sessions with seats left, booking form (children, ages, allergies), ticket with QR, add-to-calendar, send-to-PastaMania; event catering enquiry
-- **Join / Profile** – sign-up with 100 welcome points; profile, links, contact details
+- **Home** – guests see why to join (free Garlic Bread, how points work); members see their points, the next free item and a *Show my card* button
+- **Menu** – per-branch menu with photos and search; tap a dish for details and Uber Eats; *Order* opens delivery options
+- **Rewards** – points, free-food list, vouchers ready to use (each with a QR code)
+- **Book** – Dough Workz kids workshops: pick a date, add kids, get a ticket with QR; catering enquiry link
+- **My card** (from Home) – member QR code to show at the till; **Profile** (avatar) – details, branches, points history
 
 ## Loyalty programme (proposed – for the brand to confirm)
 
 Defined in `src/data/club.js`:
 
-- 1 Mania Point per LKR 100 spent; 100 welcome points; 200 birthday points
-- Tiers by points earned per year: **Al Dente** (on joining) → **Bella** (1,500, 1.25× points) → **Maestro** (4,000, 1.5× points)
-- Rewards from 150 points (Garlic Bread) to 900 points (any regular pizza); vouchers valid 30 days
+- 1 point for every LKR 100 spent
+- 150 welcome points = a free Garlic Bread on day one
+- Free food from 150 points (Garlic Bread) to 900 points (any regular pizza); vouchers last 30 days
 
 ## Prototype status
 
-This version runs entirely on the phone: member, points, vouchers and bookings are saved on the device
-(`src/context/ClubContext.jsx`). The Profile screen has a **Demo: earn points** box that simulates a staff scan.
-To go live it needs a backend (e.g. Supabase) for:
+Member, points, vouchers and bookings are saved on the device (`src/context/ClubContext.jsx`) and stay in sync
+across open tabs. The *My card* screen has a **Demo** box that simulates the till scanning the card.
+To go live it needs a backend (e.g. Supabase) for SMS sign-up, shared accounts, a staff scanner screen,
+and real workshop dates with bookings sent to the branch. `ClubContext.jsx` already exposes the actions a
+backend would provide (`join`, `recordPurchase`, `redeem`, `book`, `cancelBooking`).
 
-- sign-up with SMS one-time code, and member accounts shared across devices
-- a points ledger, plus a simple staff scanner screen at each till to add points and redeem vouchers
-- real Dough Workz sessions and seat counts, booking notifications to the branch, and online payment if wanted
-- push notifications (weekly FridayMania, booking reminders)
-
-`ClubContext.jsx` already exposes the actions a backend would provide (`join`, `recordPurchase`, `redeem`, `book`,
-`cancelBooking`), so the screens don't change when it is connected. For the Play Store / App Store, the same code
-can be wrapped with Capacitor.
+The app does not use a service worker. `public/sw.js` only removes the one shipped in v0.2, which could keep
+an open app on an old version until a manual refresh.
 
 ## Run locally
 
@@ -83,9 +79,8 @@ All content lives in `src/data/` – no code changes needed for routine updates:
 | `branches.js` | Addresses, phones, hours, Uber Eats links |
 | `menu.js` | Menu items and prices per branch, signature dishes |
 | `offers.js` | FridayMania and current combos/rewards |
-| `club.js` | Loyalty programme: earn rate, tiers, rewards catalogue |
+| `club.js` | Loyalty programme: earn rate, welcome points, rewards |
 | `workshops.js` | Dough Workz details and session dates (**sample dates – replace**) |
-| `events.js` | Christmas teaser and catering copy |
 
 Comments like `// M01`, `// P16` refer to source IDs in the research dossier (18 Oct 2026).
 
@@ -103,13 +98,12 @@ The first version is seeded from public research. These items need the brand's c
 - [ ] **FridayMania** – this week's hero dish and whether it applies at all branches
 - [ ] **Combo availability** – Solo Spaghetti and Double Penne
 - [ ] **Dough Workz** real session dates, capacity and price (sample dates are in `workshops.js`); **catering** packages
-- [ ] **Loyalty programme** – earn rate, tiers, rewards and voucher rules in `club.js`
+- [ ] **Loyalty programme** – earn rate, welcome points, rewards and voucher rules in `club.js`
 - [ ] **PickMe Food** direct store links (currently links to pickme.lk)
 - [ ] Allergen, vegetarian and halal information
 
 ## Roadmap
 
-1. ~~**v0.2 – Loyalty app prototype**~~: member card, points, rewards, vouchers, Dough Workz booking, PWA with offline support
-2. **v0.3 – Backend**: SMS sign-up, shared accounts, points ledger, staff scanner screen, real bookings with branch notifications
-3. **v0.4 – Engagement**: push notifications, birthday rewards, monthly tier perks
-4. **v1.0 – Store apps**: wrap with Capacitor for the Play Store and App Store; pickup ordering
+1. **v0.4 – Backend**: SMS sign-up, shared accounts, points ledger, staff scanner screen, real bookings with branch notifications
+2. **v0.5 – Engagement**: push notifications for FridayMania and booking reminders, birthday treats
+3. **v1.0 – Store apps**: wrap with Capacitor for the Play Store and App Store

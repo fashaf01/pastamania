@@ -9,6 +9,5 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}))
-}
+// The app no longer uses a service worker; ask any existing one to update so it can remove itself.
+navigator.serviceWorker?.getRegistrations().then((regs) => regs.forEach((r) => r.update()))

@@ -1,68 +1,33 @@
 import AppBar from '../components/AppBar.jsx'
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { ClockIcon, PhoneIcon, PinIcon } from '../components/Icons.jsx'
 import { branches, mapsUrl } from '../data/branches.js'
-import { formatPhone } from '../lib/format.js'
 
 export default function Branches() {
-  const { hash } = useLocation()
-
-  useEffect(() => {
-    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth' })
-  }, [hash])
-
   return (
     <>
-      <AppBar title="Branches" back />
-      <div className="screen-pad">
-        <div className="branch-grid">
-          {branches.map((b) => (
-            <article key={b.id} id={b.id} className="branch-card">
-              <h2>{b.name}</h2>
-              <div className="tags">
-                {b.highlights.map((h) => (
-                  <span key={h} className="tag">{h}</span>
+      <AppBar title="Branches" back="/me" />
+      <div className="pad">
+        {branches.map((b) => (
+          <section key={b.id} className="branch">
+            <h2 className="h2">{b.name}</h2>
+            <p className="muted">{b.address}</p>
+            {b.hours.map((h) => (
+              <dl key={h.label} className="hours">
+                <dt>{h.label}</dt>
+                {h.rows.map((r) => (
+                  <dd key={r.days}>
+                    <span>{r.days}</span>
+                    <span>{r.time}</span>
+                  </dd>
                 ))}
-              </div>
-              <p className="branch-line">
-                <PinIcon width={18} height={18} /> {b.address}
-              </p>
-              {b.hours.map((h) => (
-                <div key={h.label} className="hours">
-                  <p className="branch-line">
-                    <ClockIcon width={18} height={18} /> <strong>{h.label}</strong>
-                  </p>
-                  <table>
-                    <tbody>
-                      {h.rows.map((r) => (
-                        <tr key={r.days}>
-                          <td>{r.days}</td>
-                          <td>{r.time}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ))}
-              <div className="branch-actions">
-                <a className="btn btn-primary" href={`tel:${b.phones[0]}`}>
-                  <PhoneIcon width={18} height={18} /> Call
-                </a>
-                <a className="btn btn-outline" href={mapsUrl(b)} target="_blank" rel="noreferrer">
-                  Directions
-                </a>
-                <a className="btn btn-uber" href={b.uberEatsUrl} target="_blank" rel="noreferrer">
-                  Uber Eats
-                </a>
-              </div>
-              <p className="muted small">
-                {b.phones.map(formatPhone).join(' · ')}
-              </p>
-            </article>
-          ))}
-        </div>
-        <p className="muted small">Hours may change on public holidays. Please call ahead to confirm.</p>
+              </dl>
+            ))}
+            <div className="branch-actions">
+              <a className="btn btn-primary btn-sm" href={`tel:${b.phones[0]}`}>Call</a>
+              <a className="btn btn-outline btn-sm" href={mapsUrl(b)} target="_blank" rel="noreferrer">Directions</a>
+            </div>
+          </section>
+        ))}
+        <p className="footnote">Hours may change on public holidays.</p>
       </div>
     </>
   )

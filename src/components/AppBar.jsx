@@ -1,23 +1,21 @@
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { BackIcon } from './Icons.jsx'
 
-// Screen header. `back` shows a back button (to `back` if it is a path, otherwise browser back).
+// Screen header. `back` is the screen to return to when there is no in-app history
+// (for example when the page was opened from a shared link).
 export default function AppBar({ title, back, action }) {
   const navigate = useNavigate()
-  const goBack = () => {
-    if (typeof back === 'string') navigate(back)
-    else if (window.history.length > 1) navigate(-1)
-    else navigate('/')
-  }
+  const location = useLocation()
+  const goBack = () => (location.key === 'default' ? navigate(back, { replace: true }) : navigate(-1))
 
   return (
     <header className="appbar">
       {back ? (
-        <button className="icon-btn appbar-back" onClick={goBack} aria-label="Back">
+        <button className="icon-btn" onClick={goBack} aria-label="Back">
           <BackIcon />
         </button>
       ) : (
-        <span className="appbar-spacer" />
+        <span />
       )}
       <h1 className="appbar-title">{title}</h1>
       <div className="appbar-action">{action}</div>

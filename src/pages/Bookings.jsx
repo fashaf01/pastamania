@@ -6,15 +6,15 @@ import { getBranch } from '../data/branches.js'
 import { formatSessionDate, formatSessionTime, getSession, seatsLeft, upcomingSessions, workshop } from '../data/workshops.js'
 import { formatLKR } from '../lib/format.js'
 
-// Full sessions render as a plain row instead of a link.
-const Row = ({ to, full, children }) =>
-  full ? (
-    <div className="session full">{children}</div>
-  ) : (
-    <Link to={to} className="session">
-      {children}
-    </Link>
+function DateBox({ date }) {
+  const d = new Date(`${date}T00:00`)
+  return (
+    <span className="date-box">
+      <strong>{d.getDate()}</strong>
+      <span>{d.toLocaleDateString('en-GB', { month: 'short' })}</span>
+    </span>
   )
+}
 
 export default function Bookings() {
   const { bookings } = useClub()
@@ -23,82 +23,77 @@ export default function Bookings() {
 
   return (
     <>
-      <AppBar title="Bookings" />
-      <div className="screen-pad">
-        <section className="workshop-hero red-paper">
+      <AppBar title="Book" />
+      <div className="pad">
+        <section className="intro">
           <img src={workshop.image} alt="" />
-          <div className="workshop-hero-text">
-            <p className="caps-gold">{workshop.subtitle}</p>
-            <h2 className="retro retro-gold">{workshop.title}</h2>
-            <p className="small">
-              Ages {workshop.minAge}–{workshop.maxAge} · {formatLKR(workshop.pricePerChild)} per child
+          <div>
+            <h2 className="h2">{workshop.title}</h2>
+            <p className="muted">
+              Kids pizza-making · ages {workshop.minAge}–{workshop.maxAge}
+              <br />
+              {formatLKR(workshop.pricePerChild)} per child · apron, cap, pizza & drink
             </p>
           </div>
         </section>
-        <ul className="ticks inline-ticks">
-          {workshop.includes.map((x) => (
-            <li key={x}>{x}</li>
-          ))}
-        </ul>
-
-        <h2 className="section-title retro retro-red">Choose a session</h2>
-        {sessions.length === 0 && <p className="empty">New dates are coming soon. Check back shortly!</p>}
-        <ul className="session-list">
-          {sessions.map((s) => {
-            const left = seatsLeft(s, bookings)
-            const full = left <= 0
-            return (
-              <li key={s.id}>
-                <Row to={`/bookings/workshop/${s.id}`} full={full}>
-                  <span className="session-date">
-                    <strong>{new Date(`${s.date}T00:00`).getDate()}</strong>
-                    <span>{new Date(`${s.date}T00:00`).toLocaleDateString('en-GB', { month: 'short' })}</span>
-                  </span>
-                  <span className="session-text">
-                    <strong>
-                      {formatSessionDate(s)} · {formatSessionTime(s)}
-                    </strong>
-                    <span className="muted small">{getBranch(s.branchId).name}</span>
-                    {s.label && <span className="tag">{s.label}</span>}
-                  </span>
-                  <span className={`seats ${left <= 4 ? 'low' : ''}`}>{full ? 'Full' : `${left} seats`}</span>
-                  {!full && <ChevronIcon width={18} height={18} />}
-                </Row>
-              </li>
-            )
-          })}
-        </ul>
 
         {mine.length > 0 && (
-          <>
-            <h2 className="section-title retro retro-red">My bookings</h2>
-            <ul className="session-list">
+          <section className="block">
+            <h2 className="h2">Your bookings</h2>
+            <ul className="list">
               {mine.map((b) => (
                 <li key={b.ref}>
-                  <Link to={`/bookings/${b.ref}`} className={`session ${b.status === 'cancelled' ? 'full' : ''}`}>
-                    <span className="session-text">
-                      <strong>{b.ref}</strong>
-                      <span className="small">
-                        {formatSessionDate(b.session)} · {formatSessionTime(b.session)} · {getBranch(b.session.branchId).shortName}
-                      </span>
+                  <Link to={`/book/ticket/${b.ref}`} className={`list-row ${b.status === 'cancelled' ? 'faded' : ''}`}>
+                    <DateBox date={b.session.date} />
+                    <span className="row-text">
+                      <strong>
+                        {formatSessionTime(b.session)} · {getBranch(b.session.branchId).shortName}
+                      </strong>
+                      <span>{b.status === 'cancelled' ? 'Cancelled' : `${b.ref} · ${b.children.length} ${b.children.length === 1 ? 'child' : 'children'}`}</span>
                     </span>
-                    <span className={`status status-${b.status}`}>{b.status === 'cancelled' ? 'Cancelled' : 'Requested'}</span>
                     <ChevronIcon width={18} height={18} />
                   </Link>
                 </li>
               ))}
             </ul>
-          </>
+          </section>
         )}
 
-        <Link to="/catering" className="catering-card">
-          <span className="event-icon" aria-hidden="true">🎉</span>
-          <span>
-            <strong>Event catering & live pasta</strong>
-            <span className="muted small">Birthdays, office parties and celebrations – send us an enquiry.</span>
-          </span>
-          <ChevronIcon width={18} height={18} />
-        </Link>
+        <section className="block">
+          <h2 className="h2">Pick a date</h2>
+          {sessions.length === 0 && <p className="empty">New dates coming soon.</p>}
+          <ul className="list">
+            {sessions.map((s) => {
+              const left = seatsLeft(s, bookings)
+              const content = (
+                <>
+                  <DateBox date={s.date} />
+                  <span className="row-text">
+                    <strong>
+                      {formatSessionDate(s)} · {formatSessionTime(s)}
+                    </strong>
+                    <span>
+                      {getBranch(s.branchId).name}
+                      {s.label ? ` · ${s.label}` : ''}
+                    </span>
+                  </span>
+                  <span className={`pill ${left <= 4 ? 'pill-red' : ''}`}>{left <= 0 ? 'Full' : `${left} left`}</span>
+                </>
+              )
+              return (
+                <li key={s.id}>
+                  {left <= 0 ? (
+                    <div className="list-row faded">{content}</div>
+                  ) : (
+                    <Link to={`/book/${s.id}`} className="list-row">{content}</Link>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        </section>
+
+        <Link to="/catering" className="text-link">Planning a party? Ask about event catering →</Link>
       </div>
     </>
   )

@@ -1,7 +1,7 @@
 {
   "name": "PastaMania Club",
   "short_name": "PastaMania",
-  "description": "PastaMania Sri Lanka – earn Mania Points, redeem rewards, browse the menu and book Dough Workz.",
+  "description": "Eat pasta, earn free pasta. PastaMania Sri Lanka rewards, menu and Dough Workz booking.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -17,6 +17,6 @@
   "shortcuts": [
     { "name": "My Card", "url": "/card", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] },
     { "name": "Menu", "url": "/menu", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Book Dough Workz", "url": "/bookings", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Book Dough Workz", "url": "/book", "icons": [{ "src": "/images/brand/icon-192.png", "sizes": "192x192" }] }
   ]
 }

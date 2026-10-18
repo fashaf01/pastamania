@@ -123,11 +123,3 @@ export const categories = [
 ]
 
 export const categoryIcon = (name) => categories.find((c) => c.name === name)?.icon ?? '🍴'
-
-// Dishes featured on the home page (present on at least one branch menu above).
-export const signatureDishes = [
-  { name: 'Jaffna Calamari Pasta', note: 'Local fusion favourite', price: 1990, image: '/images/menu/jaffna-calamari-pasta.jpg' },
-  { name: 'Kochi Creamy Chicken Pasta', note: 'Kerala-style spice, Italian cream', price: 1890, image: '/images/menu/kochi-creamy-chicken-pasta.jpg' },
-  { name: 'Chilli Crab Pasta', note: 'Our boldest seafood pasta', price: 3190, image: '/images/menu/chilli-crab-pasta.jpg' },
-  { name: 'Hot Basil Chicken Pizza', note: 'A FridayMania hero', price: 1590, image: '/images/menu/hot-basil-chicken-pizza.jpg' },
-]

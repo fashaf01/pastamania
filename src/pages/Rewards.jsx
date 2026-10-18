@@ -1,181 +1,108 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import AppBar from '../components/AppBar.jsx'
-import { CheckIcon } from '../components/Icons.jsx'
-import { JoinPrompt, PointsCard } from '../components/Loyalty.jsx'
 import QRCode from '../components/QRCode.jsx'
+import RewardProgress from '../components/RewardProgress.jsx'
 import Sheet from '../components/Sheet.jsx'
-import { useToast } from '../components/Toast.jsx'
 import { useClub } from '../context/ClubContext.jsx'
-import { club, rewards, tiers } from '../data/club.js'
-import { formatDate, formatLKR, formatPoints } from '../lib/format.js'
-
-const TABS = [
-  { id: 'rewards', label: 'Rewards' },
-  { id: 'vouchers', label: 'My vouchers' },
-  { id: 'activity', label: 'Activity' },
-]
+import { club, rewards } from '../data/club.js'
+import { formatDate, formatPoints } from '../lib/format.js'
 
 export default function Rewards() {
-  const { member, balance, tier, vouchers, activity, redeem } = useClub()
-  const toast = useToast()
-  const [params, setParams] = useSearchParams()
-  const tab = TABS.some((t) => t.id === params.get('tab')) ? params.get('tab') : 'rewards'
+  const { member, balance, vouchers, redeem } = useClub()
   const [confirming, setConfirming] = useState(null)
-  const [showVoucher, setShowVoucher] = useState(null)
+  const [voucher, setVoucher] = useState(null)
+  const active = vouchers.filter((v) => v.expiresAt > Date.now())
 
   const confirmRedeem = () => {
-    const voucher = redeem(confirming)
+    const issued = redeem(confirming)
     setConfirming(null)
-    if (voucher) {
-      toast(`${voucher.name} added to your vouchers`)
-      setShowVoucher(voucher)
-    }
+    if (issued) setVoucher(issued)
   }
-
-  const now = Date.now()
 
   return (
     <>
       <AppBar title="Rewards" />
-      <div className="screen-pad">
-        {member ? <PointsCard /> : <JoinPrompt />}
-
-        {member && (
-          <div className="segmented tabs" role="tablist" aria-label="Rewards sections">
-            {TABS.map((t) => (
-              <button
-                key={t.id}
-                role="tab"
-                aria-selected={tab === t.id}
-                className={tab === t.id ? 'active' : ''}
-                onClick={() => setParams(t.id === 'rewards' ? {} : { tab: t.id }, { replace: true })}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {tab === 'rewards' && (
-          <>
-            <ul className="reward-list">
-              {rewards.map((r) => {
-                const short = r.points - balance
-                return (
-                  <li key={r.id} className="reward-row">
-                    <img src={r.image} alt="" loading="lazy" />
-                    <div className="reward-text">
-                      <span className="caps-label">{r.category}</span>
-                      <strong>{r.name}</strong>
-                      <span className="pts">{formatPoints(r.points)} pts</span>
-                    </div>
-                    {member && (
-                      <button className="btn btn-primary btn-sm" disabled={short > 0} onClick={() => setConfirming(r)}>
-                        {short > 0 ? `${formatPoints(short)} to go` : 'Redeem'}
-                      </button>
-                    )}
-                  </li>
-                )
-              })}
-            </ul>
-
-            <h2 className="section-title retro retro-red">Club tiers</h2>
-            <div className="tier-list">
-              {tiers.map((t) => (
-                <article key={t.id} className={`tier-card ${member && t.id === tier.id ? 'current' : ''}`}>
-                  <div className="tier-card-head">
-                    <h3 style={{ color: t.colour }}>{t.name}</h3>
-                    <span className="muted small">
-                      {t.minPoints === 0 ? 'On joining' : `${formatPoints(t.minPoints)} pts / year`}
-                    </span>
-                  </div>
-                  <ul className="ticks">
-                    {t.perks.map((p) => (
-                      <li key={p}>{p}</li>
-                    ))}
-                  </ul>
-                  {member && t.id === tier.id && <span className="tag">Your tier</span>}
-                </article>
-              ))}
-            </div>
-            <p className="muted small">
-              Earn 1 point for every {formatLKR(club.spendPerPoint)} spent at any PastaMania branch. Vouchers are valid for{' '}
-              {club.voucherValidDays} days.
+      <div className="pad">
+        {member ? (
+          <section className="summary-card">
+            <p className="balance dark">
+              <span className="retro">{formatPoints(balance)}</span> points
             </p>
-          </>
+            <RewardProgress balance={balance} />
+          </section>
+        ) : (
+          <section className="summary-card">
+            <p>
+              <strong>Join free</strong> and get {club.welcomeBonus} points – enough for a free Garlic Bread today.
+            </p>
+            <Link className="btn btn-primary btn-block" to="/join?next=/rewards">Join free</Link>
+          </section>
         )}
 
-        {tab === 'vouchers' && (
-          <>
-            {vouchers.length === 0 && <p className="empty">No vouchers yet. Redeem a reward to get one.</p>}
-            <ul className="voucher-list">
-              {vouchers.map((v) => {
-                const expired = v.expiresAt <= now
-                return (
-                  <li key={v.id}>
-                    <button className={`voucher ${expired ? 'expired' : ''}`} onClick={() => !expired && setShowVoucher(v)}>
-                      <img src={v.image} alt="" loading="lazy" />
-                      <span className="voucher-text">
-                        <strong>{v.name}</strong>
-                        <span className="small muted">
-                          {expired ? `Expired ${formatDate(v.expiresAt)}` : `Use by ${formatDate(v.expiresAt)}`}
-                        </span>
-                      </span>
-                      <span className="voucher-code">{v.code}</span>
-                    </button>
-                  </li>
-                )
-              })}
+        {active.length > 0 && (
+          <section className="block">
+            <h2 className="h2">Ready to use</h2>
+            <ul className="list">
+              {active.map((v) => (
+                <li key={v.id}>
+                  <button className="list-row" onClick={() => setVoucher(v)}>
+                    <img src={v.image} alt="" />
+                    <span className="row-text">
+                      <strong>{v.name}</strong>
+                      <span>Use by {formatDate(v.expiresAt)}</span>
+                    </span>
+                    <span className="pill pill-red">Show</span>
+                  </button>
+                </li>
+              ))}
             </ul>
-          </>
+          </section>
         )}
 
-        {tab === 'activity' && (
-          <ul className="activity-list">
-            {activity.map((a) => (
-              <li key={a.id}>
-                <span className="activity-text">
-                  <strong>{a.label}</strong>
-                  <span className="small muted">
-                    {formatDate(a.at)}
-                    {a.amount ? ` · ${formatLKR(a.amount)}` : ''}
+        <section className="block">
+          <h2 className="h2">Free food</h2>
+          <ul className="list">
+            {rewards.map((r) => {
+              const short = r.points - balance
+              return (
+                <li key={r.id} className="list-row">
+                  <img src={r.image} alt="" loading="lazy" />
+                  <span className="row-text">
+                    <strong>{r.name}</strong>
+                    <span>{formatPoints(r.points)} points</span>
                   </span>
-                </span>
-                <span className={`activity-pts ${a.points < 0 ? 'minus' : ''}`}>
-                  {a.points > 0 ? '+' : ''}
-                  {formatPoints(a.points)}
-                </span>
-              </li>
-            ))}
+                  {member && short <= 0 ? (
+                    <button className="btn btn-primary btn-sm" onClick={() => setConfirming(r)}>Redeem</button>
+                  ) : (
+                    member && <span className="pill">{formatPoints(short)} to go</span>
+                  )}
+                </li>
+              )
+            })}
           </ul>
-        )}
+          <p className="footnote">1 point for every LKR {club.spendPerPoint} · vouchers last {club.voucherValidDays} days</p>
+        </section>
       </div>
 
       {confirming && (
-        <Sheet title="Redeem reward" onClose={() => setConfirming(null)}>
+        <Sheet title={`Redeem ${confirming.name}?`} onClose={() => setConfirming(null)}>
           <img className="sheet-photo" src={confirming.image} alt="" />
-          <p className="sheet-lead">
-            Swap <strong>{formatPoints(confirming.points)} points</strong> for <strong>{confirming.name}</strong>?
+          <p>
+            Uses {formatPoints(confirming.points)} of your {formatPoints(balance)} points. You’ll get a voucher to show at the counter.
           </p>
-          <p className="muted small">
-            You’ll have {formatPoints(balance - confirming.points)} points left. The voucher is valid for {club.voucherValidDays} days at any
-            branch.
-          </p>
-          <button className="btn btn-primary btn-block" onClick={confirmRedeem}>
-            <CheckIcon width={18} height={18} /> Redeem now
-          </button>
+          <button className="btn btn-primary btn-block" onClick={confirmRedeem}>Redeem</button>
         </Sheet>
       )}
 
-      {showVoucher && (
-        <Sheet title={showVoucher.name} onClose={() => setShowVoucher(null)}>
+      {voucher && (
+        <Sheet title={voucher.name} onClose={() => setVoucher(null)}>
           <div className="voucher-ticket">
-            <QRCode value={`PASTAMANIA:VOUCHER:${showVoucher.code}`} size={200} label="Voucher QR code" />
-            <p className="voucher-big-code">{showVoucher.code}</p>
-            <p className="muted small">Valid until {formatDate(showVoucher.expiresAt)}</p>
+            <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={190} label="Voucher QR code" />
+            <p className="code">{voucher.code}</p>
+            <p className="muted">Valid until {formatDate(voucher.expiresAt)}</p>
           </div>
-          <p className="center small">Show this at the counter when you order. One use only.</p>
+          <p className="center muted">Show this at the counter. One use only.</p>
         </Sheet>
       )}
     </>

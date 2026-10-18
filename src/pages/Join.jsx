@@ -3,11 +3,10 @@ import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import AppBar from '../components/AppBar.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { useClub } from '../context/ClubContext.jsx'
-import { brand } from '../data/brand.js'
-import { club, tiers } from '../data/club.js'
+import { club } from '../data/club.js'
 
 // Only allow in-app paths as the post-join destination.
-const safeNext = (next) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/card')
+const safeNext = (next) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/')
 
 export default function Join() {
   const { member, join } = useClub()
@@ -15,45 +14,33 @@ export default function Join() {
   const toast = useToast()
   const [params] = useSearchParams()
   const next = safeNext(params.get('next'))
-  const [form, setForm] = useState({ name: '', phone: '', email: '', birthday: '' })
+  const [form, setForm] = useState({ name: '', phone: '', birthday: '' })
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
 
   if (member) return <Navigate to={next} replace />
 
   const submit = (e) => {
     e.preventDefault()
-    join({
-      name: form.name.trim(),
-      phone: form.phone.trim(),
-      email: form.email.trim() || null,
-      birthday: form.birthday || null,
-    })
-    toast(`Welcome! ${club.welcomeBonus} points added`)
+    join({ name: form.name.trim(), phone: form.phone.trim(), birthday: form.birthday || null })
+    toast('Welcome! Your free Garlic Bread is ready')
     navigate(next, { replace: true })
   }
 
   return (
     <>
-      <AppBar title={`Join the Club`} back />
-      <div className="screen-pad">
-        <section className="join-hero red-paper">
-          <img src={brand.logo} alt="" width="84" height="84" />
-          <h2 className="retro retro-gold">{club.name}</h2>
-          <p className="caps-white">{club.welcomeBonus} welcome points</p>
-          <ul className="ticks join-perks">
-            {tiers[0].perks.map((p) => (
-              <li key={p}>{p}</li>
-            ))}
-          </ul>
-        </section>
-
+      <AppBar title="Join free" back="/" />
+      <div className="pad">
+        <p className="lead">
+          Get <strong>{club.welcomeBonus} points</strong> today – that’s a free Garlic Bread. Then earn 1 point for every LKR{' '}
+          {club.spendPerPoint} you spend.
+        </p>
         <form className="form" onSubmit={submit}>
           <label>
-            Full name
+            <span className="label">Name</span>
             <input required value={form.name} onChange={update('name')} autoComplete="name" />
           </label>
           <label>
-            Mobile number
+            <span className="label">Mobile number</span>
             <input
               required
               type="tel"
@@ -67,15 +54,13 @@ export default function Join() {
             />
           </label>
           <label>
-            Email <span className="optional">optional</span>
-            <input type="email" value={form.email} onChange={update('email')} autoComplete="email" />
-          </label>
-          <label>
-            Birthday <span className="optional">for your birthday treat</span>
+            <span className="label">
+              Birthday <span className="muted">(optional)</span>
+            </span>
             <input type="date" value={form.birthday} onChange={update('birthday')} autoComplete="bday" />
           </label>
-          <button type="submit" className="btn btn-primary btn-block">Join & get {club.welcomeBonus} points</button>
-          <p className="muted small center">In the live app we’ll verify your number with a one-time SMS code.</p>
+          <button type="submit" className="btn btn-primary btn-block">Join & get my Garlic Bread</button>
+          <p className="footnote">In the live app your number is confirmed with an SMS code.</p>
         </form>
       </div>
     </>
