@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AppBar from '../components/AppBar.jsx'
 import { CameraIcon, CheckIcon } from '../components/Icons.jsx'
 import QrScanner from '../components/QrScanner.jsx'
@@ -22,6 +22,17 @@ export default function Staff() {
 
   const flash = (text, tone = 'ok') => setMessage({ text, tone })
 
+  // The customer signed out, or someone else joined, in another tab: start again rather than credit the wrong person.
+  const memberId = club.member?.id
+  useEffect(() => {
+    if (customer && customer.id !== memberId) {
+      setCustomer(null)
+      setAward(null)
+      setAmount('')
+      setMessage({ text: 'That customer is no longer on this device. Find them again.', tone: 'error' })
+    }
+  }, [customer, memberId])
+
   const find = (value) => {
     const member = club.findMember(value)
     if (member) {
@@ -32,8 +43,8 @@ export default function Staff() {
     }
   }
 
-  const use = (code) => {
-    const result = club.markVoucherUsed(code)
+  const use = (code, forMember = customer.id) => {
+    const result = club.markVoucherUsed(forMember, code)
     if (result.error) flash(result.error, 'error')
     else flash(`Used: free ${result.voucher.name}. Hand it over!`)
   }
@@ -47,7 +58,7 @@ export default function Staff() {
       // A voucher QR on its own: find whose it is, then mark it used.
       if (club.member && club.vouchers.some((v) => v.code === voucher[1])) {
         setCustomer(club.member)
-        return use(voucher[1])
+        return use(voucher[1], club.member.id)
       }
       return flash('That voucher isn’t on this device.', 'error')
     }
@@ -59,7 +70,9 @@ export default function Staff() {
     const bill = Math.floor(Number(amount))
     if (!bill || bill <= 0) return flash('Enter the order total.', 'error')
     if (bill > 100000) return flash('That total looks wrong (over LKR 100,000). Enter it again.', 'error')
-    setAward(club.recordPurchase(bill, 'Visit'))
+    const result = club.recordPurchase(customer.id, bill, 'Visit')
+    if (result.error) return flash(result.error, 'error')
+    setAward(result.award)
     setMessage(null)
   }
 
@@ -78,7 +91,7 @@ export default function Staff() {
     setMessage(null)
   }
 
-  const live = customer && club.member?.id === customer.id ? club.member : customer
+  const live = customer && club.member?.id === customer.id ? club.member : null
   const ready = live ? club.vouchers.filter((v) => voucherStatus(v) === 'ready') : []
   const preview = pointsForSpend(Math.floor(Number(amount)) || 0)
 

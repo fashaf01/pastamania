@@ -18,7 +18,7 @@ export default function QRCode({ value, size = 200, label }) {
   return (
     <div
       className="qr"
-      style={{ width: size, height: size }}
+      style={{ width: size, maxWidth: '100%', aspectRatio: '1' }}
       role="img"
       aria-label={label ?? `QR code for ${value}`}
       dangerouslySetInnerHTML={{ __html: svg }}

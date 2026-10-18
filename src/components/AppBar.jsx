@@ -1,12 +1,12 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { BackIcon } from './Icons.jsx'
 
 // Screen header. `back` is the screen to return to when there is no in-app history
-// (for example when the page was opened from a shared link).
+// (for example when the page was opened from a shared link or a home-screen shortcut).
+// The router numbers its history entries; 0 means this is the first screen of the visit.
 export default function AppBar({ title, back, action }) {
   const navigate = useNavigate()
-  const location = useLocation()
-  const goBack = () => (location.key === 'default' ? navigate(back, { replace: true }) : navigate(-1))
+  const goBack = () => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate(back, { replace: true }))
 
   return (
     <header className="appbar">

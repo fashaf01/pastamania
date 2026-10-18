@@ -13,6 +13,8 @@ export default function Rewards() {
   const navigate = useNavigate()
   const [confirming, setConfirming] = useState(null)
   const ready = vouchers.filter((v) => voucherStatus(v) === 'ready').length
+  // The balance can change while the sheet is open (the counter is another tab in this prototype).
+  const short = confirming ? confirming.points - balance : 0
 
   const confirmRedeem = () => {
     const voucher = redeem(confirming)
@@ -93,10 +95,11 @@ export default function Rewards() {
             </div>
             <div className="sum-total">
               <dt>Left after</dt>
-              <dd>{formatPoints(balance - confirming.points)} points</dd>
+              <dd>{formatPoints(Math.max(0, balance - confirming.points))} points</dd>
             </div>
           </dl>
-          <button className="btn btn-primary btn-block" onClick={confirmRedeem}>Redeem</button>
+          {short > 0 && <p className="flash flash-error">You need {formatPoints(short)} more points for this one.</p>}
+          <button className="btn btn-primary btn-block" onClick={confirmRedeem} disabled={short > 0}>Redeem</button>
           <button className="text-btn" onClick={() => setConfirming(null)}>Cancel</button>
         </Sheet>
       )}
