@@ -37,6 +37,8 @@ const DAY = 24 * 60 * 60 * 1000
 
 const UNDO_WINDOW = 30 * 60 * 1000
 
+const NOT_HERE = 'That customer is no longer on this device. Find them again.'
+
 const addActivity = (s, entry) => ({
   ...s,
   activity: [{ id: randomCode(8), at: Date.now(), ...entry }, ...s.activity],
@@ -91,12 +93,16 @@ export function ClubProvider({ children }) {
     [state.member],
   )
 
-  // Points for a bill at the counter. Returns the award so it can be undone.
-  const recordPurchase = useCallback((amount, label = 'Visit') => {
-    const award = { id: randomCode(8), at: Date.now(), type: 'earn', points: pointsForSpend(amount), label, amount }
-    setState((s) => ({ ...s, balance: s.balance + award.points, activity: [award, ...s.activity] }))
-    return award
-  }, [])
+  // Points for a bill at the counter, for the member the counter looked up. Returns the award so it can be undone.
+  const recordPurchase = useCallback(
+    (memberId, amount, label = 'Visit') => {
+      if (state.member?.id !== memberId) return { error: NOT_HERE }
+      const award = { id: randomCode(8), at: Date.now(), type: 'earn', points: pointsForSpend(amount), label, amount }
+      setState((s) => (s.member?.id === memberId ? { ...s, balance: s.balance + award.points, activity: [award, ...s.activity] } : s))
+      return { ok: true, award }
+    },
+    [state.member],
+  )
 
   // Takes a mistyped award back: within 30 minutes, once, and only if the points haven't been spent.
   const undoAward = useCallback(
@@ -122,19 +128,21 @@ export function ClubProvider({ children }) {
 
   // Marks a voucher as used when the counter hands over the free item.
   const markVoucherUsed = useCallback(
-    (code) => {
+    (memberId, code) => {
+      if (state.member?.id !== memberId) return { error: NOT_HERE }
       const voucher = state.vouchers.find((v) => v.code === normaliseCode(code))
       if (!voucher) return { error: 'No voucher with that code.' }
       const status = voucherStatus(voucher)
       if (status === 'used') return { error: 'This voucher has already been used.' }
       if (status === 'expired') return { error: 'This voucher has expired.' }
-      setState((s) => ({
-        ...s,
-        vouchers: s.vouchers.map((v) => (v.code === voucher.code ? { ...v, usedAt: Date.now() } : v)),
-      }))
+      setState((s) =>
+        s.member?.id === memberId
+          ? { ...s, vouchers: s.vouchers.map((v) => (v.code === voucher.code ? { ...v, usedAt: Date.now() } : v)) }
+          : s,
+      )
       return { ok: true, voucher }
     },
-    [state.vouchers],
+    [state.member, state.vouchers],
   )
 
   const redeem = useCallback(

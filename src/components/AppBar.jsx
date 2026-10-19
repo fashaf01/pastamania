@@ -1,11 +1,11 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { BackIcon, CloseIcon } from './Icons.jsx'
 
-// Goes back in the app's history, or to `fallback` when the screen was opened directly (shared link, reload).
+// Goes back in the app's history, or to `fallback` when this is the first screen of the visit (a shared link,
+// a reload or a home-screen shortcut). The router numbers its history entries; 0 means the first.
 export function useBack(fallback = '/') {
   const navigate = useNavigate()
-  const location = useLocation()
-  return () => (location.key === 'default' ? navigate(fallback, { replace: true }) : navigate(-1))
+  return () => ((window.history.state?.idx ?? 0) > 0 ? navigate(-1) : navigate(fallback, { replace: true }))
 }
 
 // Header for pushed screens: round back button and a centred poster title.

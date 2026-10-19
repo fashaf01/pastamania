@@ -319,7 +319,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .points-big { font-size: 4rem; font-variant-numeric: tabular-nums; -webkit-text-stroke-width: 2px; }
 .points-unit { font-weight: 800; font-size: 0.875rem; letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 125%; color: var(--gold-light); }
 .hero-line { font-size: 0.9375rem; color: rgb(255 255 255 / 0.92); }
-.hero-actions { display: flex; gap: 10px; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .hero-actions .btn { flex: 1 1 0; }
 .hero-actions .btn:first-child { flex-grow: 1.4; }
 
@@ -382,6 +382,12 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
   -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 28%); mask-image: linear-gradient(to bottom, transparent 0%, #000 28%);
 }
 .promo-photo .btn { position: absolute; left: 16px; bottom: 16px; min-height: 44px; font-size: 0.8125rem; }
+
+@media (max-width: 359px) {
+  .promo .starburst { width: 76px !important; height: 76px !important; top: 12px; right: 10px; }
+  .promo-kicker { font-size: 1.125rem; }
+  .promo-headline { font-size: 2.375rem; }
+}
 
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .tile { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 16px; border: 0; text-align: left; color: var(--ink); }
@@ -451,7 +457,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .code-name { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .code-name strong { font-size: 1.25rem; }
 .code-name span { font-size: 0.9375rem; font-weight: 600; letter-spacing: 0.16em; color: #6e625a; font-variant-numeric: tabular-nums; }
-.qr-wrap { position: relative; }
+.qr-wrap { position: relative; max-width: 100%; }
 .qr-logo { position: absolute; top: 50%; left: 50%; width: 24%; aspect-ratio: 1; transform: translate(-50%, -50%); display: grid; place-items: center; border-radius: 14px; background: #fff; }
 .qr-logo img { width: 84%; height: 84%; object-fit: contain; }
 .qr svg { width: 100%; height: 100%; display: block; }

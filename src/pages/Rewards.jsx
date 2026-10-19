@@ -10,6 +10,8 @@ import { club, rewards } from '../data/club.js'
 import { formatPoints } from '../lib/format.js'
 
 function RedeemSheet({ reward, balance, onConfirm, onClose }) {
+  // The balance can change while the sheet is open (the counter is another tab in this prototype).
+  const short = reward.points - balance
   return (
     <Sheet labelledBy="redeem-title" onClose={onClose}>
       <div className="redeem-photo">
@@ -33,15 +35,16 @@ function RedeemSheet({ reward, balance, onConfirm, onClose }) {
         </div>
         <div className="total">
           <dt>Left after</dt>
-          <dd>{formatPoints(balance - reward.points)}</dd>
+          <dd>{formatPoints(Math.max(0, balance - reward.points))}</dd>
         </div>
       </dl>
       <p className="note">
         <ClockIcon width={18} height={18} />
         Your voucher lasts {club.voucherValidDays} days. Show it at the counter and it’s free.
       </p>
+      {short > 0 && <p className="flash flash-error">You need {formatPoints(short)} more points for this one.</p>}
       <div className="stack" style={{ gap: 4 }}>
-        <button type="button" className="btn btn-red btn-lg btn-block" onClick={onConfirm}>
+        <button type="button" className="btn btn-red btn-lg btn-block" onClick={onConfirm} disabled={short > 0}>
           Swap {formatPoints(reward.points)} points
         </button>
         <button type="button" className="text-btn muted" onClick={onClose}>Not now</button>
