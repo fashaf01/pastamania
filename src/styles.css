@@ -319,9 +319,9 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .points-big { font-size: 4rem; font-variant-numeric: tabular-nums; -webkit-text-stroke-width: 2px; }
 .points-unit { font-weight: 800; font-size: 0.875rem; letter-spacing: 0.12em; text-transform: uppercase; font-stretch: 125%; color: var(--gold-light); }
 .hero-line { font-size: 0.9375rem; color: rgb(255 255 255 / 0.92); }
+/* Side by side from 360px up; stacked on the narrowest phones. */
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.hero-actions .btn { flex: 1 1 0; }
-.hero-actions .btn:first-child { flex-grow: 1.4; }
+.hero-actions .btn { flex: 1 1 auto; padding: 0 16px; font-size: 0.8125rem; }
 
 /* Reward track: six free-food stops along the points line */
 .track { position: relative; height: 62px; margin: 0 20px 0 2px; }
