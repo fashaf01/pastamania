@@ -4,26 +4,56 @@ import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
 import { club } from '../data/club.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import { CalendarIcon, GiftIcon, HomeIcon, MenuIcon, WalletIcon } from './Icons.jsx'
+import { GiftIcon, HomeIcon, MenuIcon, QrIcon, WalletIcon } from './Icons.jsx'
 import QRCode from './QRCode.jsx'
 
-const TABS = [
-  { to: '/', label: 'Home', Icon: HomeIcon, end: true },
-  { to: '/menu', label: 'Menu', Icon: MenuIcon },
-  { to: '/rewards', label: 'Rewards', Icon: GiftIcon },
-  { to: '/wallet', label: 'Wallet', Icon: WalletIcon, end: true },
-  { to: '/book', label: 'Book', Icon: CalendarIcon },
-]
+// The tab bar shows on the four tab screens only. Pushed screens, and the counter-facing screens
+// (My code, vouchers), get the whole phone.
+const TAB_SCREENS = ['/', '/menu', '/rewards', '/wallet']
 
-// Screens shown at the counter get the whole phone: no tab bar under the QR.
-const FULL_SCREEN = [/^\/card$/, /^\/wallet\/.+/, /^\/staff$/]
+function TabBar({ readyVouchers }) {
+  const tab = ({ isActive }) => `tab ${isActive ? 'active' : ''}`
+  return (
+    <nav className="tabbar" aria-label="Main">
+      <NavLink to="/" end className={tab}>
+        <HomeIcon width={24} height={24} />
+        <span>Home</span>
+      </NavLink>
+      <NavLink to="/menu" className={tab}>
+        <MenuIcon width={24} height={24} />
+        <span>Menu</span>
+      </NavLink>
+      <NavLink to="/card" className="tab tab-code">
+        <span className="tab-code-btn">
+          <QrIcon width={26} height={26} />
+        </span>
+        <span>My code</span>
+      </NavLink>
+      <NavLink to="/rewards" className={tab}>
+        <GiftIcon width={24} height={24} />
+        <span>Rewards</span>
+      </NavLink>
+      <NavLink to="/wallet" end className={tab}>
+        <span className="tab-icon">
+          <WalletIcon width={24} height={24} />
+          {readyVouchers > 0 && <span className="tab-dot" />}
+        </span>
+        <span>
+          Wallet
+          {readyVouchers > 0 && <span className="sr-only">, {readyVouchers} ready</span>}
+        </span>
+      </NavLink>
+    </nav>
+  )
+}
 
 // Phone-width app shell. On wide screens the app sits beside a QR code for opening it on a phone.
 export default function Layout() {
   const { pathname } = useLocation()
-  const { vouchers } = useClub()
+  const { member, vouchers } = useClub()
   const readyVouchers = vouchers.filter((v) => voucherStatus(v) === 'ready').length
-  const showTabs = !FULL_SCREEN.some((re) => re.test(pathname))
+  // A guest's home is the full-screen welcome poster.
+  const showTabs = TAB_SCREENS.includes(pathname) && !(pathname === '/' && !member)
 
   useEffect(() => window.scrollTo(0, 0), [pathname])
 
@@ -31,7 +61,7 @@ export default function Layout() {
     <div className="stage">
       <aside className="stage-panel" aria-hidden="true">
         <img src={brand.logo} alt="" width="104" height="104" />
-        <p className="retro retro-gold stage-title">{club.name}</p>
+        <p className="hatch stage-title">{club.name}</p>
         <p className="stage-text">Scan to open on your phone</p>
         <QRCode value={window.location.origin} size={150} label="Open on your phone" />
       </aside>
@@ -43,20 +73,7 @@ export default function Layout() {
             <Outlet />
           </ErrorBoundary>
         </main>
-
-        {showTabs && (
-          <nav className="tabbar" aria-label="Main">
-            {TABS.map(({ to, label, Icon, end }) => (
-              <NavLink key={to} to={to} end={end}>
-                <span className="tab-icon">
-                  <Icon />
-                  {to === '/wallet' && readyVouchers > 0 && <span className="tab-dot" aria-label={`${readyVouchers} ready`} />}
-                </span>
-                <span>{label}</span>
-              </NavLink>
-            ))}
-          </nav>
-        )}
+        {showTabs && <TabBar readyVouchers={readyVouchers} />}
       </div>
     </div>
   )

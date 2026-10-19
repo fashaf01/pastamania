@@ -1,16 +1,17 @@
 import { Link, useLocation, useParams } from 'react-router-dom'
-import AppBar from '../components/AppBar.jsx'
-import { CheckIcon } from '../components/Icons.jsx'
+import AppBar, { useBack } from '../components/AppBar.jsx'
+import { CloseIcon } from '../components/Icons.jsx'
 import QRCode from '../components/QRCode.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
-import { brand } from '../data/brand.js'
-import { formatDate } from '../lib/format.js'
+import { rewards } from '../data/club.js'
+import { daysUntil, formatDay } from '../lib/format.js'
 
 // One voucher, full screen, for the counter to scan. It turns to "Enjoy!" the moment staff mark it used.
 export default function Voucher() {
   const { id } = useParams()
   const { state } = useLocation()
   const { vouchers } = useClub()
+  const close = useBack('/wallet')
   const voucher = vouchers.find((v) => v.id === id)
 
   if (!voucher) {
@@ -23,52 +24,66 @@ export default function Voucher() {
   }
 
   const status = voucherStatus(voucher)
+  const cost = rewards.find((r) => r.name === voucher.name)?.points
+  const left = daysUntil(voucher.expiresAt)
+
+  const statusLine = {
+    ready: `Valid till ${formatDay(voucher.expiresAt)} · ${left === 1 ? '1 day' : `${left} days`} left`,
+    used: `Used ${formatDay(voucher.usedAt ?? Date.now())}`,
+    expired: `Ran out on ${formatDay(voucher.expiresAt)}`,
+  }[status]
+
+  const hint = {
+    ready: state?.fresh
+      ? `It’s yours! Show this at the counter and your ${voucher.name} is free.`
+      : `Show this at the counter. Staff scan it and your ${voucher.name} is free.`,
+    used: 'Buon appetito! This voucher now sits under Used & expired in your wallet.',
+    expired: 'This voucher has expired. Swap more points for a new one.',
+  }[status]
 
   return (
-    <>
-      <AppBar title="Voucher" back="/wallet" />
-      <div className="pad">
-        {status === 'ready' && state?.fresh && <p className="lead center">It’s yours! Show this at the counter.</p>}
-
-        <article className={`code-card voucher-${status}`}>
-          <div className="code-head">
-            <div>
-              <span className="code-label">Free</span>
-              <strong>{voucher.name}</strong>
-            </div>
-            <img src={brand.logo} alt="" width="48" height="48" />
-          </div>
-
-          {status === 'used' ? (
-            <div className="voucher-done">
-              <span className="done-tick"><CheckIcon width={44} height={44} /></span>
-              <strong>Enjoy!</strong>
-              <span>Used {formatDate(voucher.usedAt)}</span>
-            </div>
-          ) : status === 'expired' ? (
-            <div className="voucher-done">
-              <strong>Expired</strong>
-              <span>This voucher ended on {formatDate(voucher.expiresAt)}</span>
-            </div>
-          ) : (
-            <>
-              <div className="code-qr">
-                <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={220} label="Voucher QR code" />
-              </div>
-              <p className="code-number">{voucher.code}</p>
-              <p className="code-points">Valid until {formatDate(voucher.expiresAt)} · one use</p>
-            </>
-          )}
-        </article>
-
-        {status === 'ready' ? (
-          <p className="hint">Staff scan this code and hand over your free {voucher.name}. It works once.</p>
-        ) : (
-          <Link className="btn btn-outline btn-block back-btn" to="/rewards">
-            Get another reward
-          </Link>
-        )}
+    <div className="voucher-screen">
+      <div className="screen-top">
+        <button type="button" className="round-btn" onClick={close} aria-label="Close">
+          <CloseIcon width={20} height={20} />
+        </button>
+        <span className="label-caps">Your voucher</span>
+        <span />
       </div>
-    </>
+
+      <article className="ticket">
+        {voucher.image && <img className="ticket-photo" src={voucher.image} alt="" />}
+        <div className="ticket-head">
+          <span className="eyebrow">Free</span>
+          <h1>{voucher.name}</h1>
+          <span>
+            {cost ? `Swapped for ${cost} points · ` : ''}
+            {formatDay(voucher.issuedAt)}
+          </span>
+        </div>
+        <div className="perf" aria-hidden="true">
+          <span />
+        </div>
+        <div className="ticket-code">
+          <div className={`ticket-qr ${status === 'ready' ? '' : 'faded'}`}>
+            <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={168} label="Voucher QR code" />
+            {status === 'used' && <span className="stamp">Enjoy!</span>}
+            {status === 'expired' && <span className="stamp grey">Expired</span>}
+          </div>
+          <span className="code">{voucher.code}</span>
+          <span className={`ticket-status ${status === 'used' ? 'used' : ''}`} role="status">
+            {statusLine}
+          </span>
+        </div>
+      </article>
+
+      <p className="voucher-hint">{hint}</p>
+
+      {status === 'ready' ? (
+        <Link className="btn btn-outline btn-block" to="/wallet">Back to wallet</Link>
+      ) : (
+        <Link className="btn btn-outline btn-block" to="/rewards">Get another reward</Link>
+      )}
+    </div>
   )
 }

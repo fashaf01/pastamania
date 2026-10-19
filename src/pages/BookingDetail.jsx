@@ -1,11 +1,12 @@
 import { useParams } from 'react-router-dom'
 import AppBar from '../components/AppBar.jsx'
+import { CalendarIcon, MailIcon, NavigateIcon } from '../components/Icons.jsx'
 import QRCode from '../components/QRCode.jsx'
 import { useClub } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
-import { getBranch } from '../data/branches.js'
+import { getBranch, mapsUrl } from '../data/branches.js'
 import { formatSessionDate, formatSessionTime, getSession, workshop } from '../data/workshops.js'
-import { formatLKR } from '../lib/format.js'
+import { formatLKR, monthShort, weekdayShort } from '../lib/format.js'
 
 const summary = (b, session, branch) =>
   [
@@ -49,7 +50,7 @@ export default function BookingDetail() {
   if (!booking || !session) {
     return (
       <>
-        <AppBar title="Booking" back="/book" />
+        <AppBar title="Workshop ticket" back="/wallet" />
         <p className="empty">We couldn’t find that booking.</p>
       </>
     )
@@ -57,6 +58,7 @@ export default function BookingDetail() {
 
   const branch = getBranch(session.branchId)
   const cancelled = booking.status === 'cancelled'
+  const when = new Date(`${session.date}T${session.time}`)
   const mailto = `mailto:${brand.email}?subject=${encodeURIComponent(`Dough Workz booking ${booking.ref}`)}&body=${encodeURIComponent(summary(booking, session, branch))}`
 
   const cancel = () => {
@@ -65,39 +67,68 @@ export default function BookingDetail() {
 
   return (
     <>
-      <AppBar title="Booking" back="/book" />
-      <div className="pad">
-        <article className={`ticket ${cancelled ? 'faded' : ''}`}>
-          <p className="ticket-status">{cancelled ? 'Cancelled' : 'Requested'}</p>
-          <h2 className="retro retro-red ticket-title">{workshop.title}</h2>
-          <p className="ticket-when">
-            {formatSessionDate(session)} · {formatSessionTime(session)}
-          </p>
-          <p className="muted">{branch.name}</p>
-          <div className="ticket-qr">
-            <QRCode value={`PASTAMANIA:BOOKING:${booking.ref}`} size={140} label="Booking QR code" />
-            <span className="code">{booking.ref}</span>
+      <AppBar title="Workshop ticket" back="/wallet" />
+      <div className="page">
+        <span className={`pill status-pill ${cancelled ? 'pill-red' : 'pill-gold'}`}>{cancelled ? 'Cancelled' : 'Requested · we’ll confirm by phone'}</span>
+
+        <article className={`event-ticket ${cancelled ? 'cancelled' : ''}`}>
+          <div className="event-top poster">
+            <div className="stack" style={{ gap: 2 }}>
+              <span className="hatch">{workshop.title}</span>
+              <span style={{ fontSize: 14, color: 'rgb(255 255 255 / 0.9)' }}>{workshop.subtitle}</span>
+            </div>
+            <div className="event-when">
+              <span className="cal-box">
+                <small>{weekdayShort(when)}</small>
+                <b>{when.getDate()}</b>
+                <small>{monthShort(when)}</small>
+              </span>
+              <div>
+                <strong>{formatSessionTime(session)}</strong>
+                <span>{branch.name}</span>
+                <small>{branch.address}</small>
+              </div>
+            </div>
           </div>
-          <dl className="details">
-            <div>
-              <dt>Kids</dt>
-              <dd>{booking.children.map((c) => `${c.name} (${c.age})`).join(', ')}</dd>
-            </div>
-            <div>
-              <dt>Total</dt>
-              <dd>{formatLKR(booking.total)} · pay at branch</dd>
-            </div>
-          </dl>
+          <div className="perf" aria-hidden="true">
+            <span />
+          </div>
+          <div className="event-bottom">
+            <QRCode value={`PASTAMANIA:BOOKING:${booking.ref}`} size={124} label="Booking QR code" />
+            <dl>
+              <div>
+                <dt>Booking</dt>
+                <dd className="code">{booking.ref}</dd>
+              </div>
+              <div>
+                <dt>Children</dt>
+                <dd>{booking.children.map((c) => `${c.name}, ${c.age}`).join(' · ')}</dd>
+              </div>
+              <div>
+                <dt>Total</dt>
+                <dd>{formatLKR(booking.total)} · pay at branch</dd>
+              </div>
+            </dl>
+          </div>
         </article>
 
         {!cancelled && (
           <>
-            <p className="hint">Show this ticket when you arrive. Send it to PastaMania so the team can confirm by phone.</p>
-            <div className="stack">
-              <a className="btn btn-primary btn-block" href={mailto}>Send to PastaMania</a>
-              <button className="btn btn-outline btn-block" onClick={() => downloadCalendar(booking, session, branch)}>Add to calendar</button>
+            <p className="muted center" style={{ fontSize: 14 }}>
+              Show this ticket when you arrive. Send it to PastaMania so the team can confirm by phone.
+            </p>
+            <a className="btn btn-red btn-block" href={mailto}>
+              <MailIcon width={18} height={18} /> Send to PastaMania
+            </a>
+            <div className="pairs">
+              <a className="btn btn-outline btn-plain" href={mapsUrl(branch)} target="_blank" rel="noreferrer">
+                <NavigateIcon width={18} height={18} /> Directions
+              </a>
+              <button type="button" className="btn btn-outline btn-plain" onClick={() => downloadCalendar(booking, session, branch)}>
+                <CalendarIcon width={18} height={18} /> Add to calendar
+              </button>
             </div>
-            <button className="text-btn" onClick={cancel}>Cancel booking</button>
+            <button type="button" className="text-btn danger" onClick={cancel}>Cancel booking</button>
           </>
         )}
       </div>

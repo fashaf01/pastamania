@@ -1,3 +1,5 @@
+import { formatDay } from '../lib/format.js'
+
 // Dough Workz kids pizza-making workshops.
 // Format and price come from the 30 Sep 2026 registration post (P12).
 // SAMPLE SESSIONS: the dates below are placeholders following the Oct pattern
@@ -38,8 +40,7 @@ const localDate = (d) =>
 // Sessions from today onwards.
 export const upcomingSessions = (today = new Date()) => sessions.filter((s) => s.date >= localDate(today))
 
-export const formatSessionDate = (s) =>
-  new Date(`${s.date}T${s.time}`).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+export const formatSessionDate = (s) => formatDay(new Date(`${s.date}T${s.time}`))
 
 export const formatSessionTime = (s) =>
   new Date(`${s.date}T${s.time}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })

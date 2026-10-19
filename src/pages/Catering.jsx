@@ -30,36 +30,36 @@ export default function Catering() {
 
   return (
     <>
-      <AppBar title="Event catering" back="/book" />
-      <div className="pad">
+      <AppBar title="Event catering" back="/me" />
+      <div className="page">
         <p className="lead">
           PastaMania food and a live pasta station for birthdays, office parties and celebrations. Tell us about your event, or call{' '}
           <a className="link" href={`tel:${brand.cateringPhone}`}>{formatPhone(brand.cateringPhone)}</a>.
         </p>
         <form onSubmit={submit} className="form">
-          <label>
-            <span className="label">Name</span>
-            <input required value={form.name} onChange={update('name')} autoComplete="name" />
+          <label className="field">
+            <span className="field-label">Name</span>
+            <input className="input" required value={form.name} onChange={update('name')} autoComplete="name" />
           </label>
-          <label>
-            <span className="label">Phone</span>
-            <input required type="tel" value={form.phone} onChange={update('phone')} autoComplete="tel" />
+          <label className="field">
+            <span className="field-label">Phone</span>
+            <input className="input" required type="tel" value={form.phone} onChange={update('phone')} autoComplete="tel" />
           </label>
           <div className="form-row">
-            <label>
-              <span className="label">Date</span>
-              <input type="date" value={form.date} onChange={update('date')} />
+            <label className="field">
+              <span className="field-label">Date</span>
+              <input className="input" type="date" value={form.date} onChange={update('date')} />
             </label>
-            <label>
-              <span className="label">Guests</span>
-              <input type="number" min="1" value={form.guests} onChange={update('guests')} />
+            <label className="field">
+              <span className="field-label">Guests</span>
+              <input className="input" type="number" min="1" value={form.guests} onChange={update('guests')} />
             </label>
           </div>
-          <label>
-            <span className="label">Details</span>
-            <textarea rows="3" value={form.notes} onChange={update('notes')} placeholder="Occasion, location, dietary needs…" />
+          <label className="field">
+            <span className="field-label">Details</span>
+            <textarea className="input" rows="3" value={form.notes} onChange={update('notes')} placeholder="Occasion, location, dietary needs…" />
           </label>
-          <button type="submit" className="btn btn-primary btn-block">Send enquiry</button>
+          <button type="submit" className="btn btn-red btn-lg btn-block">Send enquiry</button>
         </form>
       </div>
     </>

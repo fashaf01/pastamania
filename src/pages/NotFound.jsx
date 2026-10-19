@@ -7,7 +7,7 @@ export default function NotFound() {
       <AppBar title="Not found" back="/" />
       <div className="pad empty">
         <p>This page wandered off like a loose strand of spaghetti.</p>
-        <Link className="btn btn-primary" to="/">Back home</Link>
+        <Link className="btn btn-red" to="/">Back home</Link>
       </div>
     </>
   )

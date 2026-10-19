@@ -1,4 +1,4 @@
-# PastaMania Club – Sri Lanka (v0.4)
+# PastaMania Club – Sri Lanka (v0.5)
 
 A loyalty app for PastaMania Sri Lanka, built the way the Chatime Loyal Tea app works.
 The promise is one line: **eat pasta, earn free pasta** – join and your first Garlic Bread is free.
@@ -17,15 +17,31 @@ Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The 
 
 ## Screens
 
-Five tabs: **Home · Menu · Rewards · Wallet · Book**
+Five tabs: **Home · Menu · My code · Rewards · Wallet**. My code sits in the middle as a raised gold button,
+because showing it at the counter is the thing members do most.
 
-- **Home** – guests see why to join; members see their points, the next free item and *Show my code*; below, the promo banners
-- **Menu** – per-branch menu with photos and search; dish details show points earned in store; *Order* opens delivery options
-- **Rewards** – points, progress to the next free item, the free-food list with *Redeem*
-- **Wallet** – vouchers ready to use (a dot on the tab when one is waiting), used and expired vouchers, delivery links
-- **Book** – Dough Workz kids workshops: pick a date, add kids, get a ticket with QR; catering enquiry link
-- **My code** and **voucher** screens are full screen (no tab bar) so the counter can scan them
-- **Profile** (avatar on Home) – details, branches, points history, and the **Counter screen**
+- **Home** – guests get the welcome poster (*Join free*); members see their points, the reward track with a photo at
+  every free item, *Show my code* / *Redeem*, a ready voucher, their next workshop, the next reward, the
+  FridayMania offer, shortcuts (delivery, menu, branches, kids workshops), recent activity and how points work.
+  The moon/sun button switches light and dark.
+- **Menu** (`/menu`) – branch picker, search, category chips, photos, prices and points earned in store
+- **Dish** (`/menu/<dish>`) – photo, price, points, FridayMania badge for the week's hero dish, branches that serve it,
+  two add-ons, Uber Eats / PickMe buttons
+- **My code** (`/card`) – full screen QR (logo in the middle) for the counter, points and treats ready
+- **Rewards** – points card, All / Ready / Coming up filter, free-food grid; *Redeem* opens a confirmation sheet
+  (points, cost, what's left) and then the voucher
+- **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used
+- **Wallet** – vouchers ready to use, workshop tickets, used & expired vouchers, delivery links
+- **Kids workshop** (`/book`) – Dough Workz: pick a session, add the children, book; **ticket** at `/book/ticket/<ref>`
+- **Profile** (`/me`, from the avatar) – appearance (Light / Dark / System), details, points history (`/history`),
+  branches, catering, contact and the **Counter screen**
+- **Branches** – today's restaurant hours, all hours, Call / Directions / Uber Eats
+
+### Light and dark
+
+Colours are CSS variables in `src/styles.css`: `:root` holds the light theme and `:root[data-theme='dark']` the
+dark one. `src/lib/theme.jsx` keeps the choice (light, dark or follow the phone) on the device, and a small script in
+`index.html` applies it before the first paint so the app never flashes the wrong theme.
 
 ### Counter screen (`/staff`)
 
@@ -33,17 +49,10 @@ Follows a sale like Chatime's: **scan their code** (camera) or type the member n
 vouchers, each with *Mark as used* → enter the order total → *Give N points* → done, with *Undo* (30 minutes, once,
 only if the points haven't been spent) and *Next customer*. Scanning a voucher QR on its own marks it used straight away.
 
-## Promo banners (running offers)
+## FridayMania (the weekly offer)
 
-The Home screen has a swipeable rail of designed artwork – the app's advertising slot, like Chatime's. Banners are
-display only (tapping does nothing), so an ad never promises something a screen doesn't have.
-
-**Artwork spec:** 2:1, 1080 × 540 (or larger at 2:1), JPG/PNG/WebP under ~200 KB, keep text and logos 64 px inside the edges.
-
-**Publishing one:** put the file in `public/banners/`, then add a line to `src/data/banners.js` with `title` (read
-aloud by screen readers), `image`, and optional `starts` / `ends` dates (YYYY-MM-DD) to schedule it. Remove the line
-to stop it. The four current banners (FridayMania, Dough Workz, Christmas menu, Uber Eats combos) are placeholders made
-from the brand's photos – replace them with marketing's artwork.
+Home and the dish page carry FridayMania – buy 1, get 1 on the week's hero dish every Friday. Set the dish in
+`src/data/offers.js` (`heroDish`, the name exactly as in `menu.js`); the date sticker always shows the coming Friday.
 
 ## Loyalty programme (proposed – for the brand to confirm)
 
@@ -81,12 +90,13 @@ Any static host works. `vercel.json` is included so client-side routes (`/menu`,
 ## Design
 
 The look follows PastaMania's own Instagram posts (FridayMania posters): textured poster-red backgrounds,
-gold hatched retro serif headlines with a dark outline and offset shadow, wide white caps, starburst stickers
-and the running-chef logo badge.
+gold hatched slab headlines with a dark outline and offset shadow, wide caps, starburst stickers
+and the running-chef logo badge. The screens were designed first as a canvas (light and dark) and built to match.
 
-- **Fonts** – Fraunces (soft, heavy) from Google Fonts for retro headlines; the brand-supplied Oswald (labels,
-  buttons) and Inter (body) are self-hosted from `src/assets/fonts/` as Latin-subset WOFF2 files.
-- **Colours** – sampled from the logo and posters: poster red `#9E2022`, logo red `#ED1C25`, gold `#FBB516`, ink `#231F20`.
+- **Fonts** – Ultra (poster headlines and numbers) and Archivo (text, with its wide cut for caps labels), both from
+  Google Fonts.
+- **Colours** – sampled from the logo and posters: poster red `#9E2022`, red `#C8161E`, gold `#FBB516`, ink `#231F20`,
+  cream `#FFF6EA`; dark theme on espresso `#1A1110` with gold headings.
 
 ## Images
 
@@ -95,7 +105,7 @@ and the running-chef logo badge.
 | `public/images/menu/` | Dish photos. Havelock uses the branded white-plate set; One Galle Face uses its own set (files with a hash suffix, e.g. `carbonara-pasta-0308d344.jpg`) |
 | `public/images/promo/` | Combo photos and the FridayMania pizza banner (cropped from the 23 Sep poster, without the dated text) |
 | `public/images/brand/` | Optimised logo and app icons |
-| `design/` | Original uploads kept for reference: full-size logos, the original poster, and all font files (not shipped) |
+| `design/` | Original uploads kept for reference: full-size logos, the original poster, and the brand's font files (not shipped) |
 
 To add a photo, drop it in `public/images/menu/` and add the file name to the item in `src/data/menu.js`.
 Items without a photo show their category icon.
@@ -109,7 +119,7 @@ All content lives in `src/data/` – no code changes needed for routine updates:
 | `brand.js` | Contacts, socials, optional WhatsApp number |
 | `branches.js` | Addresses, phones, hours, Uber Eats links |
 | `menu.js` | Menu items and prices per branch |
-| `banners.js` | Promo banners on Home, with optional start/end dates |
+| `offers.js` | FridayMania hero dish |
 | `club.js` | Loyalty programme: earn rate, welcome points, rewards |
 | `workshops.js` | Dough Workz details and session dates (**sample dates – replace**) |
 
@@ -130,12 +140,11 @@ The first version is seeded from public research. These items need the brand's c
 - [ ] **Combo availability** – Solo Spaghetti and Double Penne
 - [ ] **Dough Workz** real session dates, capacity and price (sample dates are in `workshops.js`); **catering** packages
 - [ ] **Loyalty programme** – earn rate, welcome points, rewards and voucher rules in `club.js`
-- [ ] **Banner artwork** – replace the four placeholder banners in `public/banners/` with marketing's designs
 - [ ] **PickMe Food** direct store links (currently links to pickme.lk)
 - [ ] Allergen, vegetarian and halal information
 
 ## Roadmap
 
-1. **v0.5 – Backend**: accounts shared across devices, points ledger, staff logins for the counter screen, banners managed online, real bookings with branch notifications
-2. **v0.6 – Engagement**: push notifications for FridayMania and booking reminders, birthday treats
+1. **v0.6 – Backend**: accounts shared across devices, points ledger, staff logins for the counter screen, offers managed online, real bookings with branch notifications
+2. **v0.7 – Engagement**: push notifications for FridayMania and booking reminders, birthday treats
 3. **v1.0 – Store apps**: wrap with Capacitor for the Play Store and App Store

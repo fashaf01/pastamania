@@ -23,15 +23,15 @@ export function OrderProvider({ children }) {
               <li key={b.id} className="order-row">
                 <div>
                   <strong>{b.name}</strong>
-                  <span className="muted small">{b.address}</span>
+                  <small>{b.address}</small>
                 </div>
-                <a className="btn btn-uber btn-sm" href={b.uberEatsUrl} target="_blank" rel="noreferrer">
+                <a className="btn btn-ink btn-sm" href={b.uberEatsUrl} target="_blank" rel="noreferrer">
                   Uber Eats
                 </a>
               </li>
             ))}
           </ul>
-          <a className="btn btn-outline btn-block" href={brand.pickmeUrl} target="_blank" rel="noreferrer">
+          <a className="btn btn-outline btn-plain btn-block" href={brand.pickmeUrl} target="_blank" rel="noreferrer">
             Also on PickMe Food
           </a>
           <p className="footnote">Delivery platforms set their own prices. Points are earned in store only, not on delivery orders.</p>

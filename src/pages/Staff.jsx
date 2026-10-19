@@ -4,7 +4,7 @@ import { CameraIcon, CheckIcon } from '../components/Icons.jsx'
 import QrScanner from '../components/QrScanner.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { pointsForSpend } from '../data/club.js'
-import { formatDate, formatMemberCode, formatPoints } from '../lib/format.js'
+import { formatDay, formatMemberCode, formatPoints } from '../lib/format.js'
 
 const MEMBER_QR = /^PASTAMANIA:MEMBER:(PM\d{8})$/
 const VOUCHER_QR = /^PASTAMANIA:VOUCHER:(PMV-[A-Z0-9]{6})$/
@@ -85,83 +85,102 @@ export default function Staff() {
   return (
     <>
       <AppBar title="Counter" back="/me" />
-      <div className="pad">
-        <p className="demo-note">Demo counter: it works with members saved on this phone or browser.</p>
+      <div className="counter">
+        <span className="staff-badge">Staff · demo counter</span>
 
-        {message && <p className={`flash flash-${message.tone}`} role="status">{message.text}</p>}
+        {message && (
+          <p className={`flash flash-${message.tone}`} role="status">
+            {message.text}
+          </p>
+        )}
 
         {scanning ? (
           <QrScanner onResult={onScan} onClose={() => setScanning(false)} />
-        ) : !live ? (
-          <section className="block">
-            <h2 className="h2">Who is it?</h2>
-            <button className="btn btn-primary btn-block" onClick={() => setScanning(true)}>
-              <CameraIcon width={20} height={20} /> Scan their code
-            </button>
-            <form
-              className="form find-form"
-              onSubmit={(e) => {
-                e.preventDefault()
-                find(query)
-              }}
-            >
-              <label>
-                <span className="label">or type the member number or mobile</span>
-                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="PM 1234 5678 or 077 123 4567" />
-              </label>
-              <button type="submit" className="btn btn-outline btn-block">Find</button>
-            </form>
-          </section>
         ) : award ? (
-          <section className="block done">
+          <section className="done-card card">
             <span className="done-tick"><CheckIcon width={40} height={40} /></span>
-            <h2 className="h2">+{formatPoints(award.points)} points to {live.name.split(' ')[0]}</h2>
+            <h2 className="title-l">
+              +{formatPoints(award.points)} points to {live.name.split(' ')[0]}
+            </h2>
             <p className="muted">New balance: {formatPoints(club.balance)} points</p>
-            <button className="btn btn-primary btn-block" onClick={next}>Next customer</button>
-            <button className="text-btn" onClick={undo}>Undo – wrong total</button>
+            <button type="button" className="btn btn-red btn-block" onClick={next}>Next customer</button>
+            <button type="button" className="text-btn" onClick={undo}>Undo – wrong total</button>
+            <p className="footnote">You can undo once, within 30 minutes, if the points haven’t been spent.</p>
           </section>
         ) : (
           <>
-            <section className="customer">
-              <div>
-                <strong>{live.name}</strong>
-                <span className="muted">{formatMemberCode(live.id)}</span>
-              </div>
-              <span className="customer-points">{formatPoints(club.balance)} pts</span>
-            </section>
-
-            <section className="block">
-              <h2 className="h2">Vouchers</h2>
-              {ready.length === 0 ? (
-                <p className="muted">Nothing to use today.</p>
+            <section className="step card">
+              <h2 className="step-title">1 · Find the member</h2>
+              {!live ? (
+                <>
+                  <button type="button" className="btn btn-gold btn-block" onClick={() => setScanning(true)}>
+                    <CameraIcon width={20} height={20} /> Scan their code
+                  </button>
+                  <form
+                    className="find-row"
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      find(query)
+                    }}
+                  >
+                    <input className="input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Member no. or mobile" aria-label="Member number or mobile" />
+                    <button type="submit" className="btn btn-outline btn-plain btn-sm">Find</button>
+                  </form>
+                </>
               ) : (
-                <ul className="list">
-                  {ready.map((v) => (
-                    <li key={v.id} className="list-row">
-                      <img src={v.image} alt="" />
-                      <span className="row-text">
-                        <strong>Free {v.name}</strong>
-                        <span>{v.code} · until {formatDate(v.expiresAt)}</span>
-                      </span>
-                      <button className="btn btn-primary btn-sm" onClick={() => use(v.code)}>Mark as used</button>
-                    </li>
-                  ))}
-                </ul>
+                <>
+                  <div className="found">
+                    <span className="avatar" style={{ boxShadow: 'none' }}>{live.name.charAt(0).toUpperCase()}</span>
+                    <div>
+                      <strong>{live.name}</strong>
+                      <span>{formatMemberCode(live.id)}</span>
+                    </div>
+                    <span className="found-points">
+                      <b>{formatPoints(club.balance)}</b>
+                      <small>points</small>
+                    </span>
+                  </div>
+                  <button type="button" className="text-btn" style={{ margin: 0 }} onClick={next}>Different customer</button>
+                </>
               )}
             </section>
 
-            <form className="form block" onSubmit={give}>
-              <label>
-                <span className="label">Order total (LKR)</span>
-                <input inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))} placeholder="e.g. 4290" />
-              </label>
-              <button type="submit" className="btn btn-primary btn-block" disabled={!preview}>
-                {preview ? `Give ${formatPoints(preview)} points` : 'Give points'}
-              </button>
-            </form>
-            <button className="text-btn" onClick={next}>Different customer</button>
+            {live && (
+              <>
+                <section className="step card">
+                  <h2 className="step-title">2 · Vouchers they can use</h2>
+                  {ready.length === 0 ? (
+                    <p className="muted">Nothing to use today.</p>
+                  ) : (
+                    ready.map((v) => (
+                      <div key={v.id} className="voucher-line">
+                        <img src={v.image} alt="" />
+                        <div>
+                          <strong>Free {v.name}</strong>
+                          <span>{v.code} · till {formatDay(v.expiresAt)}</span>
+                        </div>
+                        <button type="button" className="btn btn-outline btn-plain btn-sm" onClick={() => use(v.code)}>Mark as used</button>
+                      </div>
+                    ))
+                  )}
+                </section>
+
+                <form className="step card" onSubmit={give}>
+                  <label className="step-title" htmlFor="bill">3 · Bill total</label>
+                  <div className="bill">
+                    <span>LKR</span>
+                    <input id="bill" inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))} placeholder="0" />
+                  </div>
+                  <span className="field-hint">{preview ? `Gives ${formatPoints(preview)} points · 1 point per LKR 100` : 'Type the total from the receipt'}</span>
+                  <button type="submit" className="btn btn-red btn-lg btn-block" disabled={!preview}>
+                    {preview ? `Give ${formatPoints(preview)} points` : 'Give points'}
+                  </button>
+                </form>
+              </>
+            )}
           </>
         )}
+        <p className="footnote center">Demo counter: it works with members saved on this phone or browser.</p>
       </div>
     </>
   )

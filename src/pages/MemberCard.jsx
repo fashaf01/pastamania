@@ -1,54 +1,79 @@
 import { Link, Navigate } from 'react-router-dom'
-import AppBar from '../components/AppBar.jsx'
-import { ChevronIcon, GiftIcon } from '../components/Icons.jsx'
+import { useBack } from '../components/AppBar.jsx'
+import { ChevronIcon, CloseIcon, SunIcon, TicketIcon } from '../components/Icons.jsx'
 import QRCode from '../components/QRCode.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
-import { club } from '../data/club.js'
+import { rewards } from '../data/club.js'
 import { formatMemberCode, formatPoints } from '../lib/format.js'
 
 // The counter screen: the member's code, big, with nothing else competing for the camera.
 export default function MemberCard() {
   const { member, balance, vouchers } = useClub()
+  const close = useBack('/')
 
   if (!member) return <Navigate to="/join?next=/card" replace />
 
   const ready = vouchers.filter((v) => voucherStatus(v) === 'ready')
+  const treats = rewards.filter((r) => r.points <= balance).length
 
   return (
-    <>
-      <AppBar title="My code" back="/" />
-      <div className="pad">
-        <p className="lead center">Show this when you pay. You earn 1 point for every LKR {club.spendPerPoint}.</p>
-
-        <article className="code-card">
-          <div className="code-head">
-            <div>
-              <span className="code-label">Member</span>
-              <strong>{member.name}</strong>
-            </div>
-            <img src={brand.logo} alt="" width="48" height="48" />
-          </div>
-          <div className="code-qr">
-            <QRCode value={`PASTAMANIA:MEMBER:${member.id}`} size={220} label="Member QR code" />
-          </div>
-          <p className="code-number">{formatMemberCode(member.id)}</p>
-          <p className="code-points">
-            <span key={balance}>{formatPoints(balance)}</span> points on your card
-          </p>
-        </article>
-
-        {ready.length > 0 && (
-          <Link to="/wallet" className="row ready-row">
-            <span className="row-icon"><GiftIcon width={20} height={20} /></span>
-            <span className="row-text">
-              <strong>{ready.length === 1 ? `Free ${ready[0].name} ready` : `${ready.length} free items ready`}</strong>
-              <span>Open your Wallet to show the voucher</span>
-            </span>
-            <ChevronIcon width={18} height={18} />
-          </Link>
-        )}
+    <div className="code-screen">
+      <div className="code-top">
+        <button type="button" className="round-btn on-red" onClick={close} aria-label="Close">
+          <CloseIcon width={20} height={20} />
+        </button>
+        <span className="club-word">
+          PastaMania <b>Club</b>
+        </span>
+        <span />
       </div>
-    </>
+
+      <div className="code-title">
+        <h1 className="hatch">Scan to earn</h1>
+        <p>Show this at the counter before you pay.</p>
+      </div>
+
+      <article className="code-card">
+        <div className="code-name">
+          <strong>{member.name}</strong>
+          <span>{formatMemberCode(member.id)}</span>
+        </div>
+        <div className="qr-wrap">
+          <QRCode value={`PASTAMANIA:MEMBER:${member.id}`} size={232} level="H" label="Member QR code" />
+          <span className="qr-logo" aria-hidden="true">
+            <img src={brand.logo} alt="" />
+          </span>
+        </div>
+        <div className="code-stats">
+          <div>
+            <strong key={balance}>{formatPoints(balance)}</strong>
+            <span>Points</span>
+          </div>
+          <div>
+            <strong>{treats}</strong>
+            <span>Treats ready</span>
+          </div>
+        </div>
+      </article>
+
+      {ready.length > 0 ? (
+        <Link to={`/wallet/${ready[0].id}`} className="code-link">
+          <span className="icon-tile md"><TicketIcon width={20} height={20} /></span>
+          <span className="code-link-text">
+            <strong>{ready.length === 1 ? `Free ${ready[0].name} is ready` : `${ready.length} vouchers are ready`}</strong>
+            <small>Using it today? Show the voucher instead.</small>
+          </span>
+          <ChevronIcon width={18} height={18} />
+        </Link>
+      ) : (
+        <span />
+      )}
+
+      <p className="code-hint">
+        <SunIcon width={16} height={16} />
+        Turn your screen brightness up if the scanner struggles.
+      </p>
+    </div>
   )
 }

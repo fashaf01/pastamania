@@ -71,5 +71,21 @@ export const branches = [
 
 export const getBranch = (id) => branches.find((b) => b.id === id)
 
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+// Whether an hours row ('Daily', 'Fri', 'Mon – Thu', 'Sat – Thu' …) covers a weekday (0 = Sunday).
+const coversDay = (label, day) => {
+  if (label === 'Daily') return true
+  const [from, to = from] = label.split('–').map((s) => DAYS.indexOf(s.trim()))
+  if (from < 0 || to < 0) return false
+  return from <= to ? day >= from && day <= to : day >= from || day <= to
+}
+
+// Today's restaurant hours ('12:00 – 22:00'), or null when the branch hasn't confirmed them.
+export const todaysHours = (branch, date = new Date()) => {
+  const restaurant = branch.hours.find((h) => h.label === 'Restaurant')
+  return restaurant?.rows.find((r) => coversDay(r.days, date.getDay()))?.time ?? null
+}
+
 export const mapsUrl = (branch) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`PastaMania ${branch.address}`)}`

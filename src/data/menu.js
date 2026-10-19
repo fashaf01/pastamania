@@ -123,3 +123,27 @@ export const categories = [
 ]
 
 export const categoryIcon = (name) => categories.find((c) => c.name === name)?.icon ?? '🍴'
+
+// 'Hot Basil Chicken Pizza 10 inch' -> 'hot-basil-chicken-pizza-10-inch'
+export const dishSlug = (name) =>
+  name
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
+// A dish by slug, preferring the given branch's menu, else the first branch that serves it.
+export const findDish = (slug, branchId) => {
+  const order = [branchId, ...Object.keys(menus).filter((id) => id !== branchId)].filter((id) => menus[id])
+  for (const id of order) {
+    const item = menus[id].find((i) => dishSlug(i.name) === slug)
+    if (item) return { item, branchId: id }
+  }
+  return null
+}
+
+// Branches whose menu lists a dish of this name.
+export const branchesServing = (name) => Object.keys(menus).filter((id) => menus[id].some((i) => i.name === name))
+
+// The Sri Lankan fusion dishes the brand leads with.
+export const isLocalFavourite = (name) => /jaffna|kochi/i.test(name)
