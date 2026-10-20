@@ -144,13 +144,12 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .label-caps { font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-stretch: 125%; }
 .label-caps.muted { color: var(--muted); }
 
-/* Gold hatched poster lettering with a dark outline and offset shadow (FridayMania). */
+/* Gold poster lettering with a dark outline and offset shadow (FridayMania). Solid fill on purpose:
+   background-clip:text with a filter makes Safari and some phone browsers fail to paint or crash the tab. */
 .hatch {
   font-family: var(--font-display); font-weight: 400; line-height: 1.05; color: var(--gold);
-  background-image: repeating-linear-gradient(-58deg, var(--gold) 0 2px, #ffd966 2px 3.5px);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1.5px var(--outline); paint-order: stroke fill;
-  filter: drop-shadow(3px 3px 0 var(--outline));
+  text-shadow: 3px 3px 0 var(--outline);
 }
 
 /* ---------- Buttons ---------- */
@@ -714,7 +713,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .event-ticket { display: flex; flex-direction: column; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 44px rgb(61 10 10 / 0.22); }
 .event-ticket.cancelled { opacity: 0.55; }
 .event-top { display: flex; flex-direction: column; gap: 16px; padding: 22px 22px 20px; }
-.event-top .hatch { font-size: 2rem; -webkit-text-stroke-width: 1.2px; filter: drop-shadow(2px 2px 0 var(--outline)); }
+.event-top .hatch { font-size: 2rem; -webkit-text-stroke-width: 1.2px; text-shadow: 2px 2px 0 var(--outline); }
 .event-when { display: flex; align-items: center; gap: 16px; }
 .cal-box { flex-shrink: 0; width: 72px; padding: 8px 0; border-radius: 16px; background: var(--gold); color: var(--ink-fixed); display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
 .cal-box small { font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.12em; font-stretch: 115%; text-transform: uppercase; }
