@@ -55,7 +55,11 @@ export default function Layout() {
   // A guest's home is the full-screen welcome poster.
   const showTabs = TAB_SCREENS.includes(pathname) && !(pathname === '/' && !member)
 
-  useEffect(() => window.scrollTo(0, 0), [pathname])
+  // Braces matter: newer Chrome returns a Promise from scrollTo, and an effect that returns it hands
+  // React a "cleanup" that isn't a function, which crashes the next screen change.
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 
   return (
     <div className="stage">
