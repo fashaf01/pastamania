@@ -453,13 +453,15 @@ input[type='date'].input, input[type='time'].input {
 .welcome-actions .text-btn { color: rgb(255 246 234 / 0.88); text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
 
 /* ---------- Join ---------- */
-.join { display: flex; flex-direction: column; gap: 24px; padding: 20px 20px 28px; }
-.gift-card { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 20px; background: var(--gold); color: var(--ink-fixed); box-shadow: 0 8px 22px rgb(168 115 0 / 0.22); }
-.gift-card img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; flex-shrink: 0; }
-.gift-card div { display: flex; flex-direction: column; gap: 2px; }
-.gift-card .eyebrow { color: var(--gold-ink); }
-.gift-card strong { font-size: 1.125rem; }
-.gift-card span:last-child { font-size: 0.8125rem; font-weight: 600; color: var(--gold-ink); }
+/* Join: wine header like Home and Me, the welcome gift as a gold ticket, then the form. */
+.join-head { gap: 22px; padding-top: calc(12px + env(safe-area-inset-top)); }
+.join-logo { width: 44px; height: 44px; object-fit: contain; }
+.join-intro { display: flex; flex-direction: column; gap: 10px; }
+.join-intro h1 { font-size: 3.5rem; }
+.join-intro h1 span { color: var(--gold); }
+.join-intro p { max-width: 320px; font-size: 1rem; line-height: 1.5; color: rgb(255 246 234 / 0.85); }
+.join { display: flex; flex-direction: column; gap: 24px; padding: 24px 20px 28px; }
+.ticket-row.still:active { transform: none; }
 
 /* ---------- My code ---------- */
 .code-screen {

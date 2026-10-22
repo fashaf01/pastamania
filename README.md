@@ -35,6 +35,8 @@ not a tab: it opens from the big *Show my code* button on Home and the gold QR b
   drink for a main (pizza gets wings or wedges and a cola, pasta gets garlic bread or cheese sticks and an Italian
   soda), a main and a drink for a starter or salad, a main and a side for a drink, just a drink for a meal set –
   never the dish itself, its own course, or something it already comes with.
+- **Join** (`/join`) – wine header *Join the Club*, the welcome gift as a gold ticket, then name, mobile and an
+  optional birthday
 - **My code** (`/card`) – full screen QR (logo in the middle) in gold scanner corners, member number, and the voucher
   that's ready
 - **Rewards** – points and progress, *Ready to use* vouchers, *Get with your points* (a ring per reward shows how close
