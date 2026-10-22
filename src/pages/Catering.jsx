@@ -48,11 +48,11 @@ export default function Catering() {
           <div className="form-row">
             <label className="field">
               <span className="field-label">Date</span>
-              <input className="input" type="date" value={form.date} onChange={update('date')} />
+              <input className="input" type="date" min={new Date().toISOString().slice(0, 10)} value={form.date} onChange={update('date')} />
             </label>
             <label className="field">
               <span className="field-label">Guests</span>
-              <input className="input" type="number" min="1" value={form.guests} onChange={update('guests')} />
+              <input className="input" type="number" inputMode="numeric" min="1" value={form.guests} onChange={update('guests')} />
             </label>
           </div>
           <label className="field">

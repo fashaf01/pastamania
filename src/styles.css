@@ -207,6 +207,7 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .topbar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; padding: calc(12px + env(safe-area-inset-top)) 16px 0; }
 .topbar-title { text-align: center; font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; color: var(--heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-action { display: flex; justify-content: flex-end; }
+@media (max-width: 359px) { .topbar-title { font-size: 1.0625rem; } }
 
 /* Large title for the tab screens. */
 .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: calc(16px + env(safe-area-inset-top)) 20px 0; }
@@ -304,6 +305,14 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .field-hint { font-size: 0.8125rem; color: var(--muted); }
 .field-error { font-size: 0.8125rem; font-weight: 700; color: var(--danger); }
 .form-row { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 10px; }
+/* Grid cells and fields may shrink: iPhone Safari gives date fields a wide minimum width that otherwise
+   pushes the date box over its neighbour. */
+.form-row > *, .field { min-width: 0; }
+.input { min-width: 0; max-width: 100%; }
+input[type='date'].input, input[type='time'].input {
+  -webkit-appearance: none; appearance: none; display: block; min-height: 52px; line-height: 48px; text-align: left;
+}
+.input::-webkit-date-and-time-value { text-align: left; }
 
 /* ---------- Home ---------- */
 .home { display: flex; flex-direction: column; gap: 20px; padding: calc(16px + env(safe-area-inset-top)) 20px 32px; }
@@ -517,7 +526,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .sheet-backdrop { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; background: var(--scrim); animation: fade 0.25s; }
 .sheet-backdrop.leaving { animation: fade-out 0.22s ease forwards; }
 .sheet {
-  width: 100%; max-width: var(--app-w); max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
+  width: 100%; max-width: var(--app-w); max-height: 92vh; max-height: 92dvh; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;
   padding: 10px 20px calc(24px + env(safe-area-inset-bottom)); background: var(--sheet); color: var(--ink);
   border-radius: 28px 28px 0 0; box-shadow: 0 -12px 40px rgb(0 0 0 / 0.25); animation: sheet-in 0.42s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -639,6 +648,8 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .place-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); font-size: 0.8125rem; font-weight: 700; }
 .place-chip svg { color: var(--tint-red-ink); }
 .pairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+/* Side-by-side buttons wrap their label instead of spilling out on small phones. */
+.pairs .btn { padding: 8px 12px; white-space: normal; line-height: 1.2; text-align: center; }
 .pair { display: flex; flex-direction: column; overflow: hidden; color: var(--ink); }
 .pair .dish-img { width: 100%; height: 96px; }
 .pair span { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px 12px; }
