@@ -4,7 +4,7 @@ import { CameraIcon, CheckIcon } from '../components/Icons.jsx'
 import QrScanner from '../components/QrScanner.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { pointsForSpend } from '../data/club.js'
-import { formatDay, formatMemberCode, formatPoints } from '../lib/format.js'
+import { formatDay, formatMemberCode, formatPoints, pointsText } from '../lib/format.js'
 
 const MEMBER_QR = /^PASTAMANIA:MEMBER:(PM\d{8})$/
 const VOUCHER_QR = /^PASTAMANIA:VOUCHER:(PMV-[A-Z0-9]{6})$/
@@ -79,7 +79,7 @@ export default function Staff() {
   const undo = () => {
     const result = club.undoAward(award.id)
     if (result.error) return flash(result.error, 'error')
-    flash(`Undone. ${formatPoints(award.points)} points taken back.`)
+    flash(`Undone. ${pointsText(award.points)} taken back.`)
     setAward(null)
   }
 
@@ -113,9 +113,9 @@ export default function Staff() {
           <section className="done-card card">
             <span className="done-tick"><CheckIcon width={40} height={40} /></span>
             <h2 className="title-l">
-              +{formatPoints(award.points)} points to {customer.name.split(' ')[0]}
+              +{pointsText(award.points)} to {customer.name.split(' ')[0]}
             </h2>
-            <p className="muted">New balance: {formatPoints(club.balance)} points</p>
+            <p className="muted">New balance: {pointsText(club.balance)}</p>
             <button type="button" className="btn btn-red btn-block" onClick={next}>Next customer</button>
             <button type="button" className="text-btn" onClick={undo}>Undo – wrong total</button>
             <p className="footnote">You can undo once, within 30 minutes, if the points haven’t been spent.</p>
@@ -184,9 +184,9 @@ export default function Staff() {
                     <span>LKR</span>
                     <input id="bill" inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))} placeholder="0" />
                   </div>
-                  <span className="field-hint">{preview ? `Gives ${formatPoints(preview)} points · 1 point per LKR 100` : 'Type the total from the receipt'}</span>
+                  <span className="field-hint">{preview ? `Gives ${pointsText(preview)} · 1 point per LKR 100` : 'Type the total from the receipt'}</span>
                   <button type="submit" className="btn btn-red btn-lg btn-block" disabled={!preview}>
-                    {preview ? `Give ${formatPoints(preview)} points` : 'Give points'}
+                    {preview ? `Give ${pointsText(preview)}` : 'Give points'}
                   </button>
                 </form>
               </>

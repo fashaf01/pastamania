@@ -9,7 +9,7 @@ import { branches, getBranch } from '../data/branches.js'
 import { club, pointsForSpend } from '../data/club.js'
 import { categories, dishSlug, isLocalFavourite, menus } from '../data/menu.js'
 import { fridayMania } from '../data/offers.js'
-import { formatLKR, loadBranchId, saveBranchId } from '../lib/format.js'
+import { earnLabel, formatLKR, loadBranchId, saveBranchId } from '../lib/format.js'
 import { prefersReducedMotion } from '../lib/motion.js'
 
 const initialBranch = () => {
@@ -27,6 +27,7 @@ const sticker = (name) => {
 
 function DishCard({ item, variant, branchId }) {
   const tag = sticker(item.name)
+  const points = pointsForSpend(item.price)
   return (
     <Link to={`/menu/${dishSlug(item.name)}?branch=${branchId}`} className={`dish-card v${variant}`}>
       <DishImage item={item} className="dish-plate" />
@@ -34,7 +35,7 @@ function DishCard({ item, variant, branchId }) {
       <h3 className="cd">{item.name}</h3>
       <span className="dish-pills">
         <span className="price-pill num">{formatLKR(item.price)}</span>
-        <span className="pts-pill num">+{pointsForSpend(item.price)} pts</span>
+        {points > 0 && <span className="pts-pill num">{earnLabel(points)}</span>}
       </span>
     </Link>
   )

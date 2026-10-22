@@ -7,17 +7,9 @@ import Sticker from '../components/Sticker.jsx'
 import { brand } from '../data/brand.js'
 import { getBranch } from '../data/branches.js'
 import { club, pointsForSpend } from '../data/club.js'
-import { branchesServing, dishSlug, findDish, isLocalFavourite, menus } from '../data/menu.js'
+import { branchesServing, dishSlug, findDish, goesWellWith, isLocalFavourite, isServedCold } from '../data/menu.js'
 import { fridayMania } from '../data/offers.js'
-import { formatLKR, loadBranchId } from '../lib/format.js'
-
-// Two easy add-ons from the same menu: a garlic bread and an Italian soda when the branch has them.
-const pairings = (branchId, dish) => {
-  const others = menus[branchId].filter((i) => i.name !== dish.name)
-  const side = others.find((i) => /garlic bread/i.test(i.name)) ?? others.find((i) => i.category === 'Appetizers')
-  const drink = others.find((i) => /italian soda/i.test(i.name)) ?? others.find((i) => i.category === 'Beverages')
-  return [side, drink].filter(Boolean)
-}
+import { earnLabel, formatLKR, loadBranchId } from '../lib/format.js'
 
 export default function Dish() {
   const { slug } = useParams()
@@ -29,7 +21,10 @@ export default function Dish() {
     return (
       <>
         <AppBar title="Menu" back="/menu" />
-        <p className="empty">We couldn’t find that dish.</p>
+        <div className="empty">
+          <p>We couldn’t find that dish.</p>
+          <Link className="btn btn-red" to="/menu">See the menu</Link>
+        </div>
       </>
     )
   }
@@ -39,7 +34,7 @@ export default function Dish() {
   const isHero = item.name === fridayMania.heroDish
   const isLocal = isLocalFavourite(item.name)
   const points = pointsForSpend(item.price)
-  const pairs = pairings(branchId, item)
+  const pairs = goesWellWith(branchId, item)
 
   return (
     <>
@@ -47,11 +42,13 @@ export default function Dish() {
         <button type="button" className="round-btn on-red" onClick={back} aria-label="Back to menu">
           <BackIcon width={22} height={22} />
         </button>
-        <svg className="steam" viewBox="0 0 90 60" aria-hidden="true">
-          <path d="M24 58c-7-9 7-14 0-23s7-14 0-23" />
-          <path d="M45 54c-7-9 7-14 0-23s7-14 0-23" />
-          <path d="M66 58c-7-9 7-14 0-23s7-14 0-23" />
-        </svg>
+        {!isServedCold(item) && (
+          <svg className="steam" viewBox="0 0 90 60" aria-hidden="true">
+            <path d="M24 58c-7-9 7-14 0-23s7-14 0-23" />
+            <path d="M45 54c-7-9 7-14 0-23s7-14 0-23" />
+            <path d="M66 58c-7-9 7-14 0-23s7-14 0-23" />
+          </svg>
+        )}
         <span className="dish-rings" aria-hidden="true" />
         {/* Keyed by dish so the plate spins in again when you open a pairing. */}
         <DishImage key={item.name} item={item} alt={item.name} className="dish-hero-plate" />
@@ -68,7 +65,7 @@ export default function Dish() {
         <h1 className="cd dish-name">{item.name}</h1>
         <div className="chip-row">
           <span className="price-pill big num">{formatLKR(item.price)}</span>
-          <span className="pts-pill gold big num">+{points} {points === 1 ? 'point' : 'points'} when you eat in</span>
+          {points > 0 && <span className="pts-pill gold big num">+{points} {points === 1 ? 'point' : 'points'} when you eat in</span>}
         </div>
         {isHero && <p className="dish-note">FridayMania: buy 1, get 1 free every Friday, for dine-in, takeaway and delivery.</p>}
         <p className="dish-where">
@@ -84,7 +81,10 @@ export default function Dish() {
                 <DishImage item={p} />
                 <span className="pair-text">
                   <strong>{p.name}</strong>
-                  <small className="num">{formatLKR(p.price)} · +{pointsForSpend(p.price)} pts</small>
+                  <small className="num">
+                    {formatLKR(p.price)}
+                    {pointsForSpend(p.price) > 0 && ` · ${earnLabel(pointsForSpend(p.price))}`}
+                  </small>
                 </span>
                 <ChevronIcon width={18} height={18} />
               </Link>

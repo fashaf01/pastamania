@@ -52,8 +52,8 @@ function MemberHome() {
               <span className="eyebrow">Your points</span>
               <p className="points-line">
                 <span className={`cd points-num ${formatPoints(balance).length > 4 ? 'long' : ''}`} aria-hidden="true">{formatPoints(shown)}</span>
-                <span className="cd points-unit" aria-hidden="true">pts</span>
-                <span className="sr-only">{formatPoints(balance)} points</span>
+                <span className="cd points-unit" aria-hidden="true">{balance === 1 ? 'pt' : 'pts'}</span>
+                <span className="sr-only">{formatPoints(balance)} {balance === 1 ? 'point' : 'points'}</span>
               </p>
             </div>
             <Link
