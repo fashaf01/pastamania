@@ -23,8 +23,11 @@ Four equal tabs: **Home · Menu · Rewards · Me**. Each tab has one job, and ea
 not a tab: it opens from the big *Show my code* button on Home and the gold QR button at the top of Rewards.
 
 - **Home** – guests get the welcome screen: one plate, *Eat pasta. Earn free pasta.* and *Join free*. Members see
-  three things only: their points (counting up) beside a photo of the next reward in a ring that fills as they earn
-  (tap it for Rewards), *Show my code*, a voucher that's ready to use, and this Friday's FridayMania with when it starts.
+  their points (counting up) beside a photo of the next reward in a ring that fills as they earn (tap it for
+  Rewards), *Show my code*, a voucher that's ready to use, this Friday's FridayMania with when it starts,
+  *Favourites* (a sideways row of six dishes from their branch: the Sri Lankan fusion dishes, the FridayMania dish,
+  Pasta Favourites, then one from each main course) and the next kids workshop – or, if they've booked one,
+  *You're booked*, which opens their ticket.
 - **Menu** (`/menu`) – *~~Plain Italian~~ Italian, Colombo style*, search, branch pill, *Order delivery* (Uber Eats /
   PickMe), then the whole menu in one scroll, like a delivery app: the category bar sticks to the top, follows the
   section you're reading and jumps to a section when tapped. Dishes are red, gold and cream cards with the points

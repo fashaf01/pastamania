@@ -376,6 +376,31 @@ input[type='date'].input, input[type='time'].input {
 .home-body { display: flex; flex-direction: column; gap: 28px; padding: 28px 20px 32px; }
 .block { display: flex; flex-direction: column; gap: 12px; }
 .block-title { font-size: 1.625rem; color: var(--red); }
+.block-head { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.section-head.end { align-items: flex-end; }
+.section-head.end a { min-height: 32px; }
+
+/* Sideways row of dish cards that bleeds to the screen edges. No vertical overflow, so it can't wobble. */
+.rail {
+  display: flex; gap: 12px; margin: 0 -20px; padding: 2px 20px 6px; overflow-x: auto; overflow-y: hidden;
+  overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scroll-padding-inline: 20px; scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail > .dish-card { flex: 0 0 158px; min-height: 236px; scroll-snap-align: start; }
+
+/* Red card for the next kids workshop, with a gold date tile. */
+.event-row {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px 14px 14px; border-radius: 22px;
+  background-color: var(--red); color: var(--cream); transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.event-row:active { transform: scale(0.98); transition-delay: 0.09s; }
+.event-row .date-tile { width: 60px; padding: 8px 0; }
+.event-row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.event-row-text .eyebrow { color: var(--gold-light); font-size: 0.625rem; }
+.event-row-text strong { font-size: 1.5rem; }
+.event-row-text small:last-child { font-size: 0.8125rem; font-weight: 600; }
+.event-row-text small span { white-space: nowrap; }
+.event-row > svg { flex-shrink: 0; }
 .avatar {
   display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; background: var(--gold);
   color: var(--ink-fixed); font-family: var(--font-display); font-size: 1.125rem; box-shadow: 0 0 0 3px rgb(255 255 255 / 0.18);

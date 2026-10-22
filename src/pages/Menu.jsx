@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { PickMeLink, UberEatsLink } from '../components/DeliveryLinks.jsx'
-import DishImage from '../components/DishImage.jsx'
+import DishCard from '../components/DishCard.jsx'
 import { ChevronIcon, CloseIcon, PinIcon, SearchIcon } from '../components/Icons.jsx'
 import Sheet from '../components/Sheet.jsx'
 import { brand } from '../data/brand.js'
 import { branches, getBranch } from '../data/branches.js'
-import { club, pointsForSpend } from '../data/club.js'
-import { categories, dishSlug, isLocalFavourite, menus } from '../data/menu.js'
-import { fridayMania } from '../data/offers.js'
-import { earnLabel, formatLKR, loadBranchId, saveBranchId } from '../lib/format.js'
+import { club } from '../data/club.js'
+import { categories, dishSlug, menus } from '../data/menu.js'
+import { loadBranchId, saveBranchId } from '../lib/format.js'
 import { prefersReducedMotion } from '../lib/motion.js'
 
 const initialBranch = () => {
@@ -18,28 +16,6 @@ const initialBranch = () => {
 }
 
 const sectionId = (name) => `menu-${dishSlug(name)}`
-
-const sticker = (name) => {
-  if (name === fridayMania.heroDish) return 'Fridays 1+1'
-  if (isLocalFavourite(name)) return 'Local fave!'
-  return null
-}
-
-function DishCard({ item, variant, branchId }) {
-  const tag = sticker(item.name)
-  const points = pointsForSpend(item.price)
-  return (
-    <Link to={`/menu/${dishSlug(item.name)}?branch=${branchId}`} className={`dish-card v${variant}`}>
-      <DishImage item={item} className="dish-plate" />
-      {tag && <span className="dish-sticker">{tag}</span>}
-      <h3 className="cd">{item.name}</h3>
-      <span className="dish-pills">
-        <span className="price-pill num">{formatLKR(item.price)}</span>
-        {points > 0 && <span className="pts-pill num">{earnLabel(points)}</span>}
-      </span>
-    </Link>
-  )
-}
 
 // The whole menu in one scroll, like a delivery app: the category bar sticks to the top, follows the section
 // you're reading, and jumps to a section when you tap it.

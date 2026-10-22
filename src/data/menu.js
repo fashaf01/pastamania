@@ -148,6 +148,19 @@ export const branchesServing = (name) => Object.keys(menus).filter((id) => menus
 // The Sri Lankan fusion dishes the brand leads with.
 export const isLocalFavourite = (name) => /jaffna|kochi/i.test(name)
 
+// Up to `count` mains to show off on Home, all with photos: the Sri Lankan fusion dishes, this week's FridayMania
+// dish, the rest of Pasta Favourites, then the first dish of each other main course.
+export const favourites = (branchId, heroDish, count = 6) => {
+  const mains = menus[branchId].filter((i) => i.image && !['Appetizers', 'Salads', 'Meal Sets', 'Beverages'].includes(i.category))
+  const picks = [
+    ...mains.filter((i) => isLocalFavourite(i.name)),
+    ...mains.filter((i) => i.name === heroDish),
+    ...mains.filter((i) => i.category === 'Pasta Favourites'),
+    ...categories.map((c) => mains.find((i) => i.category === c.name)).filter(Boolean),
+  ]
+  return [...new Set(picks)].slice(0, count)
+}
+
 // Drinks and salads come cold, so the dish page shows no steam over them.
 export const isServedCold = (item) => item.category === 'Beverages' || item.category === 'Salads'
 
