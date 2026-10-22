@@ -147,3 +147,55 @@ export const branchesServing = (name) => Object.keys(menus).filter((id) => menus
 
 // The Sri Lankan fusion dishes the brand leads with.
 export const isLocalFavourite = (name) => /jaffna|kochi/i.test(name)
+
+// Drinks and salads come cold, so the dish page shows no steam over them.
+export const isServedCold = (item) => item.category === 'Beverages' || item.category === 'Salads'
+
+const PASTA = ['Pasta Favourites', 'Cream Pasta', 'Tomato Pasta', 'Aglio Pasta', 'Vegetarian Pasta']
+
+// Up to two things to have with a dish, from the same branch's menu: a side and a drink with a main, a main and
+// a drink with a starter, a main and a side with a drink, and just a drink with a meal set (it comes with sides).
+// Pizza goes with wings or wedges and a cola, pasta with garlic bread or cheese sticks and an Italian soda. Each
+// dish always gets the same picks, but neighbouring dishes get different ones from the group. Never the dish
+// itself, never something from its own course, and never something it already comes with ("…with Garlic Bread").
+export const goesWellWith = (branchId, dish) => {
+  const name = dish.name.toLowerCase()
+  const options = menus[branchId].filter((i) => i.name !== dish.name && !name.includes(i.name.toLowerCase()))
+  const seed = [...dish.name].reduce((sum, c) => sum + c.charCodeAt(0), 0)
+  // One of the options passing the earliest test that any option passes.
+  const choose = (...tests) => {
+    for (const test of tests) {
+      const found = options.filter(test)
+      if (found.length) return found[seed % found.length]
+    }
+    return null
+  }
+  const named = (pattern) => (i) => pattern.test(i.name)
+  const inCategory = (...names) => (i) => names.includes(i.category)
+  const starter = (i) => i.category === 'Appetizers' && !/soup/i.test(i.name)
+  const PIZZA_SIDES = /wings|wedges|chicken bites|cheese sticks/i
+
+  const side = (forPizza) =>
+    forPizza ? choose(named(PIZZA_SIDES), starter) : choose(named(/^(cheesy )?garlic bread$|^cheese sticks$/i), starter)
+  const drink = (forPizza) =>
+    forPizza
+      ? choose(named(/^(pepsi|7 ?up|mountain dew)$/i), inCategory('Beverages'))
+      : choose(named(/italian soda|carafe/i), inCategory('Beverages'))
+  const pasta = () => choose(inCategory('Pasta Favourites'), inCategory(...PASTA))
+  const pizza = () => choose(inCategory('Pizza'))
+
+  let pairs
+  if (dish.category === 'Beverages') {
+    const fizzy = /pepsi|7 ?up|dew|water/i.test(dish.name)
+    pairs = [fizzy ? (pizza() ?? pasta()) : (pasta() ?? pizza()), side(fizzy)]
+  } else if (dish.category === 'Appetizers' || dish.category === 'Salads') {
+    const pizzaSide = PIZZA_SIDES.test(dish.name)
+    pairs = [pizzaSide ? (pizza() ?? pasta()) : (pasta() ?? pizza()), drink(pizzaSide)]
+  } else if (dish.category === 'Meal Sets') {
+    pairs = [drink(false)]
+  } else {
+    const isPizza = dish.category === 'Pizza'
+    pairs = [side(isPizza), drink(isPizza)]
+  }
+  return pairs.filter(Boolean)
+}

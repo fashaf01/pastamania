@@ -4,7 +4,7 @@ import { ChevronIcon, ClockIcon, LockIcon, QrIcon, ReceiptIcon } from '../compon
 import Sheet, { useSheetClose } from '../components/Sheet.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { club, nextReward, rewards } from '../data/club.js'
-import { formatDay, formatPoints } from '../lib/format.js'
+import { formatDay, formatPoints, pointsText } from '../lib/format.js'
 import { useCountUp, useEntered } from '../lib/motion.js'
 
 const shortName = (name) => name.replace(/^Any /, '')
@@ -89,7 +89,7 @@ function GetSheetBody({ reward, balance, redeem }) {
         <ClockIcon width={18} height={18} />
         Your voucher lasts {club.voucherValidDays} days. Show it at the counter and it’s free.
       </p>
-      {short > 0 && step === 'ask' && <p className="flash flash-error">You need {formatPoints(short)} more points for this one.</p>}
+      {short > 0 && step === 'ask' && <p className="flash flash-error">You need {pointsText(short)} more for this one.</p>}
       <div className="stack" style={{ gap: 4 }}>
         <button type="button" className="btn btn-gold btn-lg btn-block" onClick={get} disabled={short > 0 || step === 'busy'}>
           {step === 'busy' && <span className="spinner" aria-hidden="true" />}
@@ -128,8 +128,8 @@ export default function Rewards() {
             <div className="points-block rise" style={{ '--i': 1 }}>
               <p className="points-line">
                 <span className="cd points-num" aria-hidden="true">{formatPoints(shown)}</span>
-                <span className="cd points-unit" aria-hidden="true">points</span>
-                <span className="sr-only">{formatPoints(balance)} points</span>
+                <span className="cd points-unit" aria-hidden="true">{balance === 1 ? 'point' : 'points'}</span>
+                <span className="sr-only">{pointsText(balance)}</span>
               </p>
               <div className="bar" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress to your next reward">
                 <i style={{ width: `${entered ? progress : 0}%` }} />

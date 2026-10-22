@@ -29,8 +29,12 @@ not a tab: it opens from the big *Show my code* button on Home and the gold QR b
   PickMe), then the whole menu in one scroll, like a delivery app: the category bar sticks to the top, follows the
   section you're reading and jumps to a section when tapped. Dishes are red, gold and cream cards with the points
   each earns in store.
-- **Dish** (`/menu/<dish>`) – the plate spins in on a red header (with a *Local fave!* or *Fridays 1+1* sticker),
-  price, points, branches that serve it, two add-ons, Uber Eats / PickMe buttons
+- **Dish** (`/menu/<dish>`) – the plate spins in on a red header (with a *Local fave!* or *Fridays 1+1* sticker;
+  steam rises only over hot food, not drinks or salads), price, points, branches that serve it, *Goes well with*,
+  Uber Eats / PickMe buttons. *Goes well with* fits the dish (`goesWellWith` in `src/data/menu.js`): a side and a
+  drink for a main (pizza gets wings or wedges and a cola, pasta gets garlic bread or cheese sticks and an Italian
+  soda), a main and a drink for a starter or salad, a main and a side for a drink, just a drink for a meal set –
+  never the dish itself, its own course, or something it already comes with.
 - **My code** (`/card`) – full screen QR (logo in the middle) in gold scanner corners, member number, and the voucher
   that's ready
 - **Rewards** – points and progress, *Ready to use* vouchers, *Get with your points* (a ring per reward shows how close

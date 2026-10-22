@@ -2,6 +2,12 @@ export const formatLKR = (amount) => `LKR ${amount.toLocaleString('en-US')}`
 
 export const formatPoints = (points) => points.toLocaleString('en-US')
 
+// '1 point', '1,250 points'
+export const pointsText = (points) => `${formatPoints(points)} ${points === 1 ? 'point' : 'points'}`
+
+// What a dish earns, for price tags: '+20 pts', '+1 pt'.
+export const earnLabel = (points) => `+${formatPoints(points)} ${points === 1 ? 'pt' : 'pts'}`
+
 export const formatDate = (ms) => new Date(ms).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
 
 // Written out by hand: browsers disagree on 'Sep' vs 'Sept' and on the comma after the weekday.

@@ -6,7 +6,7 @@ import { getBranch } from '../data/branches.js'
 import { pointsForSpend } from '../data/club.js'
 import { categories, isLocalFavourite, menus } from '../data/menu.js'
 import { fridayMania } from '../data/offers.js'
-import { formatLKR } from '../lib/format.js'
+import { earnLabel, formatLKR } from '../lib/format.js'
 
 // The website shows Havelock City Mall's menu: it is the fullest one, and its prices are labelled as such.
 const BRANCH_ID = 'havelock'
@@ -34,7 +34,7 @@ function DishCard({ item, variant }) {
       <h3 className="w-cd">{item.name}</h3>
       <div className="w-pills">
         <span className="w-pill">{formatLKR(item.price)}</span>
-        <span className="w-pill w-pts">+{pointsForSpend(item.price)} pts</span>
+        {pointsForSpend(item.price) > 0 && <span className="w-pill w-pts">{earnLabel(pointsForSpend(item.price))}</span>}
       </div>
     </article>
   )
