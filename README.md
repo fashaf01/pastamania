@@ -23,7 +23,6 @@ because showing it at the counter is the thing members do most.
 - **Home** – guests get the welcome poster (*Join free*); members see their points, the reward track with a photo at
   every free item, *Show my code* / *Redeem*, a ready voucher, their next workshop, the next reward, the
   FridayMania offer, shortcuts (delivery, menu, branches, kids workshops), recent activity and how points work.
-  The moon/sun button switches light and dark.
 - **Menu** (`/menu`) – branch picker, search, category chips, photos, prices and points earned in store
 - **Dish** (`/menu/<dish>`) – photo, price, points, FridayMania badge for the week's hero dish, branches that serve it,
   two add-ons, Uber Eats / PickMe buttons
@@ -33,15 +32,19 @@ because showing it at the counter is the thing members do most.
 - **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used
 - **Wallet** – vouchers ready to use, workshop tickets, used & expired vouchers, delivery links
 - **Kids workshop** (`/book`) – Dough Workz: pick a session, add the children, book; **ticket** at `/book/ticket/<ref>`
-- **Profile** (`/me`, from the avatar) – appearance (Light / Dark / System), details, points history (`/history`),
+- **Profile** (`/me`, from the avatar) – details, points history (`/history`),
   branches, catering, contact and the **Counter screen**
 - **Branches** – today's restaurant hours, all hours, Call / Directions / Uber Eats
 
 ### Light and dark
 
+The app is **light only** for now. Dark mode is built but switched off: set `DARK_MODE` to `true` in
+`src/lib/theme.jsx` and `darkMode` in the script in `index.html` to bring back the moon button on Home and the
+Appearance choice (Light / Dark / System) in Profile.
+
 Colours are CSS variables in `src/styles.css`: `:root` holds the light theme and `:root[data-theme='dark']` the
-dark one. `src/lib/theme.jsx` keeps the choice (light, dark or follow the phone) on the device, and a small script in
-`index.html` applies it before the first paint so the app never flashes the wrong theme.
+dark one. `src/lib/theme.jsx` keeps the choice on the device, and the script in `index.html` applies it before the
+first paint so the app never flashes the wrong theme.
 
 ### Counter screen (`/staff`)
 

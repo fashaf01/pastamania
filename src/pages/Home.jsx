@@ -12,7 +12,7 @@ import { dishSlug } from '../data/menu.js'
 import { fridayMania, nextFriday } from '../data/offers.js'
 import { formatSessionDate, formatSessionTime, getSession, workshop } from '../data/workshops.js'
 import { firstName, formatDay, formatPoints, monthShort } from '../lib/format.js'
-import { useTheme } from '../lib/theme.jsx'
+import { DARK_MODE, useTheme } from '../lib/theme.jsx'
 import Welcome from './Welcome.jsx'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
@@ -85,9 +85,11 @@ function MemberHome() {
             </span>
           </div>
           <div className="hero-tools">
-            <button type="button" className="round-btn on-red" onClick={toggle} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}>
-              {theme === 'dark' ? <SunIcon width={20} height={20} /> : <MoonIcon width={20} height={20} />}
-            </button>
+            {DARK_MODE && (
+              <button type="button" className="round-btn on-red" onClick={toggle} aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}>
+                {theme === 'dark' ? <SunIcon width={20} height={20} /> : <MoonIcon width={20} height={20} />}
+              </button>
+            )}
             <Link to="/me" className="avatar" aria-label="My profile">
               {firstName(member.name).charAt(0).toUpperCase()}
             </Link>

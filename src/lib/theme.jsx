@@ -6,7 +6,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 const STORAGE_KEY = 'pm.theme'
 export const THEME_MODES = ['light', 'dark', 'system']
 
+// Dark mode is switched off for now: the app is light only, and the theme controls are hidden.
+// Set to true (here and in index.html) to bring back the choice; the dark colours are still in styles.css.
+export const DARK_MODE = false
+
 const loadMode = () => {
+  if (!DARK_MODE) return 'light'
   try {
     const mode = localStorage.getItem(STORAGE_KEY)
     return THEME_MODES.includes(mode) ? mode : 'system'

@@ -4,7 +4,7 @@ import { BowlIcon, CallIcon, CameraIcon, ChefIcon, ChevronIcon, InstagramIcon, M
 import { useClub } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
 import { formatMemberCode, formatMonthYear, formatPhone, formatPoints } from '../lib/format.js'
-import { useTheme } from '../lib/theme.jsx'
+import { DARK_MODE, useTheme } from '../lib/theme.jsx'
 import { BUILD_ID } from '../lib/updates.js'
 
 const MODES = [
@@ -65,17 +65,19 @@ export default function Profile() {
           <span className="pill pill-gold" style={{ fontSize: 13, fontWeight: 800 }}>{formatPoints(balance)} pts</span>
         </div>
 
-        <section>
-          <h2 className="label-caps muted">Appearance</h2>
-          <div className="segmented" role="radiogroup" aria-label="Appearance">
-            {MODES.map(({ id, label, Icon }) => (
-              <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => setMode(id)}>
-                <Icon width={18} height={18} /> {label}
-              </button>
-            ))}
-          </div>
-          <span className="field-hint">System matches your phone’s light or dark setting.</span>
-        </section>
+        {DARK_MODE && (
+          <section>
+            <h2 className="label-caps muted">Appearance</h2>
+            <div className="segmented" role="radiogroup" aria-label="Appearance">
+              {MODES.map(({ id, label, Icon }) => (
+                <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => setMode(id)}>
+                  <Icon width={18} height={18} /> {label}
+                </button>
+              ))}
+            </div>
+            <span className="field-hint">System matches your phone’s light or dark setting.</span>
+          </section>
+        )}
 
         <section>
           <h2 className="label-caps muted">My details</h2>
