@@ -13,7 +13,9 @@ Built with React + Vite as a phone-first web app; add it to the home screen to o
 3. **Get it free** – the counter scans the voucher QR (or finds the member and taps *Mark as used*). The member's
    voucher turns to *Enjoy!* and moves to *Used & expired*.
 
-Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The app links to both and says so.
+Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The app links to both and says so. The
+links are in each platform's own colours (`src/components/DeliveryLinks.jsx`): Uber Eats black with a green *Eats*,
+PickMe with a yellow *Me*, so people know them at a glance.
 
 ## Screens
 
@@ -21,10 +23,12 @@ Four equal tabs: **Home · Menu · Rewards · Me**. Each tab has one job, and ea
 not a tab: it opens from the big *Show my code* button on Home and the gold QR button at the top of Rewards.
 
 - **Home** – guests get the welcome screen: one plate, *Eat pasta. Earn free pasta.* and *Join free*. Members see
-  three things only: their points (counting up) with the next reward and *Show my code*, a voucher that's ready to
-  use, and this Friday's FridayMania with when it starts.
+  three things only: their points (counting up) beside a photo of the next reward in a ring that fills as they earn
+  (tap it for Rewards), *Show my code*, a voucher that's ready to use, and this Friday's FridayMania with when it starts.
 - **Menu** (`/menu`) – *~~Plain Italian~~ Italian, Colombo style*, search, branch pill, *Order delivery* (Uber Eats /
-  PickMe), category tabs with counts, and dishes as red, gold and cream cards with the points each earns in store
+  PickMe), then the whole menu in one scroll, like a delivery app: the category bar sticks to the top, follows the
+  section you're reading and jumps to a section when tapped. Dishes are red, gold and cream cards with the points
+  each earns in store.
 - **Dish** (`/menu/<dish>`) – the plate spins in on a red header (with a *Local fave!* or *Fridays 1+1* sticker),
   price, points, branches that serve it, two add-ons, Uber Eats / PickMe buttons
 - **My code** (`/card`) – full screen QR (logo in the middle) in gold scanner corners, member number, and the voucher
@@ -33,8 +37,9 @@ not a tab: it opens from the big *Show my code* button on Home and the gold QR b
   you are; *Get* opens a sheet: confirm → *It's yours!*), points history, how points work, used & expired vouchers
 - **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used. `/wallet` itself now
   opens Rewards.
-- **Me** (`/me`) – profile (tap the member number to copy it), *My bookings*, branches & hours, kids workshops,
-  catering, call / email / Instagram, sign out (asks first)
+- **Me** (`/me`) – profile (tap the member number to copy it), *My bookings*, *Book with us* (two big tiles: the kids
+  pizza workshop with the next date, and event catering), one *Branches & hours* row, call / email / Instagram, sign
+  out (asks first)
 - **Kids workshop** (`/book`) – Dough Workz: pick a session, add the children, book; **ticket** at `/book/ticket/<ref>`
 - **Branches** – today's restaurant hours, all hours, Call / Directions / Uber Eats
 - **Counter** (`/staff`) – for staff only, so it isn't linked from the customer screens; open the address directly
@@ -43,9 +48,10 @@ not a tab: it opens from the big *Show my code* button on Home and the gold QR b
 
 Small animations make the app feel alive without getting in the way: points count up, progress bars and reward rings
 fill in, blocks ease in one after another, buttons sink a little when pressed, sheets slide up and back down, plates
-spin in, starburst stickers turn slowly (their words stay still), menu cards deal in, a tick draws itself and an
+spin in, starburst stickers turn slowly (their words stay still), a tick draws itself and an
 *It's yours!* stamp lands when you get a reward, and the scan line sweeps the QR code twice when My code opens. Everything is in `src/styles.css` (*Motion*) and `src/lib/motion.js`, and it all
-switches off for people who turn on *Reduce motion* on their phone.
+switches off for people who turn on *Reduce motion* on their phone. Cards don't move while you scroll: a press only
+shows after a short hold, and plates only turn under a mouse.
 
 ### Light and dark
 

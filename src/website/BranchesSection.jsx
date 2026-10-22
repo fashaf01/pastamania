@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { UberEatsLink } from '../components/DeliveryLinks.jsx'
 import { ChevronIcon } from '../components/Icons.jsx'
 import { branches, mapsUrl, openStatus } from '../data/branches.js'
 import { formatPhone } from '../lib/format.js'
@@ -94,7 +95,7 @@ export default function BranchesSection() {
                     </p>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                       <a className="w-btn w-b-red w-b-sm" href={mapsUrl(b)} tabIndex={picked === b.id ? undefined : -1}>Directions</a>
-                      <a className="w-btn w-b-line w-b-sm" href={b.uberEatsUrl} tabIndex={picked === b.id ? undefined : -1}>Order on Uber Eats</a>
+                      <UberEatsLink href={b.uberEatsUrl} tabIndex={picked === b.id ? undefined : -1} />
                     </div>
                   </div>
                 )

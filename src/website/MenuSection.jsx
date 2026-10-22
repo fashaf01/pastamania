@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { PickMeLink, UberEatsLink } from '../components/DeliveryLinks.jsx'
 import { ArrowIcon } from '../components/Icons.jsx'
 import { brand } from '../data/brand.js'
 import { getBranch } from '../data/branches.js'
@@ -63,8 +64,8 @@ export default function MenuSection() {
               Prices from {branch.name}. Each dish shows the Club points it earns when you eat in or take away.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              <a className="w-btn w-b-red w-b-sm" href={branch.uberEatsUrl}>Uber Eats</a>
-              <a className="w-btn w-b-line w-b-sm" href={brand.pickmeUrl}>PickMe Food</a>
+              <UberEatsLink className="lg" href={branch.uberEatsUrl} />
+              <PickMeLink className="lg" />
             </div>
             <p style={{ fontSize: 13, color: 'var(--muted)' }}>Delivery orders don't earn Club points.</p>
           </div>
