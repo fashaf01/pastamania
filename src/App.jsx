@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
-import { OrderProvider } from './components/OrderSheet.jsx'
 import { ToastProvider } from './components/Toast.jsx'
 import { ClubProvider } from './context/ClubContext.jsx'
 import { ThemeProvider } from './lib/theme.jsx'
@@ -89,9 +88,7 @@ export default function App() {
       <ThemeProvider>
         <ClubProvider>
           <ToastProvider>
-            <OrderProvider>
-              <Pages />
-            </OrderProvider>
+            <Pages />
           </ToastProvider>
         </ClubProvider>
       </ThemeProvider>

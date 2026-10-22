@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import AppBar, { useBack } from '../components/AppBar.jsx'
 import { CloseIcon } from '../components/Icons.jsx'
 import QRCode from '../components/QRCode.jsx'
@@ -9,7 +9,6 @@ import { daysUntil, formatDay } from '../lib/format.js'
 // One voucher, full screen, for the counter to scan. It turns to "Enjoy!" the moment staff mark it used.
 export default function Voucher() {
   const { id } = useParams()
-  const { state } = useLocation()
   const { vouchers } = useClub()
   const close = useBack('/rewards')
   const voucher = vouchers.find((v) => v.id === id)
@@ -27,6 +26,8 @@ export default function Voucher() {
   const cost = rewards.find((r) => r.name === voucher.name)?.points
   const left = daysUntil(voucher.expiresAt)
 
+  const heading = { ready: 'Ready to use', used: 'Used', expired: 'Expired' }[status]
+
   const statusLine = {
     ready: `Valid till ${formatDay(voucher.expiresAt)} · ${left === 1 ? '1 day' : `${left} days`} left`,
     used: `Used ${formatDay(voucher.usedAt ?? Date.now())}`,
@@ -34,56 +35,42 @@ export default function Voucher() {
   }[status]
 
   const hint = {
-    ready: state?.fresh
-      ? `It’s yours! Show this at the counter and your ${voucher.name} is free.`
-      : `Show this at the counter. Staff scan it and your ${voucher.name} is free.`,
+    ready: `Show this at the counter. Staff scan it and your ${voucher.name} is free.`,
     used: 'Buon appetito! You’ll find it under Used & expired in Rewards.',
     expired: 'This voucher has expired. Use your points for a new one.',
   }[status]
 
   return (
-    <div className="voucher-screen">
+    <div className="voucher-screen grain">
       <div className="screen-top">
-        <button type="button" className="round-btn" onClick={close} aria-label="Close">
-          <CloseIcon width={20} height={20} />
+        <span className="eyebrow" role="status">{heading}</span>
+        <button type="button" className="round-btn on-red" onClick={close} aria-label="Close">
+          <CloseIcon width={22} height={22} />
         </button>
-        <span className="label-caps">Your voucher</span>
-        <span />
       </div>
 
-      <article className="ticket">
-        {voucher.image && <img className="ticket-photo" src={voucher.image} alt="" />}
-        <div className="ticket-head">
-          <span className="eyebrow">Free</span>
-          <h1>{voucher.name}</h1>
-          <span>
-            {cost ? `Got for ${cost} points · ` : ''}
-            {formatDay(voucher.issuedAt)}
-          </span>
+      <article className={`vticket ${status}`}>
+        {status === 'ready' && <span className="stamp small">It’s yours!</span>}
+        <div className="vticket-top">
+          {voucher.image && <img className="vticket-photo" src={voucher.image} alt="" />}
+          <h1 className="cd">{voucher.name}</h1>
+          <span>{statusLine}</span>
         </div>
-        <div className="perf" aria-hidden="true">
-          <span />
-        </div>
-        <div className="ticket-code">
-          <div className={`ticket-qr ${status === 'ready' ? '' : 'faded'}`}>
-            <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={168} label="Voucher QR code" />
+        <div className="tear" aria-hidden="true" />
+        <div className="vticket-code">
+          <div className="vticket-qr">
+            <QRCode value={`PASTAMANIA:VOUCHER:${voucher.code}`} size={176} label="Voucher QR code" />
             {status === 'used' && <span className="stamp">Enjoy!</span>}
             {status === 'expired' && <span className="stamp grey">Expired</span>}
           </div>
           <span className="code">{voucher.code}</span>
-          <span className={`ticket-status ${status === 'used' ? 'used' : ''}`} role="status">
-            {statusLine}
-          </span>
+          {cost && <small>Got for {cost} points · {formatDay(voucher.issuedAt)}</small>}
         </div>
       </article>
 
       <p className="voucher-hint">{hint}</p>
 
-      {status === 'ready' ? (
-        <Link className="btn btn-outline btn-block" to="/rewards">Back to rewards</Link>
-      ) : (
-        <Link className="btn btn-outline btn-block" to="/rewards">Get another reward</Link>
-      )}
+      <Link className="btn btn-ghost btn-block" to="/rewards">{status === 'ready' ? 'Back to rewards' : 'Get another reward'}</Link>
     </div>
   )
 }

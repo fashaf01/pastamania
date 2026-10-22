@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PageHead } from '../components/AppBar.jsx'
 import DishImage from '../components/DishImage.jsx'
-import { BagIcon, ChevronIcon, PinIcon, SearchIcon } from '../components/Icons.jsx'
-import { useOrder } from '../components/OrderSheet.jsx'
+import { ChevronIcon, CloseIcon, PinIcon, SearchIcon } from '../components/Icons.jsx'
 import Sheet from '../components/Sheet.jsx'
 import { brand } from '../data/brand.js'
 import { branches, getBranch } from '../data/branches.js'
@@ -17,95 +15,106 @@ const initialBranch = () => {
   return saved && menus[saved] ? saved : 'ogf'
 }
 
-function DishTag({ name }) {
-  if (name === fridayMania.heroDish) return <span className="dish-tag">FridayMania · buy 1, get 1 free</span>
-  if (isLocalFavourite(name)) return <span className="dish-tag">Local favourite</span>
+const sticker = (name) => {
+  if (name === fridayMania.heroDish) return 'Fridays 1+1'
+  if (isLocalFavourite(name)) return 'Local fave!'
   return null
+}
+
+function DishCard({ item, variant, branchId }) {
+  const tag = sticker(item.name)
+  return (
+    <Link to={`/menu/${dishSlug(item.name)}?branch=${branchId}`} className={`dish-card v${variant}`}>
+      <DishImage item={item} className="dish-plate" />
+      {tag && <span className="dish-sticker">{tag}</span>}
+      <h3 className="cd">{item.name}</h3>
+      <span className="dish-pills">
+        <span className="price-pill num">{formatLKR(item.price)}</span>
+        <span className="pts-pill num">+{pointsForSpend(item.price)} pts</span>
+      </span>
+    </Link>
+  )
 }
 
 export default function Menu() {
   const [branchId, setBranchId] = useState(initialBranch)
   const [picking, setPicking] = useState(false)
+  const [searching, setSearching] = useState(false)
   const [query, setQuery] = useState('')
-  const [category, setCategory] = useState('All')
-  const openOrder = useOrder()
+  const items = menus[branchId]
+  const branchCategories = categories.filter((c) => items.some((i) => i.category === c.name))
+  const [category, setCategory] = useState(() => branchCategories[0]?.name)
 
   const selectBranch = (id) => {
     setBranchId(id)
-    setCategory('All')
+    setCategory(categories.find((c) => menus[id].some((i) => i.category === c.name))?.name)
     saveBranchId(id)
     setPicking(false)
   }
 
-  const items = menus[branchId]
-  const branchCategories = categories.filter((c) => items.some((i) => i.category === c.name))
-  const q = query.trim().toLowerCase()
-  const groups = branchCategories
-    .filter((c) => category === 'All' || c.name === category)
-    .map((c) => ({ ...c, items: items.filter((i) => i.category === c.name && (!q || i.name.toLowerCase().includes(q))) }))
-    .filter((g) => g.items.length > 0)
+  const closeSearch = () => {
+    setSearching(false)
+    setQuery('')
+  }
 
+  // While searching, look across the whole menu; otherwise show the chosen category.
+  const q = query.trim().toLowerCase()
+  const shown = q ? items.filter((i) => i.name.toLowerCase().includes(q)) : items.filter((i) => i.category === category)
   const branch = getBranch(branchId)
 
   return (
     <>
-      <PageHead title="Menu">
-        <button type="button" className="branch-pill press" onClick={() => setPicking(true)} aria-label={`Branch: ${branch.name}. Change branch`}>
-          <PinIcon width={16} height={16} /> {branch.shortName}
-          <ChevronIcon width={14} height={14} style={{ transform: 'rotate(90deg)' }} />
-        </button>
-      </PageHead>
-
       <div className="menu">
-        <label className="search rise">
-          <SearchIcon width={20} height={20} />
-          <input type="search" placeholder="Search pasta, pizza, drinks" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search the menu" />
-        </label>
+        <header className="menu-head rise">
+          <div className="menu-title">
+            <p className="cd"><span className="strike">Plain Italian</span></p>
+            <h1 className="cd">Italian,<br />Colombo style</h1>
+          </div>
+          <button type="button" className="round-btn" onClick={() => (searching ? closeSearch() : setSearching(true))} aria-label={searching ? 'Close search' : 'Search the menu'} aria-expanded={searching}>
+            {searching ? <CloseIcon width={20} height={20} /> : <SearchIcon width={20} height={20} />}
+          </button>
+        </header>
+
+        {searching && (
+          <label className="search">
+            <SearchIcon width={20} height={20} />
+            <input type="search" autoFocus placeholder="Search pasta, pizza, drinks" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search the menu" />
+          </label>
+        )}
 
         <div className="rise" style={{ '--i': 1 }}>
-          <button type="button" className="row-card card" onClick={openOrder}>
-            <span className="icon-tile md"><BagIcon width={20} height={20} /></span>
-            <span className="row-card-text">
-              <strong>Order delivery</strong>
-              <span>Uber Eats · PickMe</span>
-            </span>
-            <ChevronIcon width={16} height={16} />
+          <button type="button" className="branch-pill press" onClick={() => setPicking(true)} aria-label={`Branch: ${branch.name}. Change branch`}>
+            <PinIcon width={18} height={18} /> {branch.name}
+            <ChevronIcon width={16} height={16} style={{ transform: 'rotate(90deg)' }} />
           </button>
         </div>
 
-        <div className="chips menu-chips rise" role="tablist" aria-label="Category" style={{ '--i': 2 }}>
-          {['All', ...branchCategories.map((c) => c.name)].map((name) => (
-            <button key={name} type="button" role="tab" aria-selected={name === category} className="chip" onClick={() => setCategory(name)}>
-              {name}
-            </button>
-          ))}
+        <div className="deliver rise" style={{ '--i': 2 }}>
+          <span className="deliver-text">
+            <strong className="cd">Order delivery</strong>
+            <small>Doesn’t earn points</small>
+          </span>
+          <a className="btn btn-red btn-sm" href={branch.uberEatsUrl} target="_blank" rel="noreferrer">Uber Eats</a>
+          <a className="btn btn-outline btn-sm" href={brand.pickmeUrl} target="_blank" rel="noreferrer">PickMe</a>
         </div>
 
-        {groups.length === 0 && <p className="empty">No dishes match “{query}”.</p>}
+        {!q && (
+          <div className="cat-tabs rise" role="tablist" aria-label="Category" style={{ '--i': 3 }}>
+            {branchCategories.map((c) => (
+              <button key={c.name} type="button" role="tab" aria-selected={c.name === category} className="cat-tab" onClick={() => setCategory(c.name)}>
+                {c.name}
+                <sup>{items.filter((i) => i.category === c.name).length}</sup>
+              </button>
+            ))}
+          </div>
+        )}
 
-        {/* Keyed by category so the list eases in again when you switch. */}
-        <div key={category} className="menu-list">
-          {groups.map((g, gi) => (
-            <section key={g.name} className="group rise" style={{ '--i': 3 + gi }}>
-              <h2 className="section-title">{g.name}</h2>
-              <ul className="list-card card">
-                {g.items.map((i) => (
-                  <li key={i.name}>
-                    <Link to={`/menu/${dishSlug(i.name)}?branch=${branchId}`} className="dish-row">
-                      <DishImage item={i} />
-                      <span className="dish-row-text">
-                        <strong>{i.name}</strong>
-                        <span className="num">
-                          {formatLKR(i.price)} · earns {pointsForSpend(i.price)} points
-                        </span>
-                        <DishTag name={i.name} />
-                      </span>
-                      <ChevronIcon width={16} height={16} />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+        {shown.length === 0 && <p className="empty">No dishes match “{query}”.</p>}
+
+        {/* Keyed so the cards deal in again when the category, branch or search changes. */}
+        <div key={`${branchId}-${q || category}`} className="dish-grid">
+          {shown.map((item, n) => (
+            <DishCard key={item.name} item={item} variant={n % 3} branchId={branchId} />
           ))}
         </div>
 

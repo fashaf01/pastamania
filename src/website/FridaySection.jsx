@@ -2,7 +2,7 @@ import { ArrowIcon } from '../components/Icons.jsx'
 import { menus } from '../data/menu.js'
 import { fridayMania, nextFriday } from '../data/offers.js'
 import { formatDay, formatLKR } from '../lib/format.js'
-import { useNow } from './useNow.js'
+import { useNow } from '../lib/useNow.js'
 
 const pad = (n) => String(n).padStart(2, '0')
 
