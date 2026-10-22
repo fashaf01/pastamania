@@ -1,9 +1,11 @@
-import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { lazy, Suspense, useState } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import { OrderProvider } from './components/OrderSheet.jsx'
 import { ToastProvider } from './components/Toast.jsx'
 import { ClubProvider } from './context/ClubContext.jsx'
 import { ThemeProvider } from './lib/theme.jsx'
+import { wantsWebsite } from './lib/view.js'
 import BookingDetail from './pages/BookingDetail.jsx'
 import Bookings from './pages/Bookings.jsx'
 import Branches from './pages/Branches.jsx'
@@ -20,10 +22,65 @@ import Rewards from './pages/Rewards.jsx'
 import Staff from './pages/Staff.jsx'
 import Voucher from './pages/Voucher.jsx'
 
+// Loaded only on computers, so phones never download it.
+const Website = lazy(() => import('./website/Website.jsx'))
+
+// On a computer these addresses open the website at the matching section. Everything else (My code,
+// vouchers, tickets, the counter screen) stays the app, as it does on a phone.
+const SITE_SECTIONS = {
+  '/': 'top',
+  '/menu': 'menu',
+  '/rewards': 'club',
+  '/join': 'club',
+  '/branches': 'branches',
+  '/book': 'workshops',
+}
+
 // Old links to a single session (/book/<id>) open the booking page with that session picked.
 function SessionLink() {
   const { sessionId } = useParams()
   return <Navigate to={`/book?session=${encodeURIComponent(sessionId)}`} replace />
+}
+
+function Pages() {
+  const { pathname } = useLocation()
+  const [website] = useState(wantsWebsite)
+  const section = SITE_SECTIONS[pathname]
+
+  if (website && section) {
+    return (
+      <Suspense fallback={null}>
+        <Website section={section} />
+      </Suspense>
+    )
+  }
+
+  return (
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="menu" element={<Menu />} />
+        <Route path="menu/:slug" element={<Dish />} />
+        <Route path="rewards" element={<Rewards />} />
+        <Route path="wallet" element={<Navigate to="/rewards" replace />} />
+        <Route path="wallet/:id" element={<Voucher />} />
+        <Route path="book" element={<Bookings />} />
+        <Route path="book/ticket/:ref" element={<BookingDetail />} />
+        <Route path="book/:sessionId" element={<SessionLink />} />
+        <Route path="card" element={<MemberCard />} />
+        <Route path="join" element={<Join />} />
+        <Route path="me" element={<Profile />} />
+        <Route path="history" element={<History />} />
+        <Route path="staff" element={<Staff />} />
+        <Route path="branches" element={<Branches />} />
+        <Route path="catering" element={<Catering />} />
+        <Route path="offers" element={<Navigate to="/" replace />} />
+        <Route path="bookings" element={<Navigate to="/book" replace />} />
+        <Route path="events" element={<Navigate to="/book" replace />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  )
 }
 
 export default function App() {
@@ -33,30 +90,7 @@ export default function App() {
         <ClubProvider>
           <ToastProvider>
             <OrderProvider>
-              <Routes>
-                <Route element={<Layout />}>
-                  <Route index element={<Home />} />
-                  <Route path="menu" element={<Menu />} />
-                  <Route path="menu/:slug" element={<Dish />} />
-                  <Route path="rewards" element={<Rewards />} />
-                  <Route path="wallet" element={<Navigate to="/rewards" replace />} />
-                  <Route path="wallet/:id" element={<Voucher />} />
-                  <Route path="book" element={<Bookings />} />
-                  <Route path="book/ticket/:ref" element={<BookingDetail />} />
-                  <Route path="book/:sessionId" element={<SessionLink />} />
-                  <Route path="card" element={<MemberCard />} />
-                  <Route path="join" element={<Join />} />
-                  <Route path="me" element={<Profile />} />
-                  <Route path="history" element={<History />} />
-                  <Route path="staff" element={<Staff />} />
-                  <Route path="branches" element={<Branches />} />
-                  <Route path="catering" element={<Catering />} />
-                  <Route path="offers" element={<Navigate to="/" replace />} />
-                  <Route path="bookings" element={<Navigate to="/book" replace />} />
-                  <Route path="events" element={<Navigate to="/book" replace />} />
-                  <Route path="*" element={<NotFound />} />
-                </Route>
-              </Routes>
+              <Pages />
             </OrderProvider>
           </ToastProvider>
         </ClubProvider>

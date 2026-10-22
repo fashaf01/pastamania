@@ -10,6 +10,7 @@ import { getBranch } from '../data/branches.js'
 import { formatSessionTime, getSession, workshop } from '../data/workshops.js'
 import { daysUntil, formatMemberCode, formatMonthYear, formatPhone, formatPoints, monthShort, weekdayShort } from '../lib/format.js'
 import { BUILD_ID } from '../lib/updates.js'
+import { isPhoneOrTablet, switchView } from '../lib/view.js'
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 
@@ -136,6 +137,9 @@ export default function Profile() {
 
         <div className="me-foot rise" style={{ '--i': 4 }}>
           <button type="button" className="text-btn danger" onClick={() => setLeaving(true)}>Sign out</button>
+          {!isPhoneOrTablet() && (
+            <button type="button" className="text-btn muted" onClick={() => switchView('site')}>Open the website</button>
+          )}
           <p className="version">PastaMania Club · version {BUILD_ID}</p>
         </div>
       </div>

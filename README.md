@@ -61,6 +61,28 @@ Follows a sale like Chatime's: **scan their code** (camera) or type the member n
 vouchers, each with *Mark as used* → enter the order total → *Give N points* → done, with *Undo* (30 minutes, once,
 only if the points haven't been spent) and *Next customer*. Scanning a voucher QR on its own marks it used straight away.
 
+## Website on computers
+
+The same link shows a website on a computer and the app on a phone or tablet (`src/lib/view.js`):
+
+- Phones and tablets – and the app opened from a home screen – always get the app.
+- On a computer, `/`, `/menu`, `/rewards`, `/join`, `/branches` and `/book` open the website at the matching section.
+  Everything else (My code, vouchers, booking tickets, `/staff`) stays the app.
+- Anyone can switch: *Open the app view* in the website footer, *Open the website* on the app's welcome and Me
+  screens (computers only), or `?view=app` / `?view=site` on any link. The choice is kept on the device.
+
+The website lives in `src/website/` – one file per section, styles in `website.css` (every class starts `w-` so
+nothing reaches the app). It loads only on computers, so phones never download it. It reads the same `src/data/`
+files as the app, so prices, branches and hours, rewards, FridayMania and workshop dates update both at once. Its
+menu shows Havelock City Mall's prices. The QR code in *Get the app* opens this same link, which a phone opens as
+the app.
+
+Sections: floating red nav · *Eat pasta. Earn free pasta.* with floating dishes · scrolling FridayMania tapes ·
+FridayMania with a live countdown to Friday · menu slider with category tabs and the points each dish earns ·
+Club with a phone that plays the app's three steps and the rewards ladder · branches with live *Open now* status
+and a sketch map · Dough Workz sessions · FAQ · *Get the app* QR · footer. Motion (load sequence, hovers, scroll
+reveals, marquee) switches off for *Reduce motion*.
+
 ## FridayMania (the weekly offer)
 
 Home and the dish page carry FridayMania – buy 1, get 1 on the week's hero dish every Friday. Set the dish in

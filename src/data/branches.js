@@ -87,5 +87,23 @@ export const todaysHours = (branch, date = new Date()) => {
   return restaurant?.rows.find((r) => coversDay(r.days, date.getDay()))?.time ?? null
 }
 
+const toMinutes = (time) => {
+  const [h, m] = time.trim().split(':').map(Number)
+  return h * 60 + m
+}
+
+// Right now: { state: 'open', closes } | { state: 'later', opens } | { state: 'closed' },
+// or null when the branch hasn't confirmed its restaurant hours.
+export const openStatus = (branch, date = new Date()) => {
+  if (!branch.hours.some((h) => h.label === 'Restaurant')) return null
+  const today = todaysHours(branch, date)
+  if (!today) return { state: 'closed' }
+  const [opens, closes] = today.split('–').map((s) => s.trim())
+  const now = date.getHours() * 60 + date.getMinutes()
+  if (now < toMinutes(opens)) return { state: 'later', opens }
+  if (now < toMinutes(closes)) return { state: 'open', closes }
+  return { state: 'closed' }
+}
+
 export const mapsUrl = (branch) =>
   `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`PastaMania ${branch.address}`)}`

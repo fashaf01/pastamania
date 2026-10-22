@@ -3,6 +3,7 @@ import { BowlIcon, GiftIcon, ReceiptIcon } from '../components/Icons.jsx'
 import Starburst from '../components/Starburst.jsx'
 import { brand } from '../data/brand.js'
 import { club } from '../data/club.js'
+import { isPhoneOrTablet, switchView } from '../lib/view.js'
 
 // What a guest sees first: the promise, the welcome gift, and one button to join.
 export default function Welcome() {
@@ -40,6 +41,9 @@ export default function Welcome() {
       <div className="welcome-actions">
         <Link className="btn btn-gold btn-lg btn-block" to="/join">Join free</Link>
         <Link className="text-btn" to="/menu">Browse the menu</Link>
+        {!isPhoneOrTablet() && (
+          <button type="button" className="text-btn" onClick={() => switchView('site')}>Open the website</button>
+        )}
       </div>
     </div>
   )
