@@ -1,12 +1,15 @@
 import { Link } from 'react-router-dom'
+import DishCard from '../components/DishCard.jsx'
 import { ChevronIcon, QrIcon } from '../components/Icons.jsx'
 import Sticker from '../components/Sticker.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
+import { getBranch } from '../data/branches.js'
 import { nextReward, rewards } from '../data/club.js'
-import { dishSlug } from '../data/menu.js'
+import { dishSlug, favourites, menus } from '../data/menu.js'
 import { fridayMania, nextFriday } from '../data/offers.js'
-import { daysUntil, firstName, formatDay, formatPoints } from '../lib/format.js'
+import { formatSessionTime, getSession, seatsLeft, upcomingSessions, workshop } from '../data/workshops.js'
+import { daysUntil, firstName, formatDay, formatLKR, formatPoints, loadBranchId, monthShort, weekdayShort } from '../lib/format.js'
 import { useCountUp, useEntered } from '../lib/motion.js'
 import { useNow } from '../lib/useNow.js'
 import Welcome from './Welcome.jsx'
@@ -21,13 +24,50 @@ const fridayLine = (now) => {
   return `${formatDay(start)} · starts in ${d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`}`
 }
 
+// The member's branch from the menu, else One Galle Face (the menu's default).
+const homeBranch = () => {
+  const saved = loadBranchId()
+  return saved && menus[saved] ? saved : 'ogf'
+}
+
+// The next kids workshop: the member's own booking if they have one coming up, else the next session with
+// places left. Booked members get their ticket, not another "book".
+function WorkshopRow({ session, booking, left }) {
+  const when = new Date(`${session.date}T${session.time}`)
+  const kids = booking?.children.length
+  return (
+    <Link to={booking ? `/book/ticket/${booking.ref}` : `/book?session=${session.id}`} className="event-row grain">
+      <span className="date-tile">
+        <small>{weekdayShort(when)}</small>
+        <b>{when.getDate()}</b>
+        <small>{monthShort(when)}</small>
+      </span>
+      <span className="event-row-text">
+        <small className="eyebrow">
+          {booking ? 'You’re booked' : session.label ?? (
+            <>
+              <span>Ages {workshop.minAge}–{workshop.maxAge}</span> · <span>{formatLKR(workshop.pricePerChild)}</span>
+            </>
+          )}
+        </small>
+        <strong className="cd">Little chefs, real pizza</strong>
+        <small>
+          <span>{getBranch(session.branchId).shortName}</span> · <span>{formatSessionTime(session)}</span> ·{' '}
+          <span>{booking ? `${kids} ${kids === 1 ? 'child' : 'children'}` : `${left} ${left === 1 ? 'place' : 'places'} left`}</span>
+        </small>
+      </span>
+      <ChevronIcon width={22} height={22} strokeWidth={2.4} />
+    </Link>
+  )
+}
+
 const GOAL_R = 52
 const GOAL_RING = 2 * Math.PI * GOAL_R
 
 // Home does three things: your points (and the one button you need at the counter), a voucher that's
 // ready, and this week's offer. Everything else lives in its own tab.
 function MemberHome() {
-  const { member, balance, vouchers } = useClub()
+  const { member, balance, vouchers, bookings } = useClub()
   const shown = useCountUp(balance)
   const entered = useEntered()
   const now = useNow(30 * 1000)
@@ -38,6 +78,16 @@ function MemberHome() {
   // The plate you're working towards; once everything is in reach, the top reward.
   const goal = next ?? rewards[rewards.length - 1]
   const left = ready.length ? daysUntil(ready[0].expiresAt) : 0
+  const branchId = homeBranch()
+  const faves = favourites(branchId, fridayMania.heroDish)
+  const upcoming = upcomingSessions(now)
+  const booked = bookings
+    .filter((b) => b.status !== 'cancelled')
+    .map((b) => ({ booking: b, session: upcoming.find((s) => s.id === b.sessionId) }))
+    .filter((b) => b.session)
+    .sort((a, b) => (a.session.date + a.session.time).localeCompare(b.session.date + b.session.time))[0]
+  const open = upcoming.map((s) => ({ session: s, left: seatsLeft(s, bookings) })).find((s) => s.left > 0)
+  const kidsSession = booked ?? open
 
   return (
     <div className="home">
@@ -116,6 +166,30 @@ function MemberHome() {
             </span>
           </Link>
         </section>
+
+        {faves.length > 0 && (
+          <section className="block rise" style={{ '--i': 5 }}>
+            <div className="section-head end">
+              <div className="block-head">
+                <span className="eyebrow">{getBranch(branchId).name}</span>
+                <h2 className="block-title cd">Favourites</h2>
+              </div>
+              <Link to="/menu">Full menu</Link>
+            </div>
+            <div className="rail" aria-label="Favourite dishes">
+              {faves.map((item, n) => (
+                <DishCard key={item.name} item={item} variant={n % 3} branchId={branchId} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {kidsSession && (
+          <section className="block rise" style={{ '--i': 6 }}>
+            <h2 className="block-title cd">Kids workshop</h2>
+            <WorkshopRow {...kidsSession} />
+          </section>
+        )}
       </div>
     </div>
   )
