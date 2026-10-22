@@ -3,7 +3,7 @@ import { ChevronIcon, QrIcon } from '../components/Icons.jsx'
 import Sticker from '../components/Sticker.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
-import { nextReward } from '../data/club.js'
+import { nextReward, rewards } from '../data/club.js'
 import { dishSlug } from '../data/menu.js'
 import { fridayMania, nextFriday } from '../data/offers.js'
 import { daysUntil, firstName, formatDay, formatPoints } from '../lib/format.js'
@@ -21,6 +21,9 @@ const fridayLine = (now) => {
   return `${formatDay(start)} · starts in ${d > 0 ? `${d}d ${h}h` : `${h}h ${m}m`}`
 }
 
+const GOAL_R = 52
+const GOAL_RING = 2 * Math.PI * GOAL_R
+
 // Home does three things: your points (and the one button you need at the counter), a voucher that's
 // ready, and this week's offer. Everything else lives in its own tab.
 function MemberHome() {
@@ -32,6 +35,8 @@ function MemberHome() {
   const ready = vouchers.filter((v) => voucherStatus(v) === 'ready').sort((a, b) => a.expiresAt - b.expiresAt)
   const next = nextReward(balance)
   const progress = next ? Math.min(100, (balance / next.points) * 100) : 100
+  // The plate you're working towards; once everything is in reach, the top reward.
+  const goal = next ?? rewards[rewards.length - 1]
   const left = ready.length ? daysUntil(ready[0].expiresAt) : 0
 
   return (
@@ -42,14 +47,27 @@ function MemberHome() {
           <img src={brand.logo} alt="" />
         </div>
         <div className="points-block rise" style={{ '--i': 1 }}>
-          <span className="eyebrow">Your points</span>
-          <p className="points-line">
-            <span className="cd points-num" aria-hidden="true">{formatPoints(shown)}</span>
-            <span className="cd points-unit" aria-hidden="true">pts</span>
-            <span className="sr-only">{formatPoints(balance)} points</span>
-          </p>
-          <div className="bar" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress to your next reward">
-            <i style={{ width: `${entered ? progress : 0}%` }} />
+          <div className="points-row">
+            <div className="points-main">
+              <span className="eyebrow">Your points</span>
+              <p className="points-line">
+                <span className={`cd points-num ${formatPoints(balance).length > 4 ? 'long' : ''}`} aria-hidden="true">{formatPoints(shown)}</span>
+                <span className="cd points-unit" aria-hidden="true">pts</span>
+                <span className="sr-only">{formatPoints(balance)} points</span>
+              </p>
+            </div>
+            <Link
+              to="/rewards"
+              className="goal"
+              aria-label={next ? `Next reward: ${next.name}, ${Math.round(progress)}% there. See rewards` : 'See rewards'}
+            >
+              <svg viewBox="0 0 112 112" aria-hidden="true">
+                <circle className="goal-track" cx="56" cy="56" r={GOAL_R} />
+                <circle className="goal-fill" cx="56" cy="56" r={GOAL_R} strokeDasharray={GOAL_RING} strokeDashoffset={entered ? GOAL_RING * (1 - progress / 100) : GOAL_RING} />
+              </svg>
+              <img src={goal.image} alt="" />
+              <span className="goal-tag">{next ? 'Next' : 'Yours'}</span>
+            </Link>
           </div>
           <p className="points-next">
             {next ? (

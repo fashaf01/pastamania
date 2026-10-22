@@ -328,9 +328,33 @@ input[type='date'].input, input[type='time'].input {
 .wine-head .eyebrow { color: var(--gold-light); }
 .head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .points-block { display: flex; flex-direction: column; gap: 10px; }
+.points-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.points-main { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .points-line { display: flex; align-items: baseline; gap: 8px; color: var(--gold); }
 .points-num { font-size: 6rem; line-height: 0.82; font-variant-numeric: tabular-nums; }
+.points-num.long { font-size: 4.5rem; }
 .points-unit { font-size: 1.5rem; }
+/* The plate you're earning towards, in a ring that fills as your points add up. */
+.goal { position: relative; flex-shrink: 0; width: 112px; height: 112px; display: grid; place-items: center; }
+.goal svg { position: absolute; inset: 0; transform: rotate(-90deg); overflow: visible; }
+.goal circle { fill: none; stroke-width: 6; }
+.goal-track { stroke: rgb(255 246 234 / 0.16); }
+.goal-fill { stroke: var(--gold); stroke-linecap: round; transition: stroke-dashoffset 1.4s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.goal img {
+  width: 88px; height: 88px; border-radius: 50%; object-fit: cover; box-shadow: 0 12px 22px rgb(0 0 0 / 0.35);
+  animation: plate-in 1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.goal-tag {
+  position: absolute; bottom: -6px; left: 50%; translate: -50% 0; rotate: -6deg; padding: 3px 10px; border-radius: 999px;
+  background: var(--gold); color: var(--wine); font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  font-stretch: 125%; box-shadow: 0 3px 0 var(--gold-deep); animation: pop 0.5s 1s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@media (max-width: 359px) {
+  .points-num { font-size: 4.75rem; }
+  .points-num.long { font-size: 3.75rem; }
+  .goal { width: 92px; height: 92px; }
+  .goal img { width: 72px; height: 72px; }
+}
 .bar { height: 12px; border-radius: 999px; background: rgb(255 246 234 / 0.2); overflow: hidden; }
 .bar i { display: block; height: 100%; border-radius: inherit; background: var(--gold); transition: width 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .points-next { font-size: 0.875rem; color: rgb(255 246 234 / 0.85); }
@@ -595,49 +619,72 @@ input[type='date'].input, input[type='time'].input {
 .search:focus-within { background: var(--surface); box-shadow: 0 0 0 2px var(--red); }
 .search input { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font-size: 1rem; }
 .search input:focus { outline: none; }
-.deliver { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 16px; border-radius: 20px; background: var(--soft); }
-.deliver-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.deliver { display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: 20px; background: var(--soft); }
+.deliver-text { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 0 2px; }
 .deliver-text strong { font-size: 1.25rem; }
 .deliver-text small { font-size: 0.75rem; color: var(--muted); }
-.deliver .btn { min-height: 40px; padding: 0 12px; font-size: 0.9375rem; }
-.cat-tabs { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 4px 20px 0; border-bottom: 2px solid var(--line); }
+.deliver-btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+/* Uber Eats and PickMe in their own colours, so nobody has to read the label to know which is which. */
+.brand-btn {
+  display: inline-flex; align-items: baseline; justify-content: center; gap: 0.22em; min-height: 44px; padding: 0 16px; border-radius: 12px;
+  font-size: 1.0625rem; font-weight: 800; letter-spacing: -0.01em; line-height: 44px; white-space: nowrap; text-decoration: none;
+  transition: transform 0.16s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.brand-btn b { font-weight: 800; }
+.brand-btn small { margin-left: 0.2em; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.75; }
+.brand-btn:active { transform: translateY(1px) scale(0.98); }
+.brand-btn.uber { background: #000; color: #fff; }
+.brand-btn.uber b { color: #06c167; }
+.brand-btn.pickme { background: #231f20; color: #fff; }
+.brand-btn.pickme b { color: #fdb940; }
+.brand-btn.lg { min-height: 54px; line-height: 54px; border-radius: 16px; font-size: 1.25rem; }
+
+/* Category bar: sticks under the status bar while the whole menu scrolls past, and follows the section you're in.
+   No vertical overflow on purpose: a strip that can scroll a couple of pixels up and down wobbles when you swipe it. */
+.cat-tabs {
+  position: sticky; top: 0; z-index: 15; display: flex; gap: 22px; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+  scrollbar-width: none; margin: 0 -20px; padding: calc(12px + env(safe-area-inset-top)) 20px 0; scroll-padding-inline: 20px;
+  background: rgb(255 246 234 / 0.94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: inset 0 -2px 0 var(--line);
+}
 .cat-tabs::-webkit-scrollbar { display: none; }
 .cat-tab {
   position: relative; flex-shrink: 0; display: inline-flex; align-items: flex-start; gap: 4px; padding: 0 0 12px; border: 0; background: none;
-  font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 1.5rem; line-height: 1; color: #b5a596; transition: color 0.2s;
+  font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 1.375rem; line-height: 1; color: #b5a596; transition: color 0.2s;
 }
 .cat-tab sup {
   display: inline-flex; align-items: center; justify-content: center; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 999px;
   border: 1.5px solid currentColor; font-size: 0.6875rem; font-stretch: 100%; font-weight: 800; top: 0; transition: background-color 0.2s, color 0.2s;
 }
 .cat-tab::after {
-  content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; border-radius: 2px; background: var(--red);
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; border-radius: 2px 2px 0 0; background: var(--red);
   transform: scaleX(0); transform-origin: left; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.cat-tab[aria-selected='true'] { color: var(--wine); }
-.cat-tab[aria-selected='true'] sup { background: var(--wine); border-color: var(--wine); color: var(--cream); }
-.cat-tab[aria-selected='true']::after { transform: scaleX(1); }
+.cat-tab[aria-current='true'] { color: var(--wine); }
+.cat-tab[aria-current='true'] sup { background: var(--wine); border-color: var(--wine); color: var(--cream); }
+.cat-tab[aria-current='true']::after { transform: scaleX(1); }
+.menu-section { display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 72px; }
+.menu-section + .menu-section { margin-top: 14px; }
+.menu-section-title { display: flex; align-items: flex-start; gap: 6px; font-size: 2.125rem; color: var(--wine); }
+.menu-section-title sup { font-size: 0.875rem; font-stretch: 100%; font-weight: 800; color: var(--red); top: 0; }
 .dish-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+/* Cards stay still while you scroll: on a phone a finger that scrolls the page also "presses" whatever it lands on,
+   so the press only shows after a short hold, and the plate only turns under a mouse. */
 .dish-card {
   position: relative; display: flex; flex-direction: column; gap: 8px; min-height: 248px; padding: 16px 14px 14px; border-radius: 24px;
-  animation: card-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.dish-card:nth-child(2) { animation-delay: 0.05s; }
-.dish-card:nth-child(3) { animation-delay: 0.1s; }
-.dish-card:nth-child(4) { animation-delay: 0.15s; }
-.dish-card:nth-child(n + 5) { animation-delay: 0.2s; }
-.dish-card:active { transform: scale(0.97); }
+.dish-card:active { transform: scale(0.98); transition-delay: 0.09s; }
 .dish-card.v0 { background: var(--red); color: var(--cream); }
 .dish-card.v1 { background: var(--gold); color: var(--wine); }
 .dish-card.v2 { background: var(--soft); color: var(--ink); }
 .dish-card.v2 h3 { color: var(--red); }
 .dish-card h3 { font-size: 1.375rem; }
 .dish-plate { width: min(124px, 100%); height: auto; aspect-ratio: 1; align-self: center; border-radius: 50%; box-shadow: 0 14px 22px rgb(42 6 7 / 0.32); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-.dish-card:active .dish-plate { transform: rotate(16deg) scale(1.05); }
+@media (hover: hover) { .dish-card:hover .dish-plate { transform: rotate(16deg) scale(1.05); } }
 .dish-sticker {
   position: absolute; top: 12px; left: 8px; z-index: 2; rotate: -9deg; padding: 4px 9px; border: 2px solid var(--wine); border-radius: 7px;
   background: var(--cream); color: var(--red); font-size: 0.6875rem; font-weight: 800; white-space: nowrap; box-shadow: 2px 3px 0 var(--wine);
-  animation: wiggle 0.6s 0.8s ease-in-out both;
 }
 .dish-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
 .price-pill, .pts-pill { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; font-size: 0.8125rem; font-weight: 800; white-space: nowrap; }
@@ -691,7 +738,7 @@ input[type='date'].input, input[type='time'].input {
   position: sticky; bottom: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px;
   padding: 14px 20px calc(20px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line);
 }
-.order-bar .btns { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 10px; }
+.order-bar .btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .order-bar p { font-size: 0.75rem; color: var(--muted); text-align: center; }
 /* Kept for the workshop pages */
 .sheet-body {
@@ -781,24 +828,39 @@ input[type='date'].input, input[type='time'].input {
 .booking-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .booking-text strong { font-size: 1rem; }
 .booking-text span { font-size: 0.8125rem; color: var(--muted); }
-.branch-line { display: flex; flex-direction: column; gap: 2px; }
-.branch-line small { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
-.status-dot.open { color: #2fb35a; }
-.status-dot.later { color: var(--gold); }
-.status-dot.closed { color: var(--red); }
-.status-dot.open { animation: pulse 2s ease-out infinite; }
-.workshop-card { position: relative; display: flex; align-items: center; gap: 14px; padding: 18px; border-radius: 26px; background-color: var(--red); color: var(--cream); overflow: hidden; transition: transform 0.2s; }
-.workshop-card:active { transform: scale(0.98); }
-.workshop-photo { position: relative; flex-shrink: 0; width: 112px; height: 112px; }
-.workshop-photo img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; box-shadow: 0 14px 24px rgb(42 6 7 / 0.4); }
-.workshop-sticker { right: -10px; top: -10px; }
-.workshop-sticker .cd { font-size: 1.25rem; }
-.workshop-text { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
-.workshop-text .eyebrow { color: var(--gold-light); }
-.workshop-text strong { font-size: 1.875rem; }
-.workshop-text strong span { color: var(--gold); }
-.workshop-text small { font-size: 0.8125rem; font-weight: 600; }
-.workshop-text .btn { min-height: 40px; font-size: 1rem; }
+/* The two things you can book: big, side by side, so nobody has to dig for them. */
+.book-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.book-tile {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-height: 252px; padding: 16px 14px 14px;
+  border-radius: 24px; overflow: hidden; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.book-tile:active { transform: scale(0.98); transition-delay: 0.09s; }
+.book-tile.kids { background-color: var(--red); color: var(--cream); }
+.book-tile.kids .eyebrow { color: var(--gold-light); }
+.book-tile.catering { background: var(--gold); color: var(--wine); }
+.book-tile.catering .eyebrow { color: var(--wine); }
+.book-tile img {
+  width: 84px; height: 84px; margin-bottom: 6px; border-radius: 50%; object-fit: cover; border: 4px solid var(--cream);
+  box-shadow: 0 10px 18px rgb(42 6 7 / 0.3);
+}
+.book-tile .eyebrow { font-size: 0.625rem; }
+.book-tile strong { font-size: 1.5rem; }
+.book-tile small { font-size: 0.8125rem; font-weight: 600; line-height: 1.35; }
+.book-tile small span { white-space: nowrap; }
+.book-cta {
+  display: inline-flex; align-items: center; gap: 5px; min-height: 40px; margin-top: auto; padding: 0 12px; border-radius: 999px;
+  font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.02em; white-space: nowrap;
+}
+.kids .book-cta { background: var(--gold); color: var(--wine); box-shadow: 0 3px 0 var(--gold-deep); }
+.catering .book-cta { background: var(--wine); color: var(--cream); box-shadow: 0 3px 0 rgb(42 6 7 / 0.5); }
+@media (hover: hover) { .book-tile:hover img { transform: rotate(12deg); } }
+@media (max-width: 359px) {
+  .book-tile { padding-inline: 12px; }
+  .book-tile img { width: 68px; height: 68px; }
+  .book-tile .eyebrow { letter-spacing: 0.06em; }
+  .book-tile strong { font-size: 1.3125rem; }
+}
+.book-tile img { transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .me-foot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
 .list-row {
   width: 100%; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 0 16px; border: 0; background: none;
@@ -824,6 +886,8 @@ input[type='date'].input, input[type='time'].input {
 .branch-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
 .branch-actions a { min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--field-line); color: var(--ink); font-size: 0.8125rem; font-weight: 800; }
 .branch-actions a.solid { background: var(--ink); color: var(--bg); box-shadow: none; }
+.branch-actions a.uber { gap: 0.2em; background: #000; color: #fff; box-shadow: none; font-size: 0.9375rem; }
+.branch-actions a.uber b { color: #06c167; }
 
 /* ---------- Counter (staff) ---------- */
 .counter { display: flex; flex-direction: column; gap: 18px; padding: 16px 20px 28px; }
@@ -887,8 +951,6 @@ input[type='date'].input, input[type='time'].input {
 @keyframes hop { 40% { transform: translateY(-3px) scale(1.08); } }
 @keyframes ping { 75%, 100% { transform: scale(2.6); opacity: 0; } }
 @keyframes plate-in { from { opacity: 0; transform: rotate(-120deg) scale(0.6); } }
-@keyframes card-in { from { opacity: 0; transform: translateY(24px); } }
-@keyframes wiggle { 0%, 100% { rotate: -9deg; } 25% { rotate: 5deg; } 50% { rotate: -14deg; } 75% { rotate: 2deg; } }
 @keyframes code-pop { from { opacity: 0; transform: scale(0.7) rotate(-6deg); } }
 @keyframes ticket-in { from { opacity: 0; transform: translateY(60px) rotate(4deg); } }
 @keyframes stamp-in { from { opacity: 0; scale: 2.4; } }

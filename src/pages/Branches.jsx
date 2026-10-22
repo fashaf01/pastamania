@@ -44,7 +44,7 @@ export default function Branches() {
               <div className="branch-actions">
                 <a href={`tel:${b.phones[0]}`}><CallIcon width={16} height={16} /> Call</a>
                 <a href={mapsUrl(b)} target="_blank" rel="noreferrer"><NavigateIcon width={16} height={16} /> Directions</a>
-                <a className="solid" href={b.uberEatsUrl} target="_blank" rel="noreferrer">Uber Eats</a>
+                <a className="uber" href={b.uberEatsUrl} target="_blank" rel="noreferrer" aria-label="Order on Uber Eats">Uber<b>Eats</b></a>
               </div>
             </article>
           )

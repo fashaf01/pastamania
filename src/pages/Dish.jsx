@@ -1,5 +1,6 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import AppBar, { useBack } from '../components/AppBar.jsx'
+import { PickMeLink, UberEatsLink } from '../components/DeliveryLinks.jsx'
 import DishImage from '../components/DishImage.jsx'
 import { BackIcon, ChevronIcon, PinIcon } from '../components/Icons.jsx'
 import Sticker from '../components/Sticker.jsx'
@@ -97,8 +98,8 @@ export default function Dish() {
 
       <div className="order-bar">
         <div className="btns">
-          <a className="btn btn-red" href={branch.uberEatsUrl} target="_blank" rel="noreferrer">Uber Eats</a>
-          <a className="btn btn-outline" href={brand.pickmeUrl} target="_blank" rel="noreferrer">PickMe</a>
+          <UberEatsLink className="lg" href={branch.uberEatsUrl} />
+          <PickMeLink className="lg" />
         </div>
         <p>Delivery orders don’t earn points. Eat in or take away to earn.</p>
       </div>
