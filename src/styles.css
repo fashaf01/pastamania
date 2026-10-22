@@ -221,6 +221,13 @@ mark.hl {
   body:has(.voucher-screen) .voucher-screen { background-color: transparent; }
 }
 
+/* Carries the colour of the top of the screen into the phone's status bar (see TopTint.jsx). On a phone in
+   Safari it's a thin strip the same colour as what's under it; added to the home screen it fills the status bar. */
+.top-tint {
+  position: fixed; top: 0; left: 50%; z-index: 70; width: min(100%, var(--app-w)); height: max(10px, env(safe-area-inset-top));
+  translate: -50% 0; pointer-events: none; visibility: hidden;
+}
+
 /* Top bar for pushed screens: round back button and a centred poster title. */
 .topbar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; padding: calc(12px + env(safe-area-inset-top)) 16px 0; }
 .topbar-title { text-align: center; font-family: var(--font-display); font-weight: 400; font-size: 1.25rem; color: var(--heading); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

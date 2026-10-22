@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import { GiftIcon, HomeIcon, MenuIcon, UserIcon } from './Icons.jsx'
+import TopTint from './TopTint.jsx'
 
 // Four equal tabs. My code isn't a tab: it opens from the big button on Home (and the QR button on Rewards),
 // so nothing in the bar sticks out or gets tapped by mistake. The tab bar shows on the four tab screens only;
@@ -56,6 +57,7 @@ export default function Layout() {
 
   return (
     <div className="stage">
+      <TopTint />
       <div className="app">
         <main className="screen">
           {/* Keyed by path so a failed screen recovers as soon as you go somewhere else. */}
