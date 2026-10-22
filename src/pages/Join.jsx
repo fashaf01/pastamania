@@ -1,9 +1,14 @@
 import { useState } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
-import AppBar from '../components/AppBar.jsx'
+import { useBack } from '../components/AppBar.jsx'
+import { BackIcon } from '../components/Icons.jsx'
 import { useToast } from '../components/Toast.jsx'
 import { useClub } from '../context/ClubContext.jsx'
-import { club } from '../data/club.js'
+import { brand } from '../data/brand.js'
+import { club, rewards } from '../data/club.js'
+
+// Joining is worth the cheapest reward straight away.
+const gift = rewards[0]
 
 // Only allow in-app paths as the post-join destination.
 const safeNext = (next) => (next && next.startsWith('/') && !next.startsWith('//') ? next : '/')
@@ -23,6 +28,7 @@ export default function Join() {
   const [form, setForm] = useState({ name: '', phone: '', birthday: '' })
   const [phoneError, setPhoneError] = useState(false)
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value })
+  const back = useBack('/')
 
   if (member) return <Navigate to={next} replace />
 
@@ -34,29 +40,37 @@ export default function Join() {
       return
     }
     join({ name: form.name.trim(), phone, birthday: form.birthday || null })
-    toast('Welcome! Your free Garlic Bread is ready')
+    toast(`Welcome! Your free ${gift.name} is ready`)
     navigate(next, { replace: true })
   }
 
   return (
     <>
-      <AppBar title="" back="/" />
+      <header className="wine-head grain join-head">
+        <div className="head-row">
+          <button type="button" className="round-btn on-red" onClick={back} aria-label="Back">
+            <BackIcon width={22} height={22} />
+          </button>
+          <img className="join-logo" src={brand.logo} alt="" />
+        </div>
+        <div className="join-intro rise">
+          <span className="eyebrow">PastaMania Club</span>
+          <h1 className="cd">Join the <span>Club</span></h1>
+          <p>It takes 30 seconds. No card to carry: your phone is your card.</p>
+        </div>
+      </header>
+
       <div className="join">
-        <div className="stack" style={{ gap: 6 }}>
-          <h1 className="title-xl">Join the Club</h1>
-          <p className="muted">It takes 30 seconds. No card to carry – your phone is your card.</p>
+        <div className="ticket-row still rise" style={{ '--i': 1 }}>
+          <img src={gift.image} alt="" />
+          <span className="ticket-row-text">
+            <small className="eyebrow">Welcome gift</small>
+            <strong className="cd">Free {gift.name}</strong>
+            <small>{club.welcomeBonus} points the moment you join</small>
+          </span>
         </div>
 
-        <div className="gift-card">
-          <img src="/images/menu/garlic-bread.jpg" alt="" />
-          <div>
-            <span className="eyebrow">Welcome gift</span>
-            <strong>Free Garlic Bread</strong>
-            <span>{club.welcomeBonus} points the moment you join</span>
-          </div>
-        </div>
-
-        <form className="form" onSubmit={submit}>
+        <form className="form rise" style={{ '--i': 2 }} onSubmit={submit}>
           <label className="field">
             <span className="field-label">Name</span>
             <input className="input" required value={form.name} onChange={update('name')} autoComplete="name" placeholder="Your full name" />
@@ -93,7 +107,7 @@ export default function Join() {
             </span>
             <input className="input" type="date" value={form.birthday} onChange={update('birthday')} autoComplete="bday" />
           </label>
-          <button type="submit" className="btn btn-red btn-lg btn-block">Join &amp; get my Garlic Bread</button>
+          <button type="submit" className="btn btn-red btn-lg btn-block">Join &amp; get my {gift.name}</button>
           <p className="footnote center">In the live app your number is confirmed with an SMS code.</p>
         </form>
       </div>
