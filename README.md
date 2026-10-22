@@ -1,4 +1,4 @@
-# PastaMania Club – Sri Lanka (v0.5)
+# PastaMania Club – Sri Lanka (v0.6)
 
 A loyalty app for PastaMania Sri Lanka, built the way the Chatime Loyal Tea app works.
 The promise is one line: **eat pasta, earn free pasta** – join and your first Garlic Bread is free.
@@ -8,8 +8,8 @@ Built with React + Vite as a phone-first web app; add it to the home screen to o
 ## How it works
 
 1. **Earn** – the member shows *My code* when paying in store; the counter scans it and enters the bill (1 point per LKR 100).
-2. **Redeem** – in *Rewards* the member swaps points for free food. A confirmation shows their points, the cost and
-   what's left; the voucher then opens full screen with its own QR code and stays in the *Wallet*.
+2. **Get free food** – in *Rewards* the member taps *Get* on a reward. A sheet shows their points, the cost and
+   what's left; after *Get it for … points* the voucher sits under *Ready to use* in Rewards, with its own QR code.
 3. **Get it free** – the counter scans the voucher QR (or finds the member and taps *Mark as used*). The member's
    voucher turns to *Enjoy!* and moves to *Used & expired*.
 
@@ -17,30 +17,39 @@ Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The 
 
 ## Screens
 
-Five tabs: **Home · Menu · My code · Rewards · Wallet**. My code sits in the middle as a raised gold button,
-because showing it at the counter is the thing members do most.
+Five tabs: **Home · Menu · My code · Rewards · Me**. My code sits in the middle as a raised gold button,
+because showing it at the counter is the thing members do most. Each tab has one job, and each thing lives in one place.
 
-- **Home** – guests get the welcome poster (*Join free*); members see their points, the reward track with a photo at
-  every free item, *Show my code* / *Redeem*, a ready voucher, their next workshop, the next reward, the
-  FridayMania offer, shortcuts (delivery, menu, branches, kids workshops), recent activity and how points work.
-- **Menu** (`/menu`) – branch picker, search, category chips, photos, prices and points earned in store
+- **Home** – guests get the welcome poster (*Join free*). Members see three things only: their points (counting up)
+  with the next reward and *Show my code*, a voucher that's ready to use, and this week's FridayMania offer.
+- **Menu** (`/menu`) – branch pill, search, *Order delivery* (Uber Eats / PickMe), category chips, one list per category
+  with prices and the points each dish earns in store
 - **Dish** (`/menu/<dish>`) – photo, price, points, FridayMania badge for the week's hero dish, branches that serve it,
   two add-ons, Uber Eats / PickMe buttons
-- **My code** (`/card`) – full screen QR (logo in the middle) for the counter, points and treats ready
-- **Rewards** – points card, All / Ready / Coming up filter, free-food grid; *Redeem* opens a confirmation sheet
-  (points, cost, what's left) and then the voucher
-- **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used
-- **Wallet** – vouchers ready to use, workshop tickets, used & expired vouchers, delivery links
+- **My code** (`/card`) – full screen QR (logo in the middle) for the counter, points and vouchers ready
+- **Rewards** – points and progress, *Ready to use* vouchers, *Get with your points* (a ring per reward shows how close
+  you are; *Get* opens a sheet: confirm → *It's yours!*), points history, how points work, used & expired vouchers
+- **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used. `/wallet` itself now
+  opens Rewards.
+- **Me** (`/me`) – profile (tap the member number to copy it), *My bookings*, branches & hours, kids workshops,
+  catering, call / email / Instagram, sign out (asks first)
 - **Kids workshop** (`/book`) – Dough Workz: pick a session, add the children, book; **ticket** at `/book/ticket/<ref>`
-- **Profile** (`/me`, from the avatar) – details, points history (`/history`),
-  branches, catering, contact and the **Counter screen**
 - **Branches** – today's restaurant hours, all hours, Call / Directions / Uber Eats
+- **Counter** (`/staff`) – for staff only, so it isn't linked from the customer screens; open the address directly
+
+### Motion
+
+Small animations make the app feel alive without getting in the way: points count up, progress bars and reward rings
+fill in, blocks ease in one after another, buttons sink a little when pressed, sheets slide up and back down, the big
+title tucks into a frosted bar as you scroll, a tick draws itself when you get a reward, and the scan line sweeps the
+QR code twice when My code opens. Everything is in `src/styles.css` (*Motion*) and `src/lib/motion.js`, and it all
+switches off for people who turn on *Reduce motion* on their phone.
 
 ### Light and dark
 
 The app is **light only** for now. Dark mode is built but switched off: set `DARK_MODE` to `true` in
-`src/lib/theme.jsx` and `darkMode` in the script in `index.html` to bring back the moon button on Home and the
-Appearance choice (Light / Dark / System) in Profile.
+`src/lib/theme.jsx` and `darkMode` in the script in `index.html` to follow the phone's light/dark setting again
+(the old Light / Dark / System control can be brought back from git history).
 
 Colours are CSS variables in `src/styles.css`: `:root` holds the light theme and `:root[data-theme='dark']` the
 dark one. `src/lib/theme.jsx` keeps the choice on the device, and the script in `index.html` applies it before the
@@ -148,6 +157,6 @@ The first version is seeded from public research. These items need the brand's c
 
 ## Roadmap
 
-1. **v0.6 – Backend**: accounts shared across devices, points ledger, staff logins for the counter screen, offers managed online, real bookings with branch notifications
-2. **v0.7 – Engagement**: push notifications for FridayMania and booking reminders, birthday treats
+1. **v0.7 – Backend**: accounts shared across devices, points ledger, staff logins for the counter screen, offers managed online, real bookings with branch notifications
+2. **v0.8 – Engagement**: push notifications for FridayMania and booking reminders, birthday treats
 3. **v1.0 – Store apps**: wrap with Capacitor for the Play Store and App Store

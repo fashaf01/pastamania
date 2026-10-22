@@ -50,7 +50,7 @@ export default function BookingDetail() {
   if (!booking || !session) {
     return (
       <>
-        <AppBar title="Workshop ticket" back="/wallet" />
+        <AppBar title="Workshop ticket" back="/me" />
         <p className="empty">We couldn’t find that booking.</p>
       </>
     )
@@ -67,7 +67,7 @@ export default function BookingDetail() {
 
   return (
     <>
-      <AppBar title="Workshop ticket" back="/wallet" />
+      <AppBar title="Workshop ticket" back="/me" />
       <div className="page">
         <span className={`pill status-pill ${cancelled ? 'pill-red' : 'pill-gold'}`}>{cancelled ? 'Cancelled' : 'Requested · we’ll confirm by phone'}</span>
 

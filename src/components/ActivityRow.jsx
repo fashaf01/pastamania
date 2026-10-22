@@ -10,7 +10,7 @@ const describe = (a) => {
     case 'bonus':
       return { Icon: StarIcon, tone: 'gold', title: 'Welcome to the Club', sub: `${day} · joining gift` }
     case 'redeem':
-      return { Icon: GiftIcon, tone: 'red', title: `Swapped for ${a.label}`, sub: `${day} · voucher in wallet` }
+      return { Icon: GiftIcon, tone: 'red', title: `Got ${a.label}`, sub: `${day} · voucher in Rewards` }
     default:
       return { Icon: ReceiptIcon, tone: 'red', title: a.label || 'Correction at the counter', sub: day }
   }

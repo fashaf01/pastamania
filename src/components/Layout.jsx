@@ -2,22 +2,22 @@ import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import { GiftIcon, HomeIcon, MenuIcon, QrIcon, WalletIcon } from './Icons.jsx'
+import { GiftIcon, HomeIcon, MenuIcon, QrIcon, UserIcon } from './Icons.jsx'
 
 // The tab bar shows on the four tab screens only. Pushed screens, and the counter-facing screens
 // (My code, vouchers), get the whole phone.
-const TAB_SCREENS = ['/', '/menu', '/rewards', '/wallet']
+const TAB_SCREENS = ['/', '/menu', '/rewards', '/me']
 
 function TabBar({ readyVouchers }) {
   const tab = ({ isActive }) => `tab ${isActive ? 'active' : ''}`
   return (
     <nav className="tabbar" aria-label="Main">
       <NavLink to="/" end className={tab}>
-        <HomeIcon width={24} height={24} />
+        <span className="tab-icon"><HomeIcon width={24} height={24} /></span>
         <span>Home</span>
       </NavLink>
       <NavLink to="/menu" className={tab}>
-        <MenuIcon width={24} height={24} />
+        <span className="tab-icon"><MenuIcon width={24} height={24} /></span>
         <span>Menu</span>
       </NavLink>
       <NavLink to="/card" className="tab tab-code">
@@ -27,18 +27,18 @@ function TabBar({ readyVouchers }) {
         <span>My code</span>
       </NavLink>
       <NavLink to="/rewards" className={tab}>
-        <GiftIcon width={24} height={24} />
-        <span>Rewards</span>
-      </NavLink>
-      <NavLink to="/wallet" end className={tab}>
         <span className="tab-icon">
-          <WalletIcon width={24} height={24} />
+          <GiftIcon width={24} height={24} />
           {readyVouchers > 0 && <span className="tab-dot" />}
         </span>
         <span>
-          Wallet
-          {readyVouchers > 0 && <span className="sr-only">, {readyVouchers} ready</span>}
+          Rewards
+          {readyVouchers > 0 && <span className="sr-only">, {readyVouchers} ready to use</span>}
         </span>
+      </NavLink>
+      <NavLink to="/me" className={tab}>
+        <span className="tab-icon"><UserIcon width={24} height={24} /></span>
+        <span>Me</span>
       </NavLink>
     </nav>
   )

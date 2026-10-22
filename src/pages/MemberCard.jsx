@@ -4,7 +4,6 @@ import { ChevronIcon, CloseIcon, SunIcon, TicketIcon } from '../components/Icons
 import QRCode from '../components/QRCode.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
-import { rewards } from '../data/club.js'
 import { formatMemberCode, formatPoints } from '../lib/format.js'
 
 // The counter screen: the member's code, big, with nothing else competing for the camera.
@@ -15,7 +14,6 @@ export default function MemberCard() {
   if (!member) return <Navigate to="/join?next=/card" replace />
 
   const ready = vouchers.filter((v) => voucherStatus(v) === 'ready')
-  const treats = rewards.filter((r) => r.points <= balance).length
 
   return (
     <div className="code-screen">
@@ -44,6 +42,7 @@ export default function MemberCard() {
           <span className="qr-logo" aria-hidden="true">
             <img src={brand.logo} alt="" />
           </span>
+          <span className="scan-line" aria-hidden="true" />
         </div>
         <div className="code-stats">
           <div>
@@ -51,8 +50,8 @@ export default function MemberCard() {
             <span>Points</span>
           </div>
           <div>
-            <strong>{treats}</strong>
-            <span>Treats ready</span>
+            <strong>{ready.length}</strong>
+            <span>Vouchers ready</span>
           </div>
         </div>
       </article>

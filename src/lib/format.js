@@ -13,6 +13,14 @@ export const monthShort = (date) => MONTHS[new Date(date).getMonth()]
 // 'Thu 15 Oct'
 export const formatDay = (date) => `${weekdayShort(date)} ${new Date(date).getDate()} ${monthShort(date)}`
 
+// 'Thursday 15 October'
+const WEEKDAYS_LONG = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+export const formatLongDay = (date) => {
+  const d = new Date(date)
+  return `${WEEKDAYS_LONG[d.getDay()]} ${d.getDate()} ${MONTHS_LONG[d.getMonth()]}`
+}
+
 // 'Aug 2026'
 export const formatMonthYear = (date) => `${monthShort(date)} ${new Date(date).getFullYear()}`
 

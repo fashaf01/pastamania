@@ -1,22 +1,19 @@
+import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
-import AppBar from '../components/AppBar.jsx'
-import { BowlIcon, CallIcon, CameraIcon, ChefIcon, ChevronIcon, InstagramIcon, MailIcon, MoonIcon, PhoneDeviceIcon, PinIcon, ReceiptIcon, SunIcon } from '../components/Icons.jsx'
+import { PageHead } from '../components/AppBar.jsx'
+import { BowlIcon, CallIcon, ChefIcon, ChevronIcon, CopyIcon, InstagramIcon, MailIcon, PinIcon } from '../components/Icons.jsx'
+import Sheet, { useSheetClose } from '../components/Sheet.jsx'
+import { useToast } from '../components/Toast.jsx'
 import { useClub } from '../context/ClubContext.jsx'
 import { brand } from '../data/brand.js'
-import { formatMemberCode, formatMonthYear, formatPhone, formatPoints } from '../lib/format.js'
-import { DARK_MODE, useTheme } from '../lib/theme.jsx'
+import { getBranch } from '../data/branches.js'
+import { formatSessionTime, getSession, workshop } from '../data/workshops.js'
+import { daysUntil, formatMemberCode, formatMonthYear, formatPhone, formatPoints, monthShort, weekdayShort } from '../lib/format.js'
 import { BUILD_ID } from '../lib/updates.js'
 
-const MODES = [
-  { id: 'light', label: 'Light', Icon: SunIcon },
-  { id: 'dark', label: 'Dark', Icon: MoonIcon },
-  { id: 'system', label: 'System', Icon: PhoneDeviceIcon },
-]
+const todayKey = () => new Date().toISOString().slice(0, 10)
 
-// '0771234567' -> '+94 77 123 4567'
-const displayPhone = (phone = '') => formatPhone(phone.replace(/^0/, '+94'))
-
-const displayBirthday = (iso) => (iso ? new Date(`${iso}T00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' }) : 'Not set')
+const whenLabel = (days) => (days <= 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`)
 
 function Row({ to, href, Icon, tone, label, aside }) {
   const content = (
@@ -37,88 +34,122 @@ function Row({ to, href, Icon, tone, label, aside }) {
   )
 }
 
+function SignOutBody({ onConfirm }) {
+  const close = useSheetClose()
+  return (
+    <>
+      <div className="stack center" style={{ gap: 4 }}>
+        <h2 id="signout-title" className="get-title">Sign out?</h2>
+        <p className="muted">Your points on this phone will be cleared.</p>
+      </div>
+      <div className="stack" style={{ gap: 4 }}>
+        <button type="button" className="btn btn-red btn-lg btn-block" onClick={onConfirm}>Sign out</button>
+        <button type="button" className="text-btn muted" onClick={close}>Cancel</button>
+      </div>
+    </>
+  )
+}
+
+// The Me tab: you, your bookings, and everything about visiting or contacting PastaMania.
+// The staff counter is not linked from here; staff open /staff directly.
 export default function Profile() {
-  const { member, balance, signOut } = useClub()
-  const { mode, setMode } = useTheme()
+  const { member, balance, bookings, signOut } = useClub()
+  const toast = useToast()
   const navigate = useNavigate()
+  const [leaving, setLeaving] = useState(false)
 
   if (!member) return <Navigate to="/join?next=/me" replace />
 
-  const leave = () => {
-    if (window.confirm('Sign out? Your points on this phone will be cleared.')) {
-      signOut()
-      navigate('/', { replace: true })
+  const upcoming = bookings
+    .filter((b) => b.status !== 'cancelled')
+    .map((b) => ({ ...b, session: getSession(b.sessionId) }))
+    .filter((b) => b.session && b.session.date >= todayKey())
+    .sort((a, b) => a.session.date.localeCompare(b.session.date))
+
+  const copyNumber = async () => {
+    try {
+      await navigator.clipboard?.writeText(member.id)
+    } catch {
+      // clipboard blocked – the number is still on screen
     }
+    toast('Member number copied')
   }
 
   return (
     <>
-      <AppBar title="Profile" back="/" />
-      <div className="profile">
-        <div className="member-card card">
-          <span className="avatar xl">{member.name.charAt(0).toUpperCase()}</span>
+      <PageHead title="Me" />
+      <div className="me">
+        <section className="profile-card card rise">
+          <span className="avatar xl pop">{member.name.charAt(0).toUpperCase()}</span>
           <div>
             <strong>{member.name}</strong>
-            <span>Member since {formatMonthYear(member.joinedAt)}</span>
-            <span className="code" style={{ fontWeight: 600 }}>{formatMemberCode(member.id)}</span>
+            <span>
+              Member since {formatMonthYear(member.joinedAt)} · {formatPoints(balance)} points
+            </span>
+            <button type="button" className="member-chip press" onClick={copyNumber} aria-label={`Copy member number ${formatMemberCode(member.id)}`}>
+              {formatMemberCode(member.id)} <CopyIcon width={14} height={14} />
+            </button>
           </div>
-          <span className="pill pill-gold" style={{ fontSize: 13, fontWeight: 800 }}>{formatPoints(balance)} pts</span>
-        </div>
+        </section>
 
-        {DARK_MODE && (
-          <section>
-            <h2 className="label-caps muted">Appearance</h2>
-            <div className="segmented" role="radiogroup" aria-label="Appearance">
-              {MODES.map(({ id, label, Icon }) => (
-                <button key={id} type="button" role="radio" aria-checked={mode === id} onClick={() => setMode(id)}>
-                  <Icon width={18} height={18} /> {label}
-                </button>
-              ))}
-            </div>
-            <span className="field-hint">System matches your phone’s light or dark setting.</span>
+        {upcoming.length > 0 && (
+          <section className="group rise" style={{ '--i': 1 }}>
+            <h2 className="section-title">My bookings</h2>
+            {upcoming.map((b) => {
+              const when = new Date(`${b.session.date}T${b.session.time}`)
+              return (
+                <Link key={b.ref} to={`/book/ticket/${b.ref}`} className="booking-row card">
+                  <span className="date-tile poster">
+                    <small>{monthShort(when)}</small>
+                    <b>{when.getDate()}</b>
+                  </span>
+                  <span className="booking-text">
+                    <strong>{workshop.title}</strong>
+                    <span>
+                      {weekdayShort(when)} · {formatSessionTime(b.session)} · {getBranch(b.session.branchId).shortName}
+                    </span>
+                  </span>
+                  <span className="pill pill-gold">{whenLabel(daysUntil(when.getTime()))}</span>
+                </Link>
+              )
+            })}
           </section>
         )}
 
-        <section>
-          <h2 className="label-caps muted">My details</h2>
-          <dl className="list-card card">
-            <div className="list-row"><dt className="key">Name</dt><dd className="value">{member.name}</dd></div>
-            <div className="list-row"><dt className="key">Mobile</dt><dd className="value">{displayPhone(member.phone)}</dd></div>
-            <div className="list-row"><dt className="key">Birthday</dt><dd className="value">{displayBirthday(member.birthday)}</dd></div>
-          </dl>
+        <section className="group rise" style={{ '--i': 2 }}>
+          <h2 className="section-title">Visit us</h2>
+          <ul className="list-card card">
+            <Row to="/branches" Icon={PinIcon} label="Branches & opening hours" />
+            <Row to="/book" Icon={ChefIcon} tone="gold" label="Kids workshops" />
+            <Row to="/catering" Icon={BowlIcon} tone="green" label="Event catering" />
+          </ul>
         </section>
 
-        <section>
-          <h2 className="label-caps muted">More</h2>
+        <section className="group rise" style={{ '--i': 3 }}>
+          <h2 className="section-title">Get in touch</h2>
           <ul className="list-card card">
-            <Row to="/history" Icon={ReceiptIcon} tone="gold" label="Points history" />
-            <Row to="/branches" Icon={PinIcon} label="Branches & hours" />
-            <Row to="/book" Icon={ChefIcon} label="Kids workshops" />
-            <Row to="/catering" Icon={BowlIcon} label="Event catering" />
             <Row href={`tel:${brand.phone}`} Icon={CallIcon} label="Call us" aside={formatPhone(brand.phone)} />
-            <Row href={`mailto:${brand.email}`} Icon={MailIcon} label="Email us" aside="Email" />
+            <Row href={`mailto:${brand.email}`} Icon={MailIcon} label="Email us" />
             <Row href={brand.socials.instagram} Icon={InstagramIcon} label="Instagram" aside="@pastamaniasrilanka" />
           </ul>
         </section>
 
-        <section>
-          <h2 className="label-caps muted">For staff</h2>
-          <ul className="list-card card">
-            <li>
-              <Link className="list-row" to="/staff">
-                <span className="icon-tile sm ink"><CameraIcon width={16} height={16} /></span>
-                <span className="grow">Counter screen</span>
-                <span className="pill pill-soft">Staff only</span>
-              </Link>
-            </li>
-          </ul>
-        </section>
-
-        <div className="stack" style={{ alignItems: 'center', gap: 4 }}>
-          <button type="button" className="text-btn danger" onClick={leave}>Sign out</button>
+        <div className="me-foot rise" style={{ '--i': 4 }}>
+          <button type="button" className="text-btn danger" onClick={() => setLeaving(true)}>Sign out</button>
           <p className="version">PastaMania Club · version {BUILD_ID}</p>
         </div>
       </div>
+
+      {leaving && (
+        <Sheet labelledBy="signout-title" onClose={() => setLeaving(false)}>
+          <SignOutBody
+            onConfirm={() => {
+              signOut()
+              navigate('/', { replace: true })
+            }}
+          />
+        </Sheet>
+      )}
     </>
   )
 }

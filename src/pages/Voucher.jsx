@@ -11,13 +11,13 @@ export default function Voucher() {
   const { id } = useParams()
   const { state } = useLocation()
   const { vouchers } = useClub()
-  const close = useBack('/wallet')
+  const close = useBack('/rewards')
   const voucher = vouchers.find((v) => v.id === id)
 
   if (!voucher) {
     return (
       <>
-        <AppBar title="Voucher" back="/wallet" />
+        <AppBar title="Voucher" back="/rewards" />
         <p className="empty">We couldn’t find that voucher.</p>
       </>
     )
@@ -37,8 +37,8 @@ export default function Voucher() {
     ready: state?.fresh
       ? `It’s yours! Show this at the counter and your ${voucher.name} is free.`
       : `Show this at the counter. Staff scan it and your ${voucher.name} is free.`,
-    used: 'Buon appetito! This voucher now sits under Used & expired in your wallet.',
-    expired: 'This voucher has expired. Swap more points for a new one.',
+    used: 'Buon appetito! You’ll find it under Used & expired in Rewards.',
+    expired: 'This voucher has expired. Use your points for a new one.',
   }[status]
 
   return (
@@ -57,7 +57,7 @@ export default function Voucher() {
           <span className="eyebrow">Free</span>
           <h1>{voucher.name}</h1>
           <span>
-            {cost ? `Swapped for ${cost} points · ` : ''}
+            {cost ? `Got for ${cost} points · ` : ''}
             {formatDay(voucher.issuedAt)}
           </span>
         </div>
@@ -80,7 +80,7 @@ export default function Voucher() {
       <p className="voucher-hint">{hint}</p>
 
       {status === 'ready' ? (
-        <Link className="btn btn-outline btn-block" to="/wallet">Back to wallet</Link>
+        <Link className="btn btn-outline btn-block" to="/rewards">Back to rewards</Link>
       ) : (
         <Link className="btn btn-outline btn-block" to="/rewards">Get another reward</Link>
       )}

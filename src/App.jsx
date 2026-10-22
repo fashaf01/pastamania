@@ -19,7 +19,6 @@ import Profile from './pages/Profile.jsx'
 import Rewards from './pages/Rewards.jsx'
 import Staff from './pages/Staff.jsx'
 import Voucher from './pages/Voucher.jsx'
-import Wallet from './pages/Wallet.jsx'
 
 // Old links to a single session (/book/<id>) open the booking page with that session picked.
 function SessionLink() {
@@ -40,7 +39,7 @@ export default function App() {
                   <Route path="menu" element={<Menu />} />
                   <Route path="menu/:slug" element={<Dish />} />
                   <Route path="rewards" element={<Rewards />} />
-                  <Route path="wallet" element={<Wallet />} />
+                  <Route path="wallet" element={<Navigate to="/rewards" replace />} />
                   <Route path="wallet/:id" element={<Voucher />} />
                   <Route path="book" element={<Bookings />} />
                   <Route path="book/ticket/:ref" element={<BookingDetail />} />

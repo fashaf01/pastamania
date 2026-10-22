@@ -12,7 +12,7 @@ export default function History() {
 
   return (
     <>
-      <AppBar title="Points history" back="/me" />
+      <AppBar title="Points history" back="/rewards" />
       <div className="page">
         <div className="points-card poster" style={{ margin: 0 }}>
           <span className="eyebrow">Balance</span>
