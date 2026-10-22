@@ -57,7 +57,6 @@
   --voucher-bg: #fbb516;
   --voucher-ink: #231f20;
   --voucher-close: rgb(35 31 32 / 0.1);
-  --stage: #f1e2cc;
   --focus: #1f6feb;
   color-scheme: light;
 }
@@ -100,7 +99,6 @@
   --voucher-bg: #1a1110;
   --voucher-ink: #fff6ea;
   --voucher-close: rgb(255 255 255 / 0.12);
-  --stage: #0f0908;
   --focus: #8ab4ff;
   color-scheme: dark;
 }
@@ -109,7 +107,7 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0; font-family: var(--font-body); color: var(--ink); background: var(--stage); line-height: 1.45;
+  margin: 0; font-family: var(--font-body); color: var(--ink); background: var(--bg); line-height: 1.45;
   -webkit-font-smoothing: antialiased; transition: background-color 0.3s;
 }
 h1, h2, h3, p, dl, dd, figure { margin: 0; }
@@ -187,26 +185,22 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 .round-btn.on-red { background: rgb(255 255 255 / 0.14); color: #fff; box-shadow: none; }
 
 /* ---------- App shell ---------- */
-.stage { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; align-items: flex-start; gap: 56px; }
-.stage-panel { display: none; }
+/* A phone-width column on a page of the same colour: on a computer it reads as the phone app, not a website. */
+.stage { min-height: 100vh; min-height: 100dvh; display: flex; justify-content: center; }
 .app {
   position: relative; width: 100%; max-width: var(--app-w); min-height: 100vh; min-height: 100dvh;
   display: flex; flex-direction: column; background: var(--bg); transition: background-color 0.3s;
 }
 .screen { flex: 1; display: flex; flex-direction: column; }
 
-@media (min-width: 900px) {
-  .stage { padding: 32px 24px; }
-  .app { min-height: calc(100dvh - 64px); border-radius: 36px; overflow: hidden; box-shadow: 0 30px 80px rgb(35 31 32 / 0.25); }
-  .tabbar { border-radius: 0 0 36px 36px; }
-  .stage-panel {
-    position: sticky; top: 32px; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 260px;
-    padding: 28px 24px; border-radius: 28px; color: #fff; text-align: center;
-    background: var(--grain), var(--poster-red);
+/* Full-colour screens (welcome poster, My code, voucher) paint the whole window so the column has no edges. */
+@supports selector(body:has(a)) {
+  body:has(.welcome), body:has(.code-screen) {
+    background-color: var(--poster); background-image: var(--grain); background-size: 160px 160px;
   }
-  .stage-title { font-size: 1.6rem; }
-  .stage-text { font-size: 0.9rem; opacity: 0.9; }
-  .stage-panel .qr { border-radius: 14px; overflow: hidden; }
+  body:has(.voucher-screen) { background: var(--voucher-bg); }
+  .app:has(.welcome, .code-screen, .voucher-screen), body:has(.welcome) .welcome, body:has(.code-screen) .code-screen,
+  body:has(.voucher-screen) .voucher-screen { background: transparent; }
 }
 
 /* Top bar for pushed screens: round back button and a centred poster title. */

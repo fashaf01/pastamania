@@ -1,11 +1,8 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
-import { brand } from '../data/brand.js'
-import { club } from '../data/club.js'
 import ErrorBoundary from './ErrorBoundary.jsx'
 import { GiftIcon, HomeIcon, MenuIcon, QrIcon, WalletIcon } from './Icons.jsx'
-import QRCode from './QRCode.jsx'
 
 // The tab bar shows on the four tab screens only. Pushed screens, and the counter-facing screens
 // (My code, vouchers), get the whole phone.
@@ -47,7 +44,8 @@ function TabBar({ readyVouchers }) {
   )
 }
 
-// Phone-width app shell. On wide screens the app sits beside a QR code for opening it on a phone.
+// Phone-width app shell. On wide screens it stays a phone-width column on a page of the same colour,
+// so it looks like the phone app rather than a website.
 export default function Layout() {
   const { pathname } = useLocation()
   const { member, vouchers } = useClub()
@@ -63,13 +61,6 @@ export default function Layout() {
 
   return (
     <div className="stage">
-      <aside className="stage-panel" aria-hidden="true">
-        <img src={brand.logo} alt="" width="104" height="104" />
-        <p className="hatch stage-title">{club.name}</p>
-        <p className="stage-text">Scan to open on your phone</p>
-        <QRCode value={window.location.origin} size={150} label="Open on your phone" />
-      </aside>
-
       <div className="app">
         <main className="screen">
           {/* Keyed by path so a failed screen recovers as soon as you go somewhere else. */}
