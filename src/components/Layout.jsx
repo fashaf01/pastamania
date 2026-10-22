@@ -2,10 +2,11 @@ import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
-import { GiftIcon, HomeIcon, MenuIcon, QrIcon, UserIcon } from './Icons.jsx'
+import { GiftIcon, HomeIcon, MenuIcon, UserIcon } from './Icons.jsx'
 
-// The tab bar shows on the four tab screens only. Pushed screens, and the counter-facing screens
-// (My code, vouchers), get the whole phone.
+// Four equal tabs. My code isn't a tab: it opens from the big button on Home (and the QR button on Rewards),
+// so nothing in the bar sticks out or gets tapped by mistake. The tab bar shows on the four tab screens only;
+// pushed screens and the counter-facing screens (My code, vouchers) get the whole phone.
 const TAB_SCREENS = ['/', '/menu', '/rewards', '/me']
 
 function TabBar({ readyVouchers }) {
@@ -19,12 +20,6 @@ function TabBar({ readyVouchers }) {
       <NavLink to="/menu" className={tab}>
         <span className="tab-icon"><MenuIcon width={24} height={24} /></span>
         <span>Menu</span>
-      </NavLink>
-      <NavLink to="/card" className="tab tab-code">
-        <span className="tab-code-btn">
-          <QrIcon width={26} height={26} />
-        </span>
-        <span>My code</span>
       </NavLink>
       <NavLink to="/rewards" className={tab}>
         <span className="tab-icon">

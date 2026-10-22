@@ -17,8 +17,8 @@ Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The 
 
 ## Screens
 
-Five tabs: **Home · Menu · My code · Rewards · Me**. My code sits in the middle as a raised gold button,
-because showing it at the counter is the thing members do most. Each tab has one job, and each thing lives in one place.
+Four equal tabs: **Home · Menu · Rewards · Me**. Each tab has one job, and each thing lives in one place. My code is
+not a tab: it opens from the big *Show my code* button on Home and the gold QR button at the top of Rewards.
 
 - **Home** – guests get the welcome poster (*Join free*). Members see three things only: their points (counting up)
   with the next reward and *Show my code*, a voucher that's ready to use, and this week's FridayMania offer.

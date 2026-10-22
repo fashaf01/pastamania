@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageHead } from '../components/AppBar.jsx'
-import { ChevronIcon, ClockIcon, InfoIcon, LockIcon, ReceiptIcon } from '../components/Icons.jsx'
+import { ChevronIcon, ClockIcon, InfoIcon, LockIcon, QrIcon, ReceiptIcon } from '../components/Icons.jsx'
 import Sheet, { useSheetClose } from '../components/Sheet.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { club, nextReward, rewards } from '../data/club.js'
@@ -117,7 +117,13 @@ export default function Rewards() {
 
   return (
     <>
-      <PageHead title="Rewards" />
+      <PageHead title="Rewards">
+        {member && (
+          <Link to="/card" className="round-btn code-btn press" aria-label="Show my code">
+            <QrIcon width={22} height={22} />
+          </Link>
+        )}
+      </PageHead>
       <div className="rewards">
         {member ? (
           <section className="summary card rise" aria-label="Your points">

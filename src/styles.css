@@ -226,20 +226,15 @@ ul, ol { list-style: none; margin: 0; padding: 0; }
 
 /* ---------- Tab bar ---------- */
 .tabbar {
-  position: sticky; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  position: sticky; bottom: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   height: calc(76px + env(safe-area-inset-bottom)); padding-bottom: calc(8px + env(safe-area-inset-bottom));
   background: rgb(255 255 255 / 0.94); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--line);
 }
-.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 0.6875rem; font-weight: 700; color: var(--nav-ink); }
+.tab { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 0.75rem; font-weight: 700; color: var(--nav-ink); }
 .tab.active { color: var(--nav-active); }
 .tab-icon { position: relative; display: flex; padding: 3px 14px; border-radius: 999px; transition: background-color 0.2s; }
 .tab.active .tab-icon { background: var(--tint-red); animation: pop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .tab-dot { position: absolute; top: 1px; right: 9px; width: 10px; height: 10px; border-radius: 50%; background: var(--logo-red); box-shadow: 0 0 0 2px #fff; animation: pop 0.4s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.tab-code { justify-content: flex-end; padding-bottom: 4px; color: var(--ink); font-weight: 800; }
-.tab-code-btn {
-  display: grid; place-items: center; width: 62px; height: 62px; margin-top: -30px; border-radius: 50%;
-  background: var(--gold); color: var(--ink-fixed); border: 4px solid #fff; box-shadow: 0 6px 16px rgb(107 16 20 / 0.28);
-}
 
 /* ---------- Shared cards ---------- */
 .card { background: var(--surface); border-radius: 20px; box-shadow: var(--shadow); }
@@ -583,6 +578,7 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .menu { display: flex; flex-direction: column; gap: 16px; padding: 14px 20px 32px; }
 .menu-list { display: flex; flex-direction: column; gap: 22px; }
 .menu .footnote { margin-top: 4px; }
+.page-head .code-btn { display: grid; justify-content: center; background: var(--gold); color: var(--ink-fixed); box-shadow: 0 3px 0 var(--gold-deep); }
 .branch-pill {
   min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; border: 0; border-radius: 999px;
   background: var(--surface); box-shadow: var(--shadow); color: var(--link); font-size: 0.9375rem; font-weight: 700; white-space: nowrap;
