@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { PageHead } from '../components/AppBar.jsx'
-import { ChevronIcon, ClockIcon, InfoIcon, LockIcon, QrIcon, ReceiptIcon } from '../components/Icons.jsx'
+import { ChevronIcon, ClockIcon, LockIcon, QrIcon, ReceiptIcon } from '../components/Icons.jsx'
 import Sheet, { useSheetClose } from '../components/Sheet.jsx'
 import { useClub, voucherStatus } from '../context/ClubContext.jsx'
 import { club, nextReward, rewards } from '../data/club.js'
@@ -9,7 +8,7 @@ import { formatDay, formatPoints } from '../lib/format.js'
 import { useCountUp, useEntered } from '../lib/motion.js'
 
 const shortName = (name) => name.replace(/^Any /, '')
-const RING = 2 * Math.PI * 28
+const RING = 2 * Math.PI * 29
 const BURST = ['#fbb516', '#c8161e', '#1d7a3a', '#fbb516', '#ed1c25']
 
 // Confirm → a short wait → "It's yours!" with a tick that draws itself.
@@ -49,14 +48,15 @@ function GetSheetBody({ reward, balance, redeem }) {
               <path className="draw-tick" d="M30 49l12 12 24-26" />
             </svg>
           </div>
-          <h2 id="get-title">It’s yours!</h2>
+          <span className="stamp small static">It’s yours!</span>
+          <h2 id="get-title" className="cd">{reward.name} is ready</h2>
           <p>
             Your free {shortName(reward.name)} is in Rewards, ready to use for {club.voucherValidDays} days.
           </p>
         </div>
         <div className="stack" style={{ gap: 4 }}>
-          <button type="button" className="btn btn-ink btn-lg btn-block" onClick={() => navigate(`/wallet/${voucher.id}`, { state: { fresh: true } })}>
-            Use it now
+          <button type="button" className="btn btn-gold btn-lg btn-block" onClick={() => navigate(`/wallet/${voucher.id}`)}>
+            See my voucher
           </button>
           <button type="button" className="text-btn muted" onClick={close}>Done</button>
         </div>
@@ -69,7 +69,7 @@ function GetSheetBody({ reward, balance, redeem }) {
       <div className="get-head">
         <img className="get-photo pop" src={reward.image} alt="" />
         <span className="get-kicker">Free reward</span>
-        <h2 id="get-title" className="get-title">{reward.name}</h2>
+        <h2 id="get-title" className="get-title cd">{reward.name}</h2>
       </div>
       <dl className="breakdown">
         <div>
@@ -91,7 +91,7 @@ function GetSheetBody({ reward, balance, redeem }) {
       </p>
       {short > 0 && step === 'ask' && <p className="flash flash-error">You need {formatPoints(short)} more points for this one.</p>}
       <div className="stack" style={{ gap: 4 }}>
-        <button type="button" className="btn btn-red btn-lg btn-block" onClick={get} disabled={short > 0 || step === 'busy'}>
+        <button type="button" className="btn btn-gold btn-lg btn-block" onClick={get} disabled={short > 0 || step === 'busy'}>
           {step === 'busy' && <span className="spinner" aria-hidden="true" />}
           {step === 'busy' ? 'Getting it…' : `Get it for ${formatPoints(reward.points)} points`}
         </button>
@@ -106,7 +106,6 @@ export default function Rewards() {
   const shown = useCountUp(balance)
   const entered = useEntered()
   const [picked, setPicked] = useState(null)
-  const [explaining, setExplaining] = useState(false)
 
   const ready = vouchers.filter((v) => voucherStatus(v) === 'ready').sort((a, b) => a.expiresAt - b.expiresAt)
   const past = vouchers.filter((v) => voucherStatus(v) !== 'ready').slice(0, 10)
@@ -117,89 +116,93 @@ export default function Rewards() {
 
   return (
     <>
-      <PageHead title="Rewards">
-        {member && (
-          <Link to="/card" className="round-btn code-btn press" aria-label="Show my code">
-            <QrIcon width={22} height={22} />
-          </Link>
-        )}
-      </PageHead>
-      <div className="rewards">
+      <header className="wine-head grain">
         {member ? (
-          <section className="summary card rise" aria-label="Your points">
-            <div className="summary-points">
-              <strong className="num" aria-hidden="true">{formatPoints(shown)}</strong>
-              <span aria-hidden="true">points</span>
-              <span className="sr-only">{formatPoints(balance)} points</span>
+          <>
+            <div className="head-row rise">
+              <h1 className="eyebrow">Rewards · your points</h1>
+              <Link to="/card" className="round-btn gold press" aria-label="Show my code">
+                <QrIcon width={22} height={22} />
+              </Link>
             </div>
-            <div className="progress-row">
-              <div className="progress-track" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress to your next reward">
-                <span className="progress-fill" style={{ width: `${entered ? progress : 0}%` }} />
+            <div className="points-block rise" style={{ '--i': 1 }}>
+              <p className="points-line">
+                <span className="cd points-num" aria-hidden="true">{formatPoints(shown)}</span>
+                <span className="cd points-unit" aria-hidden="true">points</span>
+                <span className="sr-only">{formatPoints(balance)} points</span>
+              </p>
+              <div className="bar" role="progressbar" aria-valuenow={Math.round(progress)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress to your next reward">
+                <i style={{ width: `${entered ? progress : 0}%` }} />
               </div>
-              {next && <img className="progress-goal" src={next.image} alt="" />}
+              <p className="points-next">
+                {next ? (
+                  <>
+                    {formatPoints(next.points - balance)} more for <strong>{next.name}</strong>
+                  </>
+                ) : (
+                  'You can have anything on the list'
+                )}
+              </p>
             </div>
-            <p className="num">{next ? `${formatPoints(next.points - balance)} points to a free ${shortName(next.name)}` : 'You can have anything on the list'}</p>
-          </section>
+          </>
         ) : (
-          <section className="join-card poster rise">
-            <span className="eyebrow">Join free</span>
-            <p>Get {club.welcomeBonus} points today – enough for a free Garlic Bread.</p>
+          <div className="join-pitch rise">
+            <h1 className="eyebrow">Rewards</h1>
+            <p className="cd">Your next pasta<br /><span>is on us</span></p>
+            <p>Join free and get {club.welcomeBonus} points today, enough for a free Garlic Bread.</p>
             <Link className="btn btn-gold btn-block" to="/join?next=/rewards">Join free</Link>
-          </section>
+          </div>
         )}
+      </header>
 
+      <div className="rewards">
         {ready.length > 0 && (
-          <section className="group rise" style={{ '--i': 1 }}>
-            <h2 className="section-title">Ready to use</h2>
+          <section className="block rise" style={{ '--i': 2 }}>
+            <h2 className="block-title cd">Ready to use</h2>
             {ready.map((v) => (
               <div key={v.id} className={isFresh(v) ? 'pop' : undefined}>
-                <Link to={`/wallet/${v.id}`} className="voucher-card card">
+                <Link to={`/wallet/${v.id}`} className="ticket-row">
                   <img src={v.image} alt="" />
-                  <span className="voucher-card-text">
-                    <span className="ready-label">
-                      <span className="live-dot" aria-hidden="true" />
-                      {isFresh(v) ? 'Just added' : 'Ready to use'}
-                    </span>
-                    <strong>Free {v.name}</strong>
-                    <span>Use by {formatDay(v.expiresAt)}</span>
+                  <span className="ticket-row-text">
+                    <strong className="cd">{v.name}</strong>
+                    <small>{isFresh(v) ? 'Just added' : `Use by ${formatDay(v.expiresAt)}`}</small>
                   </span>
-                  <span className="pill-btn">Use</span>
+                  <ChevronIcon width={22} height={22} strokeWidth={2.4} />
                 </Link>
               </div>
             ))}
           </section>
         )}
 
-        <section className="group">
-          <div className="rise" style={{ '--i': 2 }}>
-            <h2 className="section-title">Get with your points</h2>
-            <p className="section-sub">1 point for every LKR {club.spendPerPoint} you spend in store.</p>
+        <section className="block">
+          <div className="rise" style={{ '--i': 3 }}>
+            <h2 className="block-title cd">Get with your points</h2>
           </div>
-          <ul className="list-card card">
+          <ul className="reward-list">
             {rewards.map((r, i) => {
               const open = member && r.points <= balance
               const share = member ? Math.min(1, balance / r.points) : 0
               return (
-                <li key={r.id} className="reward-row rise" style={{ '--i': 3 + i }}>
+                <li key={r.id} className={`reward-row rise ${open ? 'open' : ''}`} style={{ '--i': 4 + i }}>
                   <span className="reward-ring">
-                    <svg viewBox="0 0 60 60" aria-hidden="true">
-                      <circle className="ring-bg" cx="30" cy="30" r="28" />
-                      <circle className={`ring-fg ${open ? 'done' : ''}`} cx="30" cy="30" r="28" strokeDasharray={RING} strokeDashoffset={entered ? RING * (1 - share) : RING} />
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                      <circle className="ring-bg" cx="32" cy="32" r="29" />
+                      <circle className="ring-fg" cx="32" cy="32" r="29" strokeDasharray={RING} strokeDashoffset={entered ? RING * (1 - share) : RING} />
                     </svg>
                     <img src={r.image} alt="" loading="lazy" />
                   </span>
                   <span className="reward-row-text">
                     <strong>{r.name}</strong>
-                    <span className="num">{formatPoints(r.points)} points</span>
+                    <span className="cd num">{formatPoints(r.points)} pts</span>
                   </span>
                   {open ? (
-                    <button type="button" className="pill-btn red" onClick={() => setPicked(r)} aria-label={`Get ${r.name}`}>
+                    <button type="button" className="btn btn-gold btn-sm" onClick={() => setPicked(r)} aria-label={`Get ${r.name}`}>
                       Get
                     </button>
                   ) : (
                     member && (
                       <span className="need">
-                        <LockIcon width={14} height={14} /> {formatPoints(r.points - balance)} more
+                        <LockIcon width={14} height={14} /> {formatPoints(r.points - balance)} to go
                       </span>
                     )
                   )}
@@ -209,8 +212,18 @@ export default function Rewards() {
           </ul>
         </section>
 
-        <ul className="list-card card rise" style={{ '--i': 9 }}>
-          {member && (
+        <section className="how-card rise" style={{ '--i': 10 }}>
+          <h2 className="cd">How points work</h2>
+          <ol className="how-steps">
+            <li><span className="how-n">1</span><span><strong>Show your code</strong> when you pay in store.</span></li>
+            <li><span className="how-n">2</span><span><strong>Earn 1 point</strong> for every LKR {club.spendPerPoint}.</span></li>
+            <li><span className="how-n">3</span><span><strong>Get free food.</strong> Vouchers last {club.voucherValidDays} days.</span></li>
+          </ol>
+          <p className="footnote">Uber Eats and PickMe orders don’t earn points.</p>
+        </section>
+
+        {member && (
+          <ul className="list-card card rise" style={{ '--i': 11 }}>
             <li>
               <Link className="list-row" to="/history">
                 <span className="icon-tile sm gold"><ReceiptIcon width={16} height={16} /></span>
@@ -218,19 +231,12 @@ export default function Rewards() {
                 <ChevronIcon width={16} height={16} />
               </Link>
             </li>
-          )}
-          <li>
-            <button type="button" className="list-row" onClick={() => setExplaining(true)}>
-              <span className="icon-tile sm"><InfoIcon width={16} height={16} /></span>
-              <span className="grow">How points work</span>
-              <ChevronIcon width={16} height={16} />
-            </button>
-          </li>
-        </ul>
+          </ul>
+        )}
 
         {past.length > 0 && (
-          <section className="group">
-            <h2 className="section-title">Used &amp; expired</h2>
+          <section className="block">
+            <h2 className="block-title cd">Used &amp; expired</h2>
             <ul className="list-card card">
               {past.map((v) => {
                 const used = voucherStatus(v) === 'used'
@@ -255,17 +261,6 @@ export default function Rewards() {
       {picked && (
         <Sheet labelledBy="get-title" onClose={() => setPicked(null)}>
           <GetSheetBody reward={picked} balance={balance} redeem={redeem} />
-        </Sheet>
-      )}
-
-      {explaining && (
-        <Sheet title="How points work" onClose={() => setExplaining(false)}>
-          <ol className="how-steps">
-            <li><span className="how-n">1</span><span>Show your code at the counter before you pay.</span></li>
-            <li><span className="how-n">2</span><span>Get 1 point for every LKR {club.spendPerPoint} at any branch.</span></li>
-            <li><span className="how-n">3</span><span>Use your points for free food. Vouchers last {club.voucherValidDays} days.</span></li>
-          </ol>
-          <p className="footnote">Uber Eats and PickMe orders don’t earn points.</p>
         </Sheet>
       )}
     </>

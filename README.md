@@ -20,13 +20,15 @@ Delivery orders (Uber Eats, PickMe) **don't earn points**, as with Chatime. The 
 Four equal tabs: **Home · Menu · Rewards · Me**. Each tab has one job, and each thing lives in one place. My code is
 not a tab: it opens from the big *Show my code* button on Home and the gold QR button at the top of Rewards.
 
-- **Home** – guests get the welcome poster (*Join free*). Members see three things only: their points (counting up)
-  with the next reward and *Show my code*, a voucher that's ready to use, and this week's FridayMania offer.
-- **Menu** (`/menu`) – branch pill, search, *Order delivery* (Uber Eats / PickMe), category chips, one list per category
-  with prices and the points each dish earns in store
-- **Dish** (`/menu/<dish>`) – photo, price, points, FridayMania badge for the week's hero dish, branches that serve it,
-  two add-ons, Uber Eats / PickMe buttons
-- **My code** (`/card`) – full screen QR (logo in the middle) for the counter, points and vouchers ready
+- **Home** – guests get the welcome screen: one plate, *Eat pasta. Earn free pasta.* and *Join free*. Members see
+  three things only: their points (counting up) with the next reward and *Show my code*, a voucher that's ready to
+  use, and this Friday's FridayMania with when it starts.
+- **Menu** (`/menu`) – *~~Plain Italian~~ Italian, Colombo style*, search, branch pill, *Order delivery* (Uber Eats /
+  PickMe), category tabs with counts, and dishes as red, gold and cream cards with the points each earns in store
+- **Dish** (`/menu/<dish>`) – the plate spins in on a red header (with a *Local fave!* or *Fridays 1+1* sticker),
+  price, points, branches that serve it, two add-ons, Uber Eats / PickMe buttons
+- **My code** (`/card`) – full screen QR (logo in the middle) in gold scanner corners, member number, and the voucher
+  that's ready
 - **Rewards** – points and progress, *Ready to use* vouchers, *Get with your points* (a ring per reward shows how close
   you are; *Get* opens a sheet: confirm → *It's yours!*), points history, how points work, used & expired vouchers
 - **Voucher** (`/wallet/<id>`) – full screen ticket with its QR; stamped *Enjoy!* once used. `/wallet` itself now
@@ -40,9 +42,9 @@ not a tab: it opens from the big *Show my code* button on Home and the gold QR b
 ### Motion
 
 Small animations make the app feel alive without getting in the way: points count up, progress bars and reward rings
-fill in, blocks ease in one after another, buttons sink a little when pressed, sheets slide up and back down, the big
-title tucks into a frosted bar as you scroll, a tick draws itself when you get a reward, and the scan line sweeps the
-QR code twice when My code opens. Everything is in `src/styles.css` (*Motion*) and `src/lib/motion.js`, and it all
+fill in, blocks ease in one after another, buttons sink a little when pressed, sheets slide up and back down, plates
+spin in, starburst stickers turn slowly (their words stay still), menu cards deal in, a tick draws itself and an
+*It's yours!* stamp lands when you get a reward, and the scan line sweeps the QR code twice when My code opens. Everything is in `src/styles.css` (*Motion*) and `src/lib/motion.js`, and it all
 switches off for people who turn on *Reduce motion* on their phone.
 
 ### Light and dark
@@ -123,14 +125,15 @@ Any static host works. `vercel.json` is included so client-side routes (`/menu`,
 
 ## Design
 
-The look follows PastaMania's own Instagram posts (FridayMania posters): textured poster-red backgrounds,
-gold hatched slab headlines with a dark outline and offset shadow, wide caps, starburst stickers
-and the running-chef logo badge. The screens were designed first as a canvas (light and dark) and built to match.
+The app and the website share one look, taken from PastaMania's FridayMania posters: wine-red headers with a
+grain texture, narrow heavy capitals for headings, gold *Ultra* slab accents, gold ticket vouchers, starburst
+stickers and the running-chef logo. The tab bar is a calm cream bar with a red marker on the current tab, so the
+screen itself stays the focus. Both were designed first as canvases and built to match.
 
-- **Fonts** – Ultra (poster headlines and numbers) and Archivo (text, with its wide cut for caps labels), both from
-  Google Fonts.
-- **Colours** – sampled from the logo and posters: poster red `#9E2022`, red `#C8161E`, gold `#FBB516`, ink `#231F20`,
-  cream `#FFF6EA`; dark theme on espresso `#1A1110` with gold headings.
+- **Fonts** – Archivo (text; its narrow heavy cut for headings and buttons, its wide cut for small caps labels) and
+  Ultra (slab accents), both from Google Fonts.
+- **Colours** – sampled from the logo and posters: wine `#3F0A0D`, poster red `#9E2022`, red `#C8161E`, gold `#FBB516`,
+  ink `#231F20`, cream `#FFF6EA`; dark theme on espresso `#1A1110` with gold headings.
 
 ## Images
 

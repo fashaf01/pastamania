@@ -1,45 +1,39 @@
 import { Link } from 'react-router-dom'
-import { BowlIcon, GiftIcon, ReceiptIcon } from '../components/Icons.jsx'
-import Starburst from '../components/Starburst.jsx'
+import { ArrowIcon } from '../components/Icons.jsx'
+import Sticker from '../components/Sticker.jsx'
 import { brand } from '../data/brand.js'
-import { club } from '../data/club.js'
+import { club, rewards } from '../data/club.js'
 import { isPhoneOrTablet, switchView } from '../lib/view.js'
 
-// What a guest sees first: the promise, the welcome gift, and one button to join.
+// What a guest sees first: one plate, the promise, and one button to join.
 export default function Welcome() {
+  const gift = rewards.find((r) => r.points === club.welcomeBonus)
+
   return (
-    <div className="welcome">
+    <div className="welcome grain">
       <img className="welcome-logo" src={brand.logo} alt="PastaMania casual dining" />
 
-      <div className="collage" aria-hidden="true">
-        <img className="c1" src="/images/menu/carbonara-pasta.jpg" alt="" />
-        <img className="c2" src="/images/menu/pepperoni-pizza.jpg" alt="" />
-        <img className="c3" src="/images/menu/garlic-bread.jpg" alt="" />
-        <Starburst size={86}>
-          <span className="big" style={{ fontSize: 22 }}>{club.welcomeBonus}</span>
-          <span className="small" style={{ fontSize: 9 }}>PTS FREE</span>
-        </Starburst>
-      </div>
-
-      <div className="stack" style={{ alignItems: 'center', gap: 12 }}>
-        <h1 className="hatch welcome-title">
-          Eat pasta.
-          <br />
-          Earn free
-          <br />
-          pasta.
+      <div className="welcome-main">
+        <div className="welcome-plate">
+          <img src="/images/menu/carbonara-pasta.jpg" alt="" />
+          <Sticker size={88} tilt={12} className="welcome-sticker">
+            <b className="slab">{club.welcomeBonus}</b>
+            <small>pts free</small>
+          </Sticker>
+        </div>
+        <h1 className="welcome-title">
+          <span className="mask"><span className="cd line-up">Eat pasta.</span></span>
+          <span className="mask"><span className="slab line-up" style={{ animationDelay: '0.15s' }}>Earn free pasta.</span></span>
         </h1>
-        <p className="welcome-lead">Join the {club.name} and your first Garlic Bread is on us.</p>
+        <p className="welcome-lead">
+          Join free and <mark className="hl">your first {gift?.name ?? 'reward'} is on us.</mark>
+        </p>
       </div>
-
-      <ul className="perks">
-        <li><span><GiftIcon width={18} height={18} /></span>{club.welcomeBonus} welcome points</li>
-        <li><span><ReceiptIcon width={18} height={18} /></span>1 point per LKR {club.spendPerPoint}</li>
-        <li><span><BowlIcon width={18} height={18} /></span>Free pasta &amp; pizza</li>
-      </ul>
 
       <div className="welcome-actions">
-        <Link className="btn btn-gold btn-lg btn-block" to="/join">Join free</Link>
+        <Link className="btn btn-gold btn-lg btn-block" to="/join">
+          Join free <ArrowIcon width={20} height={20} strokeWidth={2.6} />
+        </Link>
         <Link className="text-btn" to="/menu">Browse the menu</Link>
         {!isPhoneOrTablet() && (
           <button type="button" className="text-btn" onClick={() => switchView('site')}>Open the website</button>

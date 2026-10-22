@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ChevronIcon } from '../components/Icons.jsx'
 import { branches, mapsUrl, openStatus } from '../data/branches.js'
 import { formatPhone } from '../lib/format.js'
-import { useNow } from './useNow.js'
+import { useNow } from '../lib/useNow.js'
 
 // Rough spots on the sketch map (percent across, percent down): Galle Face on the sea front, Alfred House
 // inland in Colombo 3, Havelock further south. Not to scale.
