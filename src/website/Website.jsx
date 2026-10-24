@@ -1,12 +1,14 @@
-import { Fragment, useEffect } from 'react'
-import { ArrowIcon, BagIcon, ChefIcon, PinIcon } from '../components/Icons.jsx'
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { PickMeLink, UberEatsLink } from '../components/DeliveryLinks.jsx'
+import { ArrowIcon, BagIcon, ChefIcon, CloseIcon, PinIcon } from '../components/Icons.jsx'
 import QRCode from '../components/QRCode.jsx'
 import { brand } from '../data/brand.js'
-import { branches } from '../data/branches.js'
+import { branches, getBranch } from '../data/branches.js'
 import { club, rewards } from '../data/club.js'
 import { fridayMania } from '../data/offers.js'
+import { workshop } from '../data/workshops.js'
 import { formatPhone } from '../lib/format.js'
-import { switchView } from '../lib/view.js'
+import { isPhoneOrTablet, switchView } from '../lib/view.js'
 import BranchesSection from './BranchesSection.jsx'
 import ClubSection from './ClubSection.jsx'
 import FaqSection from './FaqSection.jsx'
@@ -27,7 +29,73 @@ const Sparkle = () => (
   </svg>
 )
 
+const SECTIONS = [
+  { id: 'menu', short: 'Menu', label: 'Menu', note: 'Prices and the points each dish earns' },
+  { id: 'fridaymania', short: 'FridayMania', label: 'FridayMania', note: 'Buy 1, get 1 free every Friday' },
+  { id: 'club', short: 'Club', label: 'The Club', note: 'Eat pasta, earn free pasta' },
+  { id: 'branches', short: 'Branches', label: 'Branches', note: 'Hours, directions and phone numbers' },
+  { id: 'workshops', short: 'Kids workshops', label: 'Kids workshops', note: `${workshop.title}, ages ${workshop.minAge}–${workshop.maxAge}` },
+  { id: 'faq', short: 'FAQ', label: 'Questions', note: 'Points, rewards and catering' },
+]
+
+// The full-screen menu behind the menu button on a phone: the sections, delivery and the app.
+function Drawer({ onClose }) {
+  const close = useRef(null)
+  const branch = getBranch('havelock')
+
+  // Layout effect, so the page can scroll again before a section link scrolls it.
+  useLayoutEffect(() => {
+    document.documentElement.classList.add('w-locked')
+    close.current?.focus()
+    return () => document.documentElement.classList.remove('w-locked')
+  }, [])
+
+  const go = (id) => (e) => {
+    e.preventDefault()
+    onClose()
+    setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }), 0)
+  }
+
+  return (
+    <div id="w-drawer" className="w-drawer w-grain" role="dialog" aria-modal="true" aria-label="Menu" onKeyDown={(e) => e.key === 'Escape' && onClose()}>
+      <div className="w-drawer-top">
+        <img src={brand.logo} alt="PastaMania" />
+        <button ref={close} type="button" className="w-drawer-x" aria-label="Close the menu" onClick={onClose}>
+          <CloseIcon width={22} height={22} strokeWidth={2.6} />
+        </button>
+      </div>
+      <nav aria-label="Sections">
+        <ul className="w-dlinks">
+          {SECTIONS.map((s) => (
+            <li key={s.id}>
+              <a href={`#${s.id}`} onClick={go(s.id)}>
+                <span>
+                  <span className="w-cd">{s.label}</span>
+                  <small>{s.note}</small>
+                </span>
+                <ArrowIcon width={22} height={22} strokeWidth={2.4} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div className="w-drawer-foot">
+        <div className="w-deliver-head">
+          <p className="w-cd">Order delivery</p>
+          <p>Doesn't earn points</p>
+        </div>
+        <div className="w-deliver-btns">
+          <UberEatsLink href={branch.uberEatsUrl} />
+          <PickMeLink />
+        </div>
+        <a className="w-btn w-b-gold" href="/app">Open the app</a>
+      </div>
+    </div>
+  )
+}
+
 function Nav() {
+  const [open, setOpen] = useState(false)
   return (
     <header className="w-nav">
       <div className="w-nav-in">
@@ -35,15 +103,18 @@ function Nav() {
           <img src={brand.logo} alt="" />
         </a>
         <nav className="w-links" aria-label="Main">
-          <a href="#menu">Menu</a>
-          <a href="#fridaymania">FridayMania</a>
-          <a href="#club">Club</a>
-          <a href="#branches">Branches</a>
-          <a href="#workshops">Kids workshops</a>
-          <a href="#faq">FAQ</a>
+          {SECTIONS.map((s) => (
+            <a key={s.id} href={`#${s.id}`}>{s.short}</a>
+          ))}
         </nav>
         <a className="w-btn w-b-ink w-b-sm w-nav-end" href="#order">Order now</a>
+        <button type="button" className="w-burger" aria-label="Open the menu" aria-expanded={open} aria-controls="w-drawer" onClick={() => setOpen(true)}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
       </div>
+      {open && <Drawer onClose={() => setOpen(false)} />}
     </header>
   )
 }
@@ -73,7 +144,18 @@ function Hero() {
         <h1 className="w-h1">
           <span className="w-mk w-cd w-l1">
             <span className="w-ln w-d1">
-              Eat <img className="w-bowl" src="/images/menu/carbonara-pasta.jpg" alt="" /> pasta.
+              <span>Eat</span>
+              <span className="w-bowlwrap">
+                <img className="w-bowl" src="/images/menu/carbonara-pasta.jpg" alt="" />
+                <span className="w-sticker w-hsticker w-narrow-only" aria-hidden="true">
+                  <span className="w-sticker-bg w-burst" />
+                  <span className="w-hs-txt">
+                    <b>{club.welcomeBonus}</b>
+                    <small>pts free</small>
+                  </span>
+                </span>
+              </span>
+              <span className="w-pasta">pasta.</span>
             </span>
           </span>
           <span className="w-mk w-slab w-l2">
@@ -85,10 +167,12 @@ function Hero() {
           when you pay and <span className="w-hl">every LKR {club.spendPerPoint} earns a point.</span>
         </p>
         <div className="w-ctas">
-          <a className="w-btn w-b-gold" href="#menu">
+          <a className="w-btn w-b-gold w-wide-only" href="#menu">
             See the menu <ArrowIcon className="w-ar" width={20} height={20} strokeWidth={2.6} />
           </a>
-          <a className="w-btn w-b-ghost" href="#club">Join the Club free</a>
+          <a className="w-btn w-b-ghost w-wide-only" href="#club">Join the Club free</a>
+          <a className="w-btn w-b-gold w-narrow-only" href="/app/join">Join free in the app</a>
+          <a className="w-btn w-b-ghost w-narrow-only" href="#menu">See the menu</a>
         </div>
         <ul className="w-perks">
           <li className="w-perk"><PinIcon />{branches.length} branches in Colombo</li>
@@ -131,9 +215,54 @@ function Tapes() {
   )
 }
 
-// The QR code opens this same link, which a phone opens as the app.
+// On a phone or tablet: a button into the app and how to keep it on the home screen.
+function OpenApp({ welcome }) {
+  return (
+    <section id="app" className="w-cta w-cta-phone">
+      {welcome && <img className="w-gb-m" src={welcome.image} alt="" />}
+      <div className="w-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <p className="w-eb" style={{ color: '#5c3a00' }}>Join free in 30 seconds</p>
+        <h2 className="w-cd w-cta-title">Your first {welcome?.name ?? 'reward'} is waiting</h2>
+        <p style={{ fontSize: 16, color: '#4a2a00' }}>
+          The Club lives in the PastaMania app: your code, your points and your free food, all in one place.
+        </p>
+        <a className="w-btn w-b-wine" href="/app/join">
+          Open the app <ArrowIcon className="w-ar" width={20} height={20} strokeWidth={2.6} />
+        </a>
+        <div className="w-home">
+          <p className="w-cd" style={{ fontSize: 22, color: 'var(--wine)' }}>Keep it on your home screen</p>
+          <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: -4 }}>It opens full screen, like any app. No app store needed.</p>
+          <p className="w-howto">
+            <span className="w-howicon red">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 15V3M7 8l5-5 5 5" />
+                <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
+              </svg>
+            </span>
+            <span><b>iPhone:</b> tap Share, then <b>Add to Home Screen</b></span>
+          </p>
+          <p className="w-howto">
+            <span className="w-howicon gold">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <circle cx="12" cy="5" r="2" />
+                <circle cx="12" cy="12" r="2" />
+                <circle cx="12" cy="19" r="2" />
+              </svg>
+            </span>
+            <span><b>Android:</b> tap the menu, then <b>Install app</b></span>
+          </p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// On a computer the QR code opens this same link, which a phone opens as the app. A phone can't scan its own
+// screen, so phones and tablets get a button instead.
 function GetApp() {
   const welcome = rewards.find((r) => r.points === club.welcomeBonus)
+  const [onPhone] = useState(isPhoneOrTablet)
+  if (onPhone) return <OpenApp welcome={welcome} />
   return (
     <section id="app" className="w-cta">
       <div className="w-wrap w-ctag">
@@ -171,11 +300,11 @@ function Footer() {
   return (
     <footer className="w-foot">
       <div className="w-wrap w-fcols">
-        <div className="w-fcol" style={{ flex: '2 1 320px', gap: 16 }}>
+        <div className="w-fcol w-fcol-about" style={{ flex: '2 1 320px', gap: 16 }}>
           <img src={brand.logo} alt="PastaMania" style={{ width: 72, height: 72 }} />
           <p style={{ color: '#c4b3a8', maxWidth: 420 }}>{brand.about}</p>
         </div>
-        <div className="w-fcol">
+        <div className="w-fcol w-fcol-eat">
           <p className="w-eb">Eat</p>
           <a href="#menu">Menu</a>
           <a href="#fridaymania">FridayMania</a>
@@ -202,7 +331,7 @@ function Footer() {
       </p>
       <div className="w-wrap w-legal" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12 }}>
         <p>© {new Date().getFullYear()} PastaMania Sri Lanka. Prices in LKR and may differ between branches.</p>
-        <button type="button" className="w-linkbtn" onClick={() => switchView('app')}>Open the app view</button>
+        <button type="button" className="w-linkbtn" onClick={() => switchView('app')}>Open the app</button>
       </div>
     </footer>
   )

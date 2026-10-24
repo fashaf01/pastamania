@@ -36,6 +36,13 @@ const SITE_SECTIONS = {
   '/book': 'workshops',
 }
 
+// /app/join, /app/book … open that screen of the app (view.js keeps them in the app on any device).
+function AppLink() {
+  const { '*': rest = '' } = useParams()
+  const { search } = useLocation()
+  return <Navigate to={`/${rest}${search}`} replace />
+}
+
 // Old links to a single session (/book/<id>) open the booking page with that session picked.
 function SessionLink() {
   const { sessionId } = useParams()
@@ -74,7 +81,7 @@ function Pages() {
         <Route path="staff" element={<Staff />} />
         <Route path="branches" element={<Branches />} />
         <Route path="catering" element={<Catering />} />
-        <Route path="app" element={<Navigate to="/" replace />} />
+        <Route path="app/*" element={<AppLink />} />
         <Route path="offers" element={<Navigate to="/" replace />} />
         <Route path="bookings" element={<Navigate to="/book" replace />} />
         <Route path="events" element={<Navigate to="/book" replace />} />

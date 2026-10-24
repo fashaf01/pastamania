@@ -98,6 +98,14 @@ files as the app, so prices, branches and hours, rewards, FridayMania and worksh
 menu shows Havelock City Mall's prices. The QR code in *Get the app* opens this same link, which a phone opens as
 the app.
 
+**On a phone** (720px and narrower, from the design canvas *PastaMania Website – Mobile*) the same website reflows:
+a slim wine bar with *Order now* and a menu button that opens a full-screen menu (sections, Uber Eats / PickMe,
+*Open the app*); *EAT [bowl] PASTA.* stacked with *Join free in the app*; FridayMania with a one-row countdown;
+the menu as pill categories and a two-column grid; Club as three short steps and a swipeable rewards row; branches
+that open in place with Call / Directions / Uber Eats (no map); workshop dates as rows. A phone can't scan a QR
+code on its own screen, so phones and tablets get *Open the app* and how to add it to the home screen instead.
+`/app/<screen>` links (`/app/join`, `/app/book`) open that screen of the app on any device.
+
 Sections: floating red nav · *Eat pasta. Earn free pasta.* with floating dishes · scrolling FridayMania tapes ·
 FridayMania with a live countdown to Friday · menu slider with category tabs and the points each dish earns ·
 Club with a phone that plays the app's three steps and the rewards ladder · branches with live *Open now* status
