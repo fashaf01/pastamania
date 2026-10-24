@@ -31,8 +31,13 @@ const saveChoice = (view) => {
   }
 }
 
+// Links that always open one face, whatever the device, and are never remembered: /website and /app.
+export const DEDICATED = { '/website': 'site', '/app': 'app' }
+
 export const wantsWebsite = () => {
   if (isInstalled()) return false
+  const dedicated = DEDICATED[window.location.pathname.replace(/\/+$/, '')]
+  if (dedicated) return dedicated === 'site'
   // ?view=app / ?view=site switches and remembers it, then tidies the address.
   const params = new URLSearchParams(window.location.search)
   const asked = params.get('view')

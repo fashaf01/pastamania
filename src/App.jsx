@@ -28,6 +28,7 @@ const Website = lazy(() => import('./website/Website.jsx'))
 // vouchers, tickets, the counter screen) stays the app, as it does on a phone.
 const SITE_SECTIONS = {
   '/': 'top',
+  '/website': 'top',
   '/menu': 'menu',
   '/rewards': 'club',
   '/join': 'club',
@@ -44,7 +45,7 @@ function SessionLink() {
 function Pages() {
   const { pathname } = useLocation()
   const [website] = useState(wantsWebsite)
-  const section = SITE_SECTIONS[pathname]
+  const section = SITE_SECTIONS[pathname.replace(/\/+$/, '') || '/']
 
   if (website && section) {
     return (
@@ -73,6 +74,7 @@ function Pages() {
         <Route path="staff" element={<Staff />} />
         <Route path="branches" element={<Branches />} />
         <Route path="catering" element={<Catering />} />
+        <Route path="app" element={<Navigate to="/" replace />} />
         <Route path="offers" element={<Navigate to="/" replace />} />
         <Route path="bookings" element={<Navigate to="/book" replace />} />
         <Route path="events" element={<Navigate to="/book" replace />} />
