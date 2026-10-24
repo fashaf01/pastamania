@@ -85,6 +85,10 @@ The same link shows a website on a computer and the app on a phone or tablet (`s
 - Phones and tablets – and the app opened from a home screen – always get the app.
 - On a computer, `/`, `/menu`, `/rewards`, `/join`, `/branches` and `/book` open the website at the matching section.
   Everything else (My code, vouchers, booking tickets, `/staff`) stays the app.
+- Two links always open one face, on any device, and aren't remembered: `/website` (the website) and `/app` (the
+  app). Use them for QR codes, social posts or a "website" and an "app" button. Added to a home screen, the app is
+  always the app. For separate web addresses (say `www.…` and `app.…`) add both domains in Vercel and point each
+  at `/website` or `/app` with a redirect.
 - Anyone can switch: *Open the app view* in the website footer, *Open the website* on the app's welcome and Me
   screens (computers only), or `?view=app` / `?view=site` on any link. The choice is kept on the device.
 
