@@ -64,8 +64,9 @@ export default function WorkshopsSection() {
             ) : (
               <p style={{ fontSize: 17, fontWeight: 700 }}>New dates are coming soon.</p>
             )}
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '12px 20px' }}>
-              <a className="w-btn w-b-gold" href="#app">Book in the app</a>
+            <div className="w-wcta">
+              <a className="w-btn w-b-gold w-wide-only" href="#app">Book in the app</a>
+              <a className="w-btn w-b-gold w-narrow-only" href="/app/book">Book a seat in the app</a>
               <span style={{ fontSize: 16 }}>
                 or call <strong style={{ fontVariantNumeric: 'tabular-nums' }}>{formatPhone(brand.workshopPhone)}</strong>
               </span>

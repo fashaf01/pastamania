@@ -147,6 +147,11 @@ export default function ClubSection() {
             ))}
           </ul>
         </div>
+
+        <div className="w-narrow-only w-club-cta">
+          <a className="w-btn w-b-gold" href="/app/join">Join free in the app</a>
+          <p>No card to carry: your phone is your card.</p>
+        </div>
       </div>
     </section>
   )

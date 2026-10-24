@@ -63,11 +63,16 @@ export default function MenuSection() {
             <p style={{ fontSize: 17, color: '#4a3f38' }}>
               Prices from {branch.name}. Each dish shows the Club points it earns when you eat in or take away.
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-              <UberEatsLink className="lg" href={branch.uberEatsUrl} />
-              <PickMeLink className="lg" />
+            <div className="w-deliver">
+              <div className="w-deliver-head">
+                <p className="w-cd">Order delivery</p>
+                <p>Doesn't earn points</p>
+              </div>
+              <div className="w-deliver-btns">
+                <UberEatsLink href={branch.uberEatsUrl} />
+                <PickMeLink />
+              </div>
             </div>
-            <p style={{ fontSize: 13, color: 'var(--muted)' }}>Delivery orders don't earn Club points.</p>
           </div>
         </div>
 
@@ -97,6 +102,7 @@ export default function MenuSection() {
                 <DishCard key={item.name} item={item} variant={n % 3} />
               ))}
           </div>
+          <p className="w-narrow-only w-swipe">Swipe the categories for pizza, baked rice, starters and drinks.</p>
           <div className="w-railnav">
             <div className="w-track"><i /></div>
             <button type="button" className="w-rbtn" aria-label="Previous dishes" onClick={() => scrollBy(-1)}>

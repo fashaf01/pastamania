@@ -33,23 +33,26 @@ export default function FridaySection() {
     <section id="fridaymania" className="w-friday">
       <div className="w-wrap">
         <div className="w-fframe w-rv">
-          <img src={fridayMania.image} alt={`${fridayMania.heroDish} on a red table`} />
-          <div className="w-sticker w-fsticker">
-            <span className="w-sticker-bg w-burst w-spin" aria-hidden="true" />
-            <p>
-              <span className="w-slab" style={{ display: 'block', fontSize: 40 }}>1+1</span>
-              <span className="w-eb">Free</span>
-            </p>
+          {/* On a computer the photo fills the frame behind the words; on a phone it sits between them. */}
+          <div className="w-fphoto">
+            <img src={fridayMania.image} alt={`${fridayMania.heroDish} on a red table`} />
+            <div className="w-sticker w-fsticker">
+              <span className="w-sticker-bg w-burst w-spin" aria-hidden="true" />
+              <p>
+                <span className="w-slab w-fs-big">1+1</span>
+                <span className="w-eb">Free</span>
+              </p>
+            </div>
           </div>
           <div className="w-ff-in">
-            <p className="w-eb w-live">
+            <p className="w-eb w-live w-f-eb">
               <span className="w-dot" />
               {isFriday ? 'On now · today only' : `Next FridayMania · ${formatDay(nextFriday(now))}`}
             </p>
-            <h2 className="w-cd" style={{ fontSize: 'clamp(64px, 8vw, 128px)' }}>
+            <h2 className="w-cd w-f-title">
               Friday<span style={{ color: 'var(--gold)' }}>Mania</span>
             </h2>
-            <p style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.35 }}>
+            <p className="w-f-text">
               Buy one {fridayMania.heroDish}, get one free. Dine-in, takeaway and delivery.
               {hero && <> Two for {formatLKR(hero.price)}.</>}
             </p>
@@ -61,7 +64,7 @@ export default function FridaySection() {
                 </div>
               ))}
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, paddingTop: 6 }}>
+            <div className="w-f-ctas">
               <a className="w-btn w-b-gold" href="#order">
                 Order for Friday <ArrowIcon className="w-ar" width={20} height={20} strokeWidth={2.6} />
               </a>

@@ -23,6 +23,28 @@ const PinShape = () => (
   </svg>
 )
 
+// Address and hours, shown in the panel on a computer and inside the opened branch on a phone.
+function Details({ b }) {
+  const restaurant = b.hours.find((h) => h.label === 'Restaurant')
+  const shown = restaurant ?? b.hours[0]
+  return (
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <p className="w-eb" style={{ color: '#8a5a00' }}>{b.highlights.join(' · ')}</p>
+        <p className="w-baddr">{b.address}</p>
+      </div>
+      <div className="w-hrs">
+        <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)' }}>
+          {restaurant ? 'Restaurant hours' : `${shown.label} – dine-in hours to confirm`}
+        </p>
+        {shown.rows.map((r) => (
+          <div key={r.days} className="w-hrow"><span>{r.days}</span><b>{r.time}</b></div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function BranchesSection() {
   const [picked, setPicked] = useState(branches[0].id)
   const now = useNow(60 * 1000)
@@ -46,60 +68,57 @@ export default function BranchesSection() {
               {branches.map((b) => {
                 const status = statusText(openStatus(b, now))
                 return (
-                  <button
-                    key={b.id}
-                    type="button"
-                    role="tab"
-                    id={`w-tab-${b.id}`}
-                    className="w-btab"
-                    aria-selected={picked === b.id}
-                    aria-controls={`w-branch-${b.id}`}
-                    onClick={() => setPicked(b.id)}
-                  >
-                    <span style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-                      <span className="w-btab-name">{b.name}</span>
-                      <span className="w-status"><span className={`w-sdot ${status.tone}`} />{status.text}</span>
-                    </span>
-                    <ChevronIcon className="w-chev" strokeWidth={2.6} />
-                  </button>
+                  // On a computer each item is just its tab; on a phone the picked one opens in place, with its details.
+                  <div key={b.id} className="w-bitem" data-open={picked === b.id}>
+                    <button
+                      type="button"
+                      role="tab"
+                      id={`w-tab-${b.id}`}
+                      className="w-btab"
+                      aria-selected={picked === b.id}
+                      aria-controls={`w-branch-${b.id}`}
+                      onClick={() => setPicked(b.id)}
+                    >
+                      <span style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
+                        <span className="w-btab-name">{b.name}</span>
+                        <span className="w-status"><span className={`w-sdot ${status.tone}`} />{status.text}</span>
+                      </span>
+                      <ChevronIcon className="w-chev" strokeWidth={2.6} />
+                    </button>
+                    {picked === b.id && (
+                      <div className="w-bp-inline">
+                        <Details b={b} />
+                        <div className="w-bacts">
+                          <a className="w-btn w-b-line w-b-sm" href={`tel:${b.phones[0]}`}>Call</a>
+                          <a className="w-btn w-b-red w-b-sm" href={mapsUrl(b)}>Directions</a>
+                          <UberEatsLink href={b.uberEatsUrl} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )
               })}
             </div>
             <div className="w-bpanels">
-              {branches.map((b) => {
-                const restaurant = b.hours.find((h) => h.label === 'Restaurant')
-                const shown = restaurant ?? b.hours[0]
-                return (
-                  <div
-                    key={b.id}
-                    id={`w-branch-${b.id}`}
-                    role="tabpanel"
-                    aria-labelledby={`w-tab-${b.id}`}
-                    aria-hidden={picked !== b.id}
-                    className="w-bp"
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      <p className="w-eb" style={{ color: '#8a5a00' }}>{b.highlights.join(' · ')}</p>
-                      <p style={{ fontSize: 17, fontWeight: 600 }}>{b.address}</p>
-                    </div>
-                    <div className="w-hrs">
-                      <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted)' }}>
-                        {restaurant ? 'Restaurant hours' : `${shown.label} – dine-in hours to confirm`}
-                      </p>
-                      {shown.rows.map((r) => (
-                        <div key={r.days} className="w-hrow"><span>{r.days}</span><b>{r.time}</b></div>
-                      ))}
-                    </div>
-                    <p style={{ fontSize: 17, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-                      {b.phones.map(formatPhone).join(' · ')}
-                    </p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                      <a className="w-btn w-b-red w-b-sm" href={mapsUrl(b)} tabIndex={picked === b.id ? undefined : -1}>Directions</a>
-                      <UberEatsLink href={b.uberEatsUrl} tabIndex={picked === b.id ? undefined : -1} />
-                    </div>
+              {branches.map((b) => (
+                <div
+                  key={b.id}
+                  id={`w-branch-${b.id}`}
+                  role="tabpanel"
+                  aria-labelledby={`w-tab-${b.id}`}
+                  aria-hidden={picked !== b.id}
+                  className="w-bp"
+                >
+                  <Details b={b} />
+                  <p style={{ fontSize: 17, fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
+                    {b.phones.map(formatPhone).join(' · ')}
+                  </p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                    <a className="w-btn w-b-red w-b-sm" href={mapsUrl(b)} tabIndex={picked === b.id ? undefined : -1}>Directions</a>
+                    <UberEatsLink href={b.uberEatsUrl} tabIndex={picked === b.id ? undefined : -1} />
                   </div>
-                )
-              })}
+                </div>
+              ))}
             </div>
           </div>
 
