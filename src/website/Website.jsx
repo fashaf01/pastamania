@@ -4,10 +4,12 @@ import { ArrowIcon, BagIcon, ChefIcon, CloseIcon, PinIcon } from '../components/
 import QRCode from '../components/QRCode.jsx'
 import { brand } from '../data/brand.js'
 import { branches, getBranch } from '../data/branches.js'
-import { club, rewards } from '../data/club.js'
+import { club, pointsForSpend, rewards } from '../data/club.js'
+import { isLocalFavourite, menus } from '../data/menu.js'
 import { fridayMania } from '../data/offers.js'
 import { workshop } from '../data/workshops.js'
-import { formatPhone } from '../lib/format.js'
+import { formatLKR, formatPhone } from '../lib/format.js'
+import { prefersReducedMotion } from '../lib/motion.js'
 import { isPhoneOrTablet, switchView } from '../lib/view.js'
 import BranchesSection from './BranchesSection.jsx'
 import ClubSection from './ClubSection.jsx'
@@ -119,66 +121,148 @@ function Nav() {
   )
 }
 
-const FLOATING = [
-  { className: 'w-fl1', image: '/images/menu/jaffna-calamari-pasta.jpg', name: 'Jaffna Calamari' },
-  { className: 'w-fl2', image: '/images/menu/hot-basil-chicken-pizza.jpg', name: 'Hot Basil Chicken Pizza' },
-  { className: 'w-fl3', image: '/images/menu/italian-sodas.jpg', name: 'Italian Sodas' },
-  { className: 'w-fl4', image: '/images/menu/chilli-crab-pasta.jpg', name: 'Chilli Crab Pasta' },
+// The hero's plate: one dish at a time on a turning sunburst, with the Club receipt for it. Prices are
+// Havelock City Mall's, as in the menu section. Each plate is a square crop of the dish's menu photo.
+const HERO_BRANCH = getBranch('havelock')
+const HERO_DISHES = [
+  { label: 'Sri Lankan', name: 'Jaffna Calamari Pasta', plate: '/images/hero/plate-jaffna.jpg' },
+  { label: 'Creamy', name: 'Carbonara Pasta', plate: '/images/hero/plate-carbonara.jpg' },
+  { label: 'Spicy', name: 'Spicy Chicken Pasta', plate: '/images/hero/plate-spicy.jpg' },
+  { label: 'Pizza', name: 'Hot Basil Chicken Pizza', plate: '/images/hero/plate-pizza.jpg' },
 ]
+  .map((d) => {
+    const item = menus[HERO_BRANCH.id].find((m) => m.name === d.name)
+    if (!item) return null
+    const stamp = isLocalFavourite(d.name) ? 'Local fave!' : d.name === fridayMania.heroDish ? 'Fridays 1+1' : null
+    return { ...d, price: item.price, points: pointsForSpend(item.price), stamp }
+  })
+  .filter(Boolean)
+
+// How long each dish stays on the plate before the next one turns in (also the pill's progress bar).
+const HERO_STEP_MS = 4600
+const LOOP_WORDS = 'EAT PASTA • EARN POINTS • GET FREE PASTA • REPEAT • '
 
 function Hero() {
+  const [{ shown, last }, setPlate] = useState({ shown: 0, last: -1 })
+  const [picked, setPicked] = useState(false)
+  const [auto] = useState(() => !prefersReducedMotion())
+  const turning = auto && !picked
+
+  // Turn to the next dish every few seconds until someone picks one. Not while the tab is hidden.
+  useEffect(() => {
+    if (!turning) return
+    const timer = setInterval(() => {
+      if (document.hidden) return
+      setPlate((p) => ({ shown: (p.shown + 1) % HERO_DISHES.length, last: p.shown }))
+    }, HERO_STEP_MS)
+    return () => clearInterval(timer)
+  }, [turning])
+
+  const pick = (i) => {
+    setPicked(true)
+    setPlate((p) => (p.shown === i ? p : { shown: i, last: p.shown }))
+  }
+  const state = (i) => (i === shown ? 'on' : i === last ? 'off' : '')
+
   return (
     <section id="top" className="w-hero w-grain">
-      {FLOATING.map((f) => (
-        <figure key={f.name} className={`w-fl ${f.className}`}>
-          <img src={f.image} alt={f.name} />
-          <figcaption>{f.name}</figcaption>
-        </figure>
-      ))}
       <div className="w-wrap w-hero-in">
-        <p className="w-ornament w-eb">
-          <Squiggle />
-          <span>Casual Italian · Colombo since 2018</span>
-          <Squiggle flip />
-        </p>
-        <h1 className="w-h1">
-          <span className="w-mk w-cd w-l1">
-            <span className="w-ln w-d1">
-              <span>Eat</span>
-              <span className="w-bowlwrap">
-                <img className="w-bowl" src="/images/menu/carbonara-pasta.jpg" alt="" />
-                <span className="w-sticker w-hsticker w-narrow-only" aria-hidden="true">
-                  <span className="w-sticker-bg w-burst" />
-                  <span className="w-hs-txt">
-                    <b>{club.welcomeBonus}</b>
-                    <small>pts free</small>
-                  </span>
-                </span>
-              </span>
-              <span className="w-pasta">pasta.</span>
-            </span>
-          </span>
-          <span className="w-mk w-slab w-l2">
-            <span className="w-ln w-d2">Earn free pasta.</span>
-          </span>
-        </h1>
-        <p className="w-lead">
-          Creamy pastas, hand-made pizzas and Sri Lankan favourites like Jaffna Calamari. Show your {club.name} code
-          when you pay and <span className="w-hl">every LKR {club.spendPerPoint} earns a point.</span>
-        </p>
-        <div className="w-ctas">
-          <a className="w-btn w-b-gold w-wide-only" href="#menu">
-            See the menu <ArrowIcon className="w-ar" width={20} height={20} strokeWidth={2.6} />
-          </a>
-          <a className="w-btn w-b-ghost w-wide-only" href="#club">Join the Club free</a>
-          <a className="w-btn w-b-gold w-narrow-only" href="/app/join">Join free in the app</a>
-          <a className="w-btn w-b-ghost w-narrow-only" href="#menu">See the menu</a>
+        <div className="w-copy">
+          <p className="w-ornament w-eb">
+            <Squiggle />
+            <span>Casual Italian · Colombo since 2018</span>
+          </p>
+          <h1 className="w-h1">
+            <span className="w-mk"><span className="w-ln w-cd w-l1">Eat pasta.</span></span>
+            <span className="w-mk"><span className="w-ln w-cd w-l2">Earn <span className="w-free">free</span></span></span>
+            <span className="w-mk w-mk-slab"><span className="w-ln w-slab w-l3">pasta.</span></span>
+            <svg className="w-noodle" viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M4 16C28 2 46 30 72 16S118 2 142 16S188 30 214 16S262 4 296 13" />
+            </svg>
+          </h1>
+          <p className="w-lead">
+            Creamy pastas, hand-made pizzas and Sri Lankan favourites like Jaffna Calamari. Show your {club.name} code
+            when you pay and <span className="w-hl">every LKR {club.spendPerPoint} earns a point.</span>
+          </p>
+          <div className="w-ctas">
+            <a className="w-btn w-b-gold w-wide-only" href="#menu">
+              See the menu <ArrowIcon className="w-ar" width={20} height={20} strokeWidth={2.6} />
+            </a>
+            <a className="w-btn w-b-ghost w-wide-only" href="#club">Join the Club free</a>
+            <a className="w-btn w-b-gold w-narrow-only" href="/app/join">Join free in the app</a>
+            <a className="w-btn w-b-ghost w-narrow-only" href="#menu">See the menu</a>
+          </div>
+          <ul className="w-perks">
+            <li className="w-perk"><PinIcon />{branches.length} branches in Colombo</li>
+            <li className="w-perk"><BagIcon />Dine-in, takeaway &amp; delivery</li>
+            <li className="w-perk"><ChefIcon />Kids pizza workshops</li>
+          </ul>
         </div>
-        <ul className="w-perks">
-          <li className="w-perk"><PinIcon />{branches.length} branches in Colombo</li>
-          <li className="w-perk"><BagIcon />Dine-in, takeaway &amp; delivery</li>
-          <li className="w-perk"><ChefIcon />Kids pizza workshops</li>
-        </ul>
+
+        <div className="w-stagecol">
+          <div className="w-stage">
+            <div className="w-sun" aria-hidden="true" />
+            <svg className="w-loop" viewBox="0 0 600 600" aria-hidden="true">
+              <defs>
+                <path id="w-loop-path" d="M300,300 m-262,0 a262,262 0 1,1 524,0 a262,262 0 1,1 -524,0" />
+              </defs>
+              <text>
+                <textPath href="#w-loop-path" textLength="1640" lengthAdjust="spacing">{LOOP_WORDS + LOOP_WORDS}</textPath>
+              </text>
+            </svg>
+
+            <div className="w-hplate">
+              <div className="w-hplate-in">
+                {HERO_DISHES.map((d, i) => (
+                  <img key={d.name} className={`w-hdish ${state(i)}`} src={d.plate} alt={i === shown ? d.name : ''} />
+                ))}
+              </div>
+            </div>
+
+            <div className="w-sticker w-hsticker" aria-hidden="true">
+              <span className="w-sticker-bg w-burst w-spin" />
+              <span className="w-hs-txt">
+                <span>Join &amp; get</span>
+                <b>{club.welcomeBonus}</b>
+                <span>points free</span>
+              </span>
+            </div>
+
+            <div className="w-rcpts">
+              {HERO_DISHES.map((d, i) => (
+                <div key={d.name} className={`w-rcpt ${state(i)}`} aria-hidden={i !== shown}>
+                  <div className="w-tk-head">
+                    <span className="w-tk-brand">{club.name}</span>
+                    <span className="w-tk-small">{HERO_BRANCH.name}</span>
+                  </div>
+                  {d.stamp && <span className="w-rstamp">{d.stamp}</span>}
+                  <div className="w-tk-rule" />
+                  <div className="w-tk-row">
+                    <span>1 × {d.name}</span>
+                    <span>{formatLKR(d.price)}</span>
+                  </div>
+                  <div className="w-tk-rule" />
+                  <div className="w-tk-pts">
+                    <span>Points earned</span>
+                    <b>+{d.points}</b>
+                  </div>
+                  <p className="w-tk-note">1 point per LKR {club.spendPerPoint}, dine-in &amp; takeaway</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className={`w-crave${turning ? ' w-turning' : ''}`}>
+            <p className="w-eb w-crave-l">What are you craving?</p>
+            <div className="w-cpills" role="group" aria-label="Pick a dish to put on the plate">
+              {HERO_DISHES.map((d, i) => (
+                <button key={d.name} type="button" className={`w-cpill ${i === shown ? 'on' : ''}`} aria-pressed={i === shown} onClick={() => pick(i)}>
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )
