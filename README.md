@@ -100,13 +100,18 @@ the app.
 
 **On a phone** (720px and narrower, from the design canvas *PastaMania Website – Mobile*) the same website reflows:
 a slim wine bar with *Order now* and a menu button that opens a full-screen menu (sections, Uber Eats / PickMe,
-*Open the app*); *EAT [bowl] PASTA.* stacked with *Join free in the app*; FridayMania with a one-row countdown;
+*Open the app*); the hero's headline, then the plate and its receipt, then *Join free in the app*; FridayMania with a one-row countdown;
 the menu as pill categories and a two-column grid; Club as three short steps and a swipeable rewards row; branches
 that open in place with Call / Directions / Uber Eats (no map); workshop dates as rows. A phone can't scan a QR
 code on its own screen, so phones and tablets get *Open the app* and how to add it to the home screen instead.
 `/app/<screen>` links (`/app/join`, `/app/book`) open that screen of the app on any device.
 
-Sections: floating red nav · *Eat pasta. Earn free pasta.* with floating dishes · scrolling FridayMania tapes ·
+Sections: floating red nav · *Eat pasta. Earn free pasta.* with one dish on a turning sunburst (from the design canvas
+*PastaMania Hero*): the ring around the plate reads *Eat pasta • Earn points • Get free pasta • Repeat*, a Club receipt
+shows the dish's Havelock price and the points it earns (with a *Local fave!* or *Fridays 1+1* stamp), and *What are
+you craving?* (Sri Lankan · Creamy · Spicy · Pizza) swaps the dish; it changes by itself every few seconds until someone
+picks one. The dishes are `HERO_DISHES` in `src/website/Website.jsx`, with square plate photos in
+`public/images/hero/` · scrolling FridayMania tapes ·
 FridayMania with a live countdown to Friday · menu slider with category tabs and the points each dish earns ·
 Club with a phone that plays the app's three steps and the rewards ladder · branches with live *Open now* status
 and a sketch map · Dough Workz sessions · FAQ · *Get the app* QR · footer. Motion (load sequence, hovers, scroll

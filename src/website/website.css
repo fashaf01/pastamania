@@ -113,55 +113,140 @@ body:has(.site) { background: #3f0a0d; }
 .w-drawer-foot .w-btn { width: 100%; margin-top: 4px; }
 
 /* ---------- Hero ---------- */
-.w-hero { position: relative; overflow: hidden; color: var(--cream); text-align: center; background-color: var(--wine); padding-block: clamp(56px, 8vw, 104px) clamp(72px, 8vw, 112px); }
-.w-hero-in { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 26px; }
-.w-ornament { display: inline-flex; align-items: center; gap: 14px; color: var(--gold); animation: w-fade 0.7s 0.05s both; }
-.w-h1 { display: flex; flex-direction: column; align-items: center; }
-.w-mk { display: block; overflow: hidden; padding: 0.04em 0.06em 0.08em; }
-.w-ln { display: inline-flex; align-items: center; justify-content: center; gap: 0.14em; animation: w-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.w-d1 { animation-delay: 0.15s; }
-.w-d2 { animation-delay: 0.32s; }
-.w-l1 { font-size: clamp(60px, 9.6vw, 150px); color: var(--cream); }
-.w-l2 { font-size: clamp(34px, 5.8vw, 92px); color: var(--gold); text-shadow: 0.04em 0.05em 0 var(--out); }
-.w-bowl {
-  width: 0.86em; height: 0.86em; border-radius: 50%; object-fit: cover; border: 0.045em solid var(--gold);
-  box-shadow: 0 0.05em 0 var(--out); animation: w-spin 40s linear infinite;
+/* The copy on the left; on the right one dish on a turning poster-red sunburst, ringed by the Club loop, with the
+   Club receipt for that dish. From the "PastaMania Hero" design canvas. On computers the hero runs up under the
+   floating nav so the sunburst bleeds off the top of the page. */
+.w-hero {
+  --plate: clamp(300px, 31vw, 450px);
+  position: relative; overflow: clip; color: var(--cream); background-color: var(--wine);
+  padding-block: clamp(24px, 3.6vw, 52px) clamp(56px, 6vw, 88px);
 }
-.w-bowlwrap { position: relative; display: inline-flex; }
-.w-hsticker { top: -4px; right: -26px; width: 58px; height: 58px; }
-.w-hs-txt { display: flex; flex-direction: column; align-items: center; line-height: 1; rotate: 10deg; }
-.w-hs-txt b { font-family: var(--cd); font-stretch: 62%; font-weight: 900; font-size: 20px; }
-.w-hs-txt small { font-family: var(--cd); font-stretch: 125%; font-weight: 800; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; }
-.w-lead { max-width: 600px; font-size: 19px; line-height: 1.6; color: rgb(255 246 234 / 0.9); animation: w-fade 0.8s 0.6s both; }
+@media (min-width: 981px) { .w-hero { margin-top: -80px; padding-top: calc(80px + clamp(24px, 3.6vw, 52px)); } }
+.w-hero-in { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr); align-items: center; gap: 40px; }
+.w-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 26px; min-width: 0; }
+/* The words sit above the sunburst where its edge reaches them. */
+.w-copy > * { position: relative; z-index: 3; }
+.w-ornament { display: inline-flex; align-items: center; gap: 12px; color: var(--gold); animation: w-fade 0.7s 0.05s both; }
+.w-h1 { display: flex; flex-direction: column; align-items: flex-start; }
+.w-mk { display: block; overflow: hidden; padding: 0.05em 0.04em 0.03em 0; }
+.w-mk-slab { padding-bottom: 0.2em; margin-bottom: -0.2em; }
+.w-ln { display: inline-block; animation: w-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.w-l1, .w-l2 { font-size: clamp(64px, 8.6vw, 132px); line-height: 0.88; color: var(--cream); }
+.w-l1 { animation-delay: 0.15s; }
+.w-l2 { animation-delay: 0.28s; }
+.w-free { color: var(--gold); }
+.w-l3 { font-size: clamp(84px, 10.4vw, 160px); color: var(--gold); text-shadow: 0.035em 0.045em 0 var(--out); letter-spacing: -0.01em; animation-delay: 0.42s; }
+/* A strand of spaghetti under "pasta.", drawn in once. */
+.w-noodle { display: block; font-size: clamp(84px, 10.4vw, 160px); width: 2.5em; height: 0.26em; margin: -0.1em 0 0 0.72em; overflow: visible; }
+.w-noodle path {
+  fill: none; stroke: var(--cream); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 400; stroke-dashoffset: 400;
+  animation: w-noodle 1.1s 1.25s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+}
+.w-lead { max-width: 520px; font-size: 19px; line-height: 1.6; color: rgb(255 246 234 / 0.9); animation: w-fade 0.8s 0.6s both; }
 .w-hl {
   padding: 0 0.18em; border-radius: 6px; background: linear-gradient(var(--gold), var(--gold)) no-repeat 0 0 / 0% 100%;
-  -webkit-box-decoration-break: clone; box-decoration-break: clone; animation: w-hl 0.9s 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone; animation: w-hl 0.9s 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
-.w-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; animation: w-fade 0.8s 0.8s both; }
-.w-perks { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 32px; padding-top: 12px; animation: w-fade 0.8s 1s both; }
+.w-ctas { display: flex; flex-wrap: wrap; gap: 14px; animation: w-fade 0.8s 0.8s both; }
+.w-perks { display: flex; flex-wrap: wrap; gap: 10px 28px; animation: w-fade 0.8s 1s both; }
 .w-perk { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; color: rgb(255 246 234 / 0.85); }
-.w-perk svg { color: var(--gold); transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.w-perk svg { flex: 0 0 auto; color: var(--gold); transition: transform 0.4s cubic-bezier(0.3, 1.6, 0.5, 1); }
 .w-perk:hover svg { transform: rotate(-14deg) scale(1.2); }
-.w-fl { position: absolute; z-index: 1; width: clamp(120px, 11.5vw, 172px); margin: 0; animation: w-pop 0.9s cubic-bezier(0.3, 1.5, 0.5, 1) both, w-bob 6s ease-in-out infinite; }
-.w-fl img {
-  width: 100%; aspect-ratio: 1; object-fit: cover; box-shadow: 0 18px 40px rgb(0 0 0 / 0.35);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), rotate 0.5s;
+
+/* The stage. Everything is centred on the plate (--cy down the stage); the sunburst sits a little to the right so it
+   bleeds off the page and stays out from behind the copy. */
+.w-stagecol { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; }
+.w-stage { --sun: calc(var(--plate) * 2.3); --sunx: calc(var(--plate) * 0.25); --cy: 50%; position: relative; width: 100%; height: calc(var(--plate) * 1.5); }
+.w-sun {
+  position: absolute; left: calc(50% + var(--sunx)); top: var(--cy); width: var(--sun); height: var(--sun);
+  margin: calc(var(--sun) / -2) 0 0 calc(var(--sun) / -2); border-radius: 50%;
+  background: repeating-conic-gradient(var(--red) 0deg 7.5deg, #a3111a 7.5deg 15deg);
+  animation: w-sunin 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, w-turn 160s linear infinite;
 }
-.w-fl figcaption {
-  position: absolute; left: 50%; bottom: -14px; transform: translateX(-50%); white-space: nowrap; background: var(--cream);
-  color: var(--wine); font-weight: 800; font-size: 13px; padding: 6px 12px; border-radius: 999px; opacity: 0;
-  translate: 0 8px; transition: opacity 0.25s, translate 0.25s;
+.w-sun::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle closest-side, rgb(63 10 13 / 0) 46%, rgb(63 10 13 / 0.7) 100%); }
+.w-loop {
+  position: absolute; left: 50%; top: var(--cy); width: calc(var(--plate) * 1.4); height: calc(var(--plate) * 1.4);
+  margin: calc(var(--plate) * -0.7) 0 0 calc(var(--plate) * -0.7); overflow: visible;
+  animation: w-ringin 0.9s 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both, w-turn 70s linear infinite reverse;
 }
-.w-fl:hover img { transform: scale(1.08); rotate: 0deg; }
-.w-fl:hover figcaption { opacity: 1; translate: 0 0; }
-.w-fl1 { left: 3%; top: 9%; animation-delay: 0.5s, 1.4s; }
-.w-fl1 img { border-radius: 58% 42% 55% 45% / 49% 61% 39% 51%; rotate: -9deg; }
-.w-fl2 { right: 3.5%; top: 7%; animation-delay: 0.65s, 2.1s; animation-duration: 0.9s, 7s; }
-.w-fl2 img { border-radius: 24% 30% 26% 34% / 30% 24% 34% 26%; rotate: 7deg; }
-.w-fl3 { left: 6%; bottom: 9%; animation-delay: 0.8s, 0.9s; animation-duration: 0.9s, 6.6s; }
-.w-fl3 img { border-radius: 40% 60% 48% 52% / 58% 44% 56% 42%; rotate: 6deg; }
-.w-fl4 { right: 5%; bottom: 11%; animation-delay: 0.95s, 1.8s; animation-duration: 0.9s, 5.6s; }
-.w-fl4 img { border-radius: 50%; rotate: -6deg; }
+.w-loop text { fill: var(--gold); font-family: var(--cd); font-stretch: 62%; font-weight: 800; font-size: 29px; letter-spacing: 0.12em; }
+.w-hplate {
+  position: absolute; z-index: 2; left: 50%; top: var(--cy); width: var(--plate); height: var(--plate);
+  margin: calc(var(--plate) * -0.5) 0 0 calc(var(--plate) * -0.5); padding: calc(var(--plate) * 0.035); border-radius: 50%;
+  background: var(--cream); box-shadow: 0 0 0 calc(var(--plate) * 0.012) rgb(42 6 7 / 0.25), 0 34px 70px rgb(25 2 4 / 0.6);
+  animation: w-platein 1.25s 0.15s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.w-hplate-in { position: relative; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; background: var(--paper); }
+.w-hplate-in::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.08), inset 0 12px 28px rgb(0 0 0 / 0.22); pointer-events: none; }
+/* The dish turns in from the left and out to the right. */
+.w-hdish {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; opacity: 0;
+  transform: rotate(-120deg) scale(0.82); transition: opacity 0.45s ease, transform 0.95s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.w-hdish.on { opacity: 1; transform: none; }
+.w-hdish.off { opacity: 0; transform: rotate(120deg) scale(0.82); }
+.w-sticker.w-hsticker {
+  z-index: 4; left: calc(50% + var(--plate) * 0.24); top: calc(var(--cy) - var(--plate) * 0.68);
+  width: calc(var(--plate) * 0.32); height: calc(var(--plate) * 0.32); animation: w-hpop 0.7s 1.35s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.w-hs-txt { display: flex; flex-direction: column; align-items: center; line-height: 1; rotate: 10deg; }
+.w-hs-txt b { font-family: var(--cd); font-stretch: 62%; font-weight: 900; font-size: max(28px, calc(var(--plate) * 0.11)); }
+.w-hs-txt span { font-family: var(--cd); font-stretch: 125%; font-weight: 800; font-size: max(9px, calc(var(--plate) * 0.024)); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* The Club receipt: torn top and bottom, it prints down when the dish changes. */
+.w-rcpts {
+  position: absolute; z-index: 5; left: calc(50% - var(--plate) * 0.8); top: calc(var(--cy) + var(--plate) * 0.04);
+  width: clamp(220px, calc(var(--plate) * 0.62), 288px); display: grid; rotate: -5deg;
+  filter: drop-shadow(0 18px 22px rgb(20 2 3 / 0.5)); animation: w-rcptin 0.9s 1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.w-rcpt {
+  --z: 7px;
+  position: relative; grid-area: 1 / 1; display: flex; flex-direction: column; gap: 10px; padding: 24px 20px 26px;
+  background: #fbf1e1; color: var(--ink); font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+  font-size: 13px; font-weight: 500; line-height: 1.45; opacity: 0; clip-path: inset(0 0 100% 0);
+  transition: opacity 0.25s ease, clip-path 0.75s 0.2s cubic-bezier(0.45, 0.05, 0.25, 1);
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 var(--z) / 100% calc(100% - 2 * var(--z)) no-repeat,
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) 0 0 / calc(2 * var(--z)) var(--z) repeat-x,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) 0 100% / calc(2 * var(--z)) var(--z) repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 var(--z) / 100% calc(100% - 2 * var(--z)) no-repeat,
+    conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) 0 0 / calc(2 * var(--z)) var(--z) repeat-x,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) 0 100% / calc(2 * var(--z)) var(--z) repeat-x;
+}
+.w-rcpt.on { opacity: 1; clip-path: inset(0 0 0 0); }
+.w-rcpt.off { opacity: 0; clip-path: inset(0 0 0 0); }
+.w-tk-head { display: flex; flex-direction: column; gap: 2px; }
+.w-tk-brand { font-family: var(--cd); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 24px; line-height: 0.95; color: var(--red); }
+.w-tk-small { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.w-tk-rule { border-top: 2px dashed rgb(35 31 32 / 0.3); }
+.w-tk-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.w-tk-row span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.w-tk-pts { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.w-tk-pts span { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; }
+.w-tk-pts b { font-family: var(--cd); font-stretch: 62%; font-weight: 900; font-size: 46px; line-height: 0.85; color: var(--red); font-variant-numeric: tabular-nums; }
+.w-tk-note { margin-top: auto; font-size: 11px; color: var(--muted); }
+.w-rstamp {
+  align-self: flex-start; margin: -2px 0; padding: 3px 8px; border: 2px solid var(--red); border-radius: 6px; color: var(--red);
+  font-family: var(--cd); font-stretch: 62%; font-weight: 900; text-transform: uppercase; font-size: 15px; line-height: 1.1; letter-spacing: 0.04em; rotate: -3deg;
+}
+
+/* What are you craving? – picks the dish; while the plate turns by itself, a bar fills under the dish on show. */
+.w-crave { position: relative; z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 12px; animation: w-fade 0.8s 1.15s both; }
+.w-crave-l { padding: 6px 12px; border-radius: 999px; background: rgb(42 6 7 / 0.72); color: var(--gold); }
+.w-cpills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.w-cpill {
+  position: relative; overflow: hidden; min-height: 44px; padding: 0 20px; border-radius: 999px; border: 2px solid rgb(255 246 234 / 0.45);
+  background: rgb(42 6 7 / 0.55); color: var(--cream); font-family: var(--cd); font-stretch: 62%; font-weight: 800; text-transform: uppercase;
+  font-size: 19px; letter-spacing: 0.03em; transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.w-cpill:hover { border-color: var(--gold); color: var(--gold); }
+.w-cpill:active { transform: scale(0.96); }
+.w-cpill.on { background: var(--gold); border-color: var(--gold); color: var(--wine); }
+.w-turning .w-cpill.on::after {
+  content: ''; position: absolute; left: 0; bottom: 0; width: 100%; height: 3px; background: var(--wine);
+  transform: scaleX(0); transform-origin: left; animation: w-fill 4.6s linear forwards;
+}
 
 /* ---------- Crossed tapes ---------- */
 .w-tapes { position: relative; height: 170px; overflow: hidden; background: linear-gradient(var(--wine) 0 50%, var(--red) 50% 100%); }
@@ -543,10 +628,21 @@ body:has(.site) { background: #3f0a0d; }
 @keyframes w-stamp { from { opacity: 0; scale: 2.4; } to { opacity: 1; scale: 1; } }
 @keyframes w-pinb { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
 @keyframes w-ring { from { opacity: 0.9; transform: scale(0.4); } to { opacity: 0; transform: scale(2.2); } }
+@keyframes w-noodle { to { stroke-dashoffset: 0; } }
+@keyframes w-turn { to { rotate: 360deg; } }
+@keyframes w-sunin { from { opacity: 0; scale: 0.55; } to { opacity: 1; scale: 1; } }
+@keyframes w-ringin { from { opacity: 0; scale: 0.8; } to { opacity: 1; scale: 1; } }
+@keyframes w-platein { from { opacity: 0; scale: 0.4; rotate: -160deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+@keyframes w-hpop { from { opacity: 0; scale: 0.3; rotate: -30deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+@keyframes w-rcptin { from { opacity: 0; translate: -20px 50px; } to { opacity: 1; translate: 0 0; } }
 @keyframes w-rv { from { opacity: 0.25; transform: translateY(48px) scale(0.97); } to { opacity: 1; transform: none; } }
 
-@media (max-width: 1180px) {
-  .w-fl { display: none; }
+/* Narrower computers: one column, the plate under the copy. */
+@media (max-width: 1100px) {
+  .w-hero-in { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .w-stagecol { width: 100%; max-width: 640px; margin: 0 auto; }
+  .w-stage { --sun: calc(var(--plate) * 1.8); --sunx: 0px; --cy: 46%; height: calc(var(--plate) * 1.62); }
+  .w-rcpts { left: calc(50% - var(--plate) * 0.95); top: calc(var(--cy) - var(--plate) * 0.12); }
 }
 @media (max-width: 980px) {
   .w-links { display: none; }
@@ -570,20 +666,32 @@ body:has(.site) { background: #3f0a0d; }
 @media (max-width: 720px) {
   .w-wrap { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
 
-  /* Top: EAT [bowl] / PASTA., big and stacked; one tape */
-  .w-hero { padding-block: 30px 36px; }
-  .w-hero-in { gap: 18px; }
+  /* Top: the headline, then the plate and its receipt, then the words and buttons; one tape */
+  .w-hero { --plate: min(64vw, 300px); padding-block: 22px 48px; }
+  .w-hero-in { display: flex; flex-direction: column; align-items: stretch; gap: 22px; }
+  .w-copy { display: contents; }
+  .w-ornament { order: 1; align-self: flex-start; font-size: 11px; }
   .w-ornament svg { display: none; }
-  .w-ornament { font-size: 11px; }
-  .w-h1 { align-self: stretch; }
-  .w-l1 { font-size: min(104px, 26vw); }
-  .w-ln { display: flex; flex-wrap: wrap; column-gap: 0.12em; row-gap: 0; }
-  .w-pasta { flex-basis: 100%; text-align: center; }
-  .w-l2 { font-size: 32px; }
-  .w-lead { font-size: 16px; line-height: 1.55; }
-  .w-ctas { flex-direction: column; width: 100%; gap: 12px; }
+  .w-h1 { order: 2; }
+  .w-noodle { margin-top: -0.06em; }
+  .w-stagecol { order: 3; margin-top: -8px; }
+  .w-lead { order: 4; font-size: 16px; line-height: 1.55; }
+  .w-ctas { order: 5; flex-direction: column; align-items: stretch; gap: 12px; }
   .w-ctas .w-btn { width: 100%; }
-  .w-perks { display: none; }
+  .w-perks { order: 6; flex-direction: column; gap: 12px; }
+  .w-stage { --sun: calc(var(--plate) * 1.75); --cy: 39%; height: calc(var(--plate) * 1.94); }
+  .w-loop text { font-size: 30px; }
+  .w-rcpts { left: 0; top: calc(var(--cy) + var(--plate) * 0.2); width: 188px; }
+  .w-rcpt { padding: 18px 15px 20px; gap: 8px; font-size: 11.5px; }
+  .w-tk-brand { font-size: 19px; }
+  .w-tk-small, .w-tk-pts span { font-size: 10px; }
+  .w-tk-note { display: none; }
+  .w-tk-pts b { font-size: 36px; }
+  .w-rstamp { font-size: 12px; }
+  .w-hsticker { left: auto; right: 0; top: calc(var(--cy) - var(--plate) * 0.72); width: calc(var(--plate) * 0.4); height: calc(var(--plate) * 0.4); }
+  .w-hs-txt span { font-stretch: 100%; letter-spacing: 0.04em; }
+  .w-cpills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; max-width: 320px; }
+  .w-cpill { font-size: 17px; padding: 0 12px; }
   .w-tapes { height: 112px; }
   .w-tape { padding-block: 10px; }
   .w-t1 { top: 20px; }
