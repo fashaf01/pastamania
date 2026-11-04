@@ -68,7 +68,7 @@ function Phone({ step }) {
         </div>
         <div className="w-ticket">
           <span className="w-stamp">It's yours!</span>
-          <img src={voucher.image} alt="" />
+          <img src={voucher.image} alt="" loading="lazy" decoding="async" />
           <p className="w-cd" style={{ fontSize: 38, paddingTop: 6 }}>{voucher.name}</p>
           <p style={{ fontSize: 14, fontWeight: 600, paddingTop: 14 }}>
             Show this voucher at the counter. Valid for {club.voucherValidDays} days.

@@ -21,6 +21,9 @@ createRoot(document.getElementById('root'), {
   </StrictMode>,
 )
 
+// Colour fades stay off for the first screen only (see index.html), then work as normal.
+setTimeout(() => document.documentElement.classList.remove('boot'), 700)
+
 // The app no longer uses a service worker; ask any existing one to update so it can remove itself.
 navigator.serviceWorker?.getRegistrations().then((regs) => regs.forEach((r) => r.update()))
 

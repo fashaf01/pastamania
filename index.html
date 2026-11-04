@@ -18,12 +18,31 @@
     <meta property="og:description" content="Eat pasta, earn free pasta. Join free and your first Garlic Bread is on us." />
     <meta property="og:image" content="/images/brand/icon-512.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@500;600&family=Ultra&display=swap" rel="stylesheet" />
+    <!-- Fonts are served from this site (public/fonts), not Google: nothing blocks the first paint, and the two
+         the first screen needs (Archivo for text, Ultra for headlines) are preloaded so the text never reflows
+         when they arrive. Latin letters only; anything else falls back to the phone's own font. -->
+    <link rel="preload" href="/fonts/archivo-var-v1.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/ultra-v1.woff2" as="font" type="font/woff2" crossorigin />
+    <style>
+      @font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-stretch: 62% 125%; font-display: swap;
+        src: url(/fonts/archivo-var-v1.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'Ultra'; font-style: normal; font-weight: 400; font-display: swap;
+        src: url(/fonts/ultra-v1.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 500; font-display: swap;
+        src: url(/fonts/plexmono-500-v1.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+      @font-face { font-family: 'IBM Plex Mono'; font-style: normal; font-weight: 600; font-display: swap;
+        src: url(/fonts/plexmono-600-v1.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+    </style>
     <script>
       // Apply the saved light/dark choice before the first paint so the app never flashes the wrong theme.
+      // "boot" switches the colour fades off for the very first screen (removed again in main.jsx), so the
+      // page doesn't fade from cream to wine while it loads.
       ;(function () {
+        document.documentElement.classList.add('boot')
         var darkMode = false // keep in step with DARK_MODE in src/lib/theme.jsx (light only for now)
         var mode
         try { mode = localStorage.getItem('pm.theme') } catch (e) {}

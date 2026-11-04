@@ -89,6 +89,9 @@ The same link shows a website on a computer and the app on a phone or tablet (`s
   app). Use them for QR codes, social posts or a "website" and an "app" button. Added to a home screen, the app is
   always the app. For separate web addresses (say `www.…` and `app.…`) add both domains in Vercel and point each
   at `/website` or `/app` with a redirect.
+- On a computer `/app` turns into `/` once it has loaded, so reloading that page shows the website. For a link that
+  stays on the app after a reload (emails, proposals, QR codes), use `/?view=app`: it opens the app and the choice is
+  kept on that device. `/website` keeps showing the website after a reload.
 - Anyone can switch: *Open the app view* in the website footer, *Open the website* on the app's welcome and Me
   screens (computers only), or `?view=app` / `?view=site` on any link. The choice is kept on the device.
 
@@ -163,7 +166,8 @@ stickers and the running-chef logo. The tab bar is a calm cream bar with a red m
 screen itself stays the focus. Both were designed first as canvases and built to match.
 
 - **Fonts** – Archivo (text; its narrow heavy cut for headings and buttons, its wide cut for small caps labels) and
-  Ultra (slab accents), both from Google Fonts.
+  Ultra (slab accents), plus IBM Plex Mono for the website's receipt. All are served from this site
+  (`public/fonts`, Latin letters only, preloaded in `index.html`), so nothing waits on Google and the text never reflows.
 - **Colours** – sampled from the logo and posters: wine `#3F0A0D`, poster red `#9E2022`, red `#C8161E`, gold `#FBB516`,
   ink `#231F20`, cream `#FFF6EA`; dark theme on espresso `#1A1110` with gold headings.
 

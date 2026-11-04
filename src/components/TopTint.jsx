@@ -69,6 +69,13 @@ export default function TopTint() {
     const settled = setTimeout(schedule, 700)
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
+    // Backgrounds fade between colours (body and screens ease over 0.3s) without changing the page's markup,
+    // so nothing above would notice when a fade ends: the strip kept the colour it read halfway through, a pale
+    // line along the top of the first screen. Read again whenever a fade or entrance finishes, and once the
+    // fonts are in (their arrival can move the top of a screen).
+    document.addEventListener('transitionend', schedule, true)
+    document.addEventListener('animationend', schedule, true)
+    document.fonts?.ready.then(schedule)
     // Sheets and screens that change in place (joining, signing out) change the top without a scroll.
     const watcher = new MutationObserver(schedule)
     watcher.observe(document.body, { childList: true, subtree: true })
@@ -77,6 +84,8 @@ export default function TopTint() {
       clearTimeout(settled)
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
+      document.removeEventListener('transitionend', schedule, true)
+      document.removeEventListener('animationend', schedule, true)
       watcher.disconnect()
     }
   }, [pathname])

@@ -1,5 +1,5 @@
 /* PastaMania Club – styles. Look: the FridayMania posters (poster red, gold hatched slab headlines,
-   wide caps, starburst stickers). Ultra for display type, Archivo for everything else (Google Fonts). */
+   wide caps, starburst stickers). Ultra for display type, Archivo for everything else (self-hosted, public/fonts). */
 
 /* ---------- Tokens ---------- */
 :root {
@@ -211,6 +211,9 @@ mark.hl {
   display: flex; flex-direction: column; background: var(--bg); transition: background-color 0.3s;
 }
 .screen { flex: 1; display: flex; flex-direction: column; }
+/* First load only (class set in index.html, removed in main.jsx): colours switch at once instead of fading in
+   from the empty cream page, which showed as a pale flash and a pale line along the top. */
+html.boot body, html.boot .app { transition: none; }
 
 /* Full-colour screens (welcome poster, My code, voucher) paint the whole window so the column has no edges. */
 @supports selector(body:has(a)) {

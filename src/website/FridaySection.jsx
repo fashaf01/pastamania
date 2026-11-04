@@ -35,7 +35,7 @@ export default function FridaySection() {
         <div className="w-fframe w-rv">
           {/* On a computer the photo fills the frame behind the words; on a phone it sits between them. */}
           <div className="w-fphoto">
-            <img src={fridayMania.image} alt={`${fridayMania.heroDish} on a red table`} />
+            <img src={fridayMania.image} alt={`${fridayMania.heroDish} on a red table`} loading="lazy" decoding="async" />
             <div className="w-sticker w-fsticker">
               <span className="w-sticker-bg w-burst w-spin" aria-hidden="true" />
               <p>

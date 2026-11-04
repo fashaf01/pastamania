@@ -213,8 +213,9 @@ function Hero() {
 
             <div className="w-hplate">
               <div className="w-hplate-in">
+                {/* Only the first plate is on show at load; the other three wait behind everything else. */}
                 {HERO_DISHES.map((d, i) => (
-                  <img key={d.name} className={`w-hdish ${state(i)}`} src={d.plate} alt={i === shown ? d.name : ''} />
+                  <img key={d.name} className={`w-hdish ${state(i)}`} src={d.plate} alt={i === shown ? d.name : ''} fetchPriority={i === 0 ? 'high' : 'low'} />
                 ))}
               </div>
             </div>
@@ -303,7 +304,7 @@ function Tapes() {
 function OpenApp({ welcome }) {
   return (
     <section id="app" className="w-cta w-cta-phone">
-      {welcome && <img className="w-gb-m" src={welcome.image} alt="" />}
+      {welcome && <img className="w-gb-m" src={welcome.image} alt="" loading="lazy" decoding="async" />}
       <div className="w-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <p className="w-eb" style={{ color: '#5c3a00' }}>Join free in 30 seconds</p>
         <h2 className="w-cd w-cta-title">Your first {welcome?.name ?? 'reward'} is waiting</h2>
@@ -366,7 +367,7 @@ function GetApp() {
           </div>
         </div>
         <div className="w-qrwrap w-rv">
-          {welcome && <img className="w-gb" src={welcome.image} alt="" />}
+          {welcome && <img className="w-gb" src={welcome.image} alt="" loading="lazy" decoding="async" />}
           <div className="w-qrbox">
             <div className="w-qr">
               <QRCode value={window.location.origin} size={216} level="H" label="QR code that opens PastaMania on your phone" />

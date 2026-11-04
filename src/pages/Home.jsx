@@ -154,7 +154,7 @@ function MemberHome() {
         <section className="block rise" style={{ '--i': 4 }}>
           <h2 className="block-title cd">This Friday</h2>
           <Link to={`/menu/${dishSlug(fridayMania.heroDish)}`} className="friday-card">
-            <img src={fridayMania.image} alt="" />
+            <img src={fridayMania.image} alt="" loading="lazy" decoding="async" />
             <Sticker size={78} tilt={10} className="friday-sticker">
               <b className="slab">1+1</b>
               <small>Free</small>

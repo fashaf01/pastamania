@@ -11,11 +11,12 @@ export default function Welcome() {
 
   return (
     <div className="welcome grain">
-      <img className="welcome-logo" src={brand.logo} alt="PastaMania casual dining" />
+      <img className="welcome-logo" src={brand.logo} alt="PastaMania casual dining" width="58" height="58" fetchPriority="high" />
 
       <div className="welcome-main">
         <div className="welcome-plate">
-          <img src="/images/menu/carbonara-pasta.jpg" alt="" />
+          {/* The biggest thing on the first screen: ask for it first, and tell the browser its shape. */}
+          <img src="/images/menu/carbonara-pasta.jpg" alt="" width="550" height="440" fetchPriority="high" decoding="async" />
           <Sticker size={88} tilt={12} className="welcome-sticker">
             <b className="slab">{club.welcomeBonus}</b>
             <small>pts free</small>
