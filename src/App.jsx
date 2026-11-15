@@ -23,6 +23,9 @@ import Voucher from './pages/Voucher.jsx'
 
 // Loaded only on computers, so phones never download it.
 const Website = lazy(() => import('./website/Website.jsx'))
+// The new app (/v2) and the side-by-side page, loaded only when opened, so the current app stays as light as before.
+const V2App = lazy(() => import('./v2/V2App.jsx'))
+const Compare = lazy(() => import('./v2/Compare.jsx'))
 
 // On a computer these addresses open the website at the matching section. Everything else (My code,
 // vouchers, tickets, the counter screen) stays the app, as it does on a phone.
@@ -64,6 +67,22 @@ function Pages() {
 
   return (
     <Routes>
+      <Route
+        path="v2/*"
+        element={
+          <Suspense fallback={null}>
+            <V2App />
+          </Suspense>
+        }
+      />
+      <Route
+        path="compare"
+        element={
+          <Suspense fallback={null}>
+            <Compare />
+          </Suspense>
+        }
+      />
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="menu" element={<Menu />} />
