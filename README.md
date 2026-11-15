@@ -117,6 +117,38 @@ Club with a phone that plays the app's three steps and the rewards ladder · bra
 and a sketch map · Dough Workz sessions · FAQ · *Get the app* QR · footer. Motion (load sequence, hovers, scroll
 reveals, marquee) switches off for *Reduce motion*.
 
+## New app (/v2) – built to make PastaMania more money
+
+A second version of the app lives at **`/v2`**, beside the current one (which is unchanged). It is built from the design
+canvas *PastaMania App – New Design*: white food cards on cream with the poster look on top (wine grain headers, narrow
+heavy capitals, gold slab numbers, gold tickets, turning starbursts). It has no ordering: delivery stays on Uber Eats and
+PickMe. **`/compare`** shows both apps side by side, live, sharing the same member.
+
+It adds five ways to earn, each switched on or off on the manager page. Their numbers are in `src/v2/config.js` (all samples
+for PastaMania to set):
+
+1. **Come-back treat** – after every visit the guest gets a free Garlic Bread that only works on their next visit within 14 days.
+2. **Pasta Pass** – 5 lunches paid upfront at the counter, the 6th free (sample price Rs. 9,500, 200 passes).
+3. **Quiet-hour boost** – double points Mon–Thu 3–6 pm, plus a manager's *Fill it now* button: 2 hours of double points at one branch.
+4. **Bigger-bill goal** – Rs. 1,000 off a bill of Rs. 5,000 (until 24 Nov). The guest can plan an order and see how far they are; the counter
+   suggests a side that tips the bill over.
+5. **Parties and catering** – kids party, office lunch or catering: pick a date and head count, see an estimate, send the request.
+
+Screens (all under `/v2`): Home · Menu · Deals (with Use deal and the bill planner) · Rewards · Me, plus My code, Pasta Pass,
+Celebrate with us, Join, a reward voucher, and the **thank-you screen** that opens by itself when the counter gives points
+(points added, the come-back treat, and a one-tap rating: 4–5 stars ask for a Google review, 1–3 stars go privately to the manager).
+
+- **Counter** (`/v2/counter`) – find the guest (scan or type) → use their pass lunch, treat or rewards → enter the order total. It
+  works out the Rs. 1,000 off, double points and the come-back treat by itself, and can sell a Pasta Pass.
+- **Manager** (`/v2/manager`, full width) – sales each way brought in, what the free food cost and what's left, by branch and
+  period; the five switches; quiet hours and *Fill it now*; the complaints inbox with the guest's number; party and catering requests.
+  It shows clearly labelled sample numbers until the counter records the first visit.
+
+The code is in `src/v2/` (screens in `src/v2/screens/`, styles in `v2.css` with every class starting `v2-`). It loads only when
+`/v2` or `/compare` is opened, so the current app downloads nothing extra. Points, members and vouchers are the same
+`ClubContext` as the current app; everything new (treats, passes, visits, ratings, requests, switches) is in `src/v2/store.jsx`,
+on the device like the rest of the prototype. Inviting a friend shares a join link; crediting the friend who invited needs the backend.
+
 ## FridayMania (the weekly offer)
 
 Home and the dish page carry FridayMania – buy 1, get 1 on the week's hero dish every Friday. Set the dish in
@@ -211,6 +243,8 @@ The first version is seeded from public research. These items need the brand's c
 - [ ] **Loyalty programme** – earn rate, welcome points, rewards and voucher rules in `club.js`
 - [ ] **PickMe Food** direct store links (currently links to pickme.lk)
 - [ ] Allergen, vegetarian and halal information
+- [ ] **New app (/v2) numbers** in `src/v2/config.js`: the come-back treat and how long it lasts, Pasta Pass price, size, limit and
+  which dishes count, quiet hours, the Rs. 1,000-off goal and its end date, and per-head prices for office lunch and catering
 
 ## Roadmap
 

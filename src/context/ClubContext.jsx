@@ -104,6 +104,17 @@ export function ClubProvider({ children }) {
     [state.member],
   )
 
+  // Extra points on top of a bill (the new app's double points in quiet hours).
+  const addBonus = useCallback(
+    (memberId, points, label) => {
+      if (state.member?.id !== memberId) return { error: NOT_HERE }
+      if (!(points > 0)) return { ok: true }
+      setState((s) => (s.member?.id === memberId ? addActivity({ ...s, balance: s.balance + points }, { type: 'bonus', points, label }) : s))
+      return { ok: true }
+    },
+    [state.member],
+  )
+
   // Takes a mistyped award back: within 30 minutes, once, and only if the points haven't been spent.
   const undoAward = useCallback(
     (awardId) => {
@@ -181,8 +192,8 @@ export function ClubProvider({ children }) {
   const signOut = useCallback(() => setState(EMPTY), [])
 
   const value = useMemo(
-    () => ({ ...state, join, findMember, recordPurchase, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut }),
-    [state, join, findMember, recordPurchase, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut],
+    () => ({ ...state, join, findMember, recordPurchase, addBonus, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut }),
+    [state, join, findMember, recordPurchase, addBonus, undoAward, markVoucherUsed, redeem, book, cancelBooking, signOut],
   )
 
   return <ClubContext.Provider value={value}>{children}</ClubContext.Provider>
